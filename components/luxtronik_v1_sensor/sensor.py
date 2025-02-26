@@ -5,8 +5,6 @@ from esphome.const import ICON_EMPTY, UNIT_EMPTY
 
 DEPENDENCIES = ["uart"]
 
-from .luxtronik_v1_sensor import luxtronik_v1_sensor
-
 luxtronik_v1_sensor_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
 LuxtronikV1Sensor = luxtronik_v1_sensor_ns.class_(
     "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
