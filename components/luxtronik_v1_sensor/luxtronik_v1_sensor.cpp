@@ -5,40 +5,39 @@ namespace esphome {
 
 namespace luxtronik_v1_sensor {
 
-  static const char *TAG = "luxtronik_v1_sensor.sensor";
+static const char *TAG = "luxtronik_v1_sensor.sensor";
 
-  luxtronik_v1_sensor::luxtronik_v1_sensor(): PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
-  // change all the other pointers to nullptr:
-   temp_RL(nullptr),temp_RL_Soll(nullptr),temp_Heissgas(nullptr),
-    temp_Aussen(nullptr), temp_BW(nullptr),
-    temp_BW_Soll(nullptr), temp_WQ_Ein(nullptr),
-    temp_Kaeltekreis(nullptr), temp_MK1_Vorl(nullptr),
-    temp_MK1VL_Soll(nullptr), temp_Raumstat(nullptr),
-    ein_Abtau_Soledruck_Durchfluss(nullptr), ein_Sperrzeit_EVU(nullptr),
-    ein_Hochdruckpressostat(nullptr), ein_Motorschutz(nullptr),
-    ein_Niederdruckpressostat(nullptr), ein_Fremdstromanode(nullptr),
-    aus_ATV(nullptr), aus_BWP(nullptr),
-    aus_FBHP(nullptr), aus_HZP(nullptr),
-    aus_Mischer_1_Auf(nullptr), aus_Mischer_1_Zu(nullptr),
-    aus_VentWP(nullptr), aus_VentBrunnen(nullptr),
-    aus_Verdichter_1(nullptr), aus_Verdichter_2(nullptr),
-    aus_ZPumpe(nullptr), aus_ZWE(nullptr),
-    aus_ZWE_Stoerung(nullptr), status_Anlagentyp(nullptr),
-    status_Softwareversion(nullptr), status_Bivalenzstufe(nullptr),
-    status_Betriebszustand(nullptr), modus_Heizung(nullptr),
-    modus_Warmwasser(nullptr) {}
-  
+LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
+                                          temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
+                                          temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
+                                          temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
+                                          temp_Kaeltekreis_ptr(nullptr), temp_MK1_Vorl_ptr(nullptr),
+                                          temp_MK1VL_Soll_ptr(nullptr), temp_Raumstat_ptr(nullptr),
+                                          ein_Abtau_Soledruck_Durchfluss_ptr(nullptr), ein_Sperrzeit_EVU_ptr(nullptr),
+                                          ein_Hochdruckpressostat_ptr(nullptr), ein_Motorschutz_ptr(nullptr),
+                                          ein_Niederdruckpressostat_ptr(nullptr), ein_Fremdstromanode_ptr(nullptr),
+                                          aus_ATV_ptr(nullptr), aus_BWP_ptr(nullptr),
+                                          aus_FBHP_ptr(nullptr), aus_HZP_ptr(nullptr),
+                                          aus_Mischer_1_Auf_ptr(nullptr), aus_Mischer_1_Zu_ptr(nullptr),
+                                          aus_VentWP_ptr(nullptr), aus_VentBrunnen_ptr(nullptr),
+                                          aus_Verdichter_1_ptr(nullptr), aus_Verdichter_2_ptr(nullptr),
+                                          aus_ZPumpe_ptr(nullptr), aus_ZWE_ptr(nullptr),
+                                          aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
+                                          status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
+                                          status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
+                                          modus_Warmwasser_ptr(nullptr) {}
+
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
-      if(this->uart_ == nullptr){
-          ESP_LOGE(TAG,"Uart is nullptr");
-      } else {
-          ESP_LOGI(TAG,"Uart is set.");
-      }
-     // Clear Read Buffer
-     for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
-      read_buffer_[i] = 0;
-   }
+  if (this->uart_ == nullptr) {
+    ESP_LOGE(TAG, "Uart is nullptr");
+  } else {
+    ESP_LOGI(TAG, "Uart is set.");
+  }
+  // Clear Read Buffer
+  for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
+    read_buffer_[i] = 0;
+  }
   // Send initial command
   send_cmd_("1100");
 }
