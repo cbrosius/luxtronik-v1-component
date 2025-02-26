@@ -12,8 +12,7 @@ from esphome.const import (
     UNIT_EMPTY,
 )
 
-# Import the namespace from const.py
-from .const import luxtronik_v1_ns 
+from .luxtronik_v1_sensor import luxtronik_v1_ns 
 
 # Declare the C++ class.
 LuxtronikV1Component = luxtronik_v1_ns.class_(

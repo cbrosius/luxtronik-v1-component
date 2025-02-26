@@ -1,7 +1,3 @@
-#include "esphome.h"
-#include "esphome/components/sensor/sensor.h"
-#include <vector>
-
 namespace esphome {
 
 const char ASCII_CR = 0x0D;
@@ -15,6 +11,8 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
  public:
   // constructor
   luxtronik_v1_sensor();
+  // destructor
+  ~luxtronik_v1_sensor();
 
   void loop() override;
   void update() override;
@@ -77,43 +75,43 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   void parse_message_(const std::string &message, std::vector<sensor::Sensor*> &sensors, size_t start);
 
   // Sensor pointers
-  sensor::Sensor *temp_VL_ptr;
-  sensor::Sensor *temp_RL_ptr;
-  sensor::Sensor *temp_RL_Soll_ptr;
-  sensor::Sensor *temp_Heissgas_ptr;
-  sensor::Sensor *temp_Aussen_ptr;
-  sensor::Sensor *temp_BW_ptr;
-  sensor::Sensor *temp_BW_Soll_ptr;
-  sensor::Sensor *temp_WQ_Ein_ptr;
-  sensor::Sensor *temp_Kaeltekreis_ptr;
-  sensor::Sensor *temp_MK1_Vorl_ptr;
-  sensor::Sensor *temp_MK1VL_Soll_ptr;
-  sensor::Sensor *temp_Raumstat_ptr;
-  sensor::Sensor *ein_Abtau_Soledruck_Durchfluss_ptr;
-  sensor::Sensor *ein_Sperrzeit_EVU_ptr;
-  sensor::Sensor *ein_Hochdruckpressostat_ptr;
-  sensor::Sensor *ein_Motorschutz_ptr;
-  sensor::Sensor *ein_Niederdruckpressostat_ptr;
-  sensor::Sensor *ein_Fremdstromanode_ptr;
-  sensor::Sensor *aus_ATV_ptr;
-  sensor::Sensor *aus_BWP_ptr;
-  sensor::Sensor *aus_FBHP_ptr;
-  sensor::Sensor *aus_HZP_ptr;
-  sensor::Sensor *aus_Mischer_1_Auf_ptr;
-  sensor::Sensor *aus_Mischer_1_Zu_ptr;
-  sensor::Sensor *aus_VentWP_ptr;
-  sensor::Sensor *aus_VentBrunnen_ptr;
-  sensor::Sensor *aus_Verdichter_1_ptr;
-  sensor::Sensor *aus_Verdichter_2_ptr;
-  sensor::Sensor *aus_ZPumpe_ptr;
-  sensor::Sensor *aus_ZWE_ptr;
-  sensor::Sensor *aus_ZWE_Stoerung_ptr;
-  sensor::Sensor *status_Anlagentyp_ptr;
-  sensor::Sensor *status_Softwareversion_ptr;
-  sensor::Sensor *status_Bivalenzstufe_ptr;
-  sensor::Sensor *status_Betriebszustand_ptr;
-  sensor::Sensor *modus_Heizung_ptr;
-  sensor::Sensor *modus_Warmwasser_ptr;
+  sensor::Sensor *temp_VL_ptr{nullptr};
+  sensor::Sensor *temp_RL_ptr{nullptr};
+  sensor::Sensor *temp_RL_Soll_ptr{nullptr};
+  sensor::Sensor *temp_Heissgas_ptr{nullptr};
+  sensor::Sensor *temp_Aussen_ptr{nullptr};
+  sensor::Sensor *temp_BW_ptr{nullptr};
+  sensor::Sensor *temp_BW_Soll_ptr{nullptr};
+  sensor::Sensor *temp_WQ_Ein_ptr{nullptr};
+  sensor::Sensor *temp_Kaeltekreis_ptr{nullptr};
+  sensor::Sensor *temp_MK1_Vorl_ptr{nullptr};
+  sensor::Sensor *temp_MK1VL_Soll_ptr{nullptr};
+  sensor::Sensor *temp_Raumstat_ptr{nullptr};
+  sensor::Sensor *ein_Abtau_Soledruck_Durchfluss_ptr{nullptr};
+  sensor::Sensor *ein_Sperrzeit_EVU_ptr{nullptr};
+  sensor::Sensor *ein_Hochdruckpressostat_ptr{nullptr};
+  sensor::Sensor *ein_Motorschutz_ptr{nullptr};
+  sensor::Sensor *ein_Niederdruckpressostat_ptr{nullptr};
+  sensor::Sensor *ein_Fremdstromanode_ptr{nullptr};
+  sensor::Sensor *aus_ATV_ptr{nullptr};
+  sensor::Sensor *aus_BWP_ptr{nullptr};
+  sensor::Sensor *aus_FBHP_ptr{nullptr};
+  sensor::Sensor *aus_HZP_ptr{nullptr};
+  sensor::Sensor *aus_Mischer_1_Auf_ptr{nullptr};
+  sensor::Sensor *aus_Mischer_1_Zu_ptr{nullptr};
+  sensor::Sensor *aus_VentWP_ptr{nullptr};
+  sensor::Sensor *aus_VentBrunnen_ptr{nullptr};
+  sensor::Sensor *aus_Verdichter_1_ptr{nullptr};
+  sensor::Sensor *aus_Verdichter_2_ptr{nullptr};
+  sensor::Sensor *aus_ZPumpe_ptr{nullptr};
+  sensor::Sensor *aus_ZWE_ptr{nullptr};
+  sensor::Sensor *aus_ZWE_Stoerung_ptr{nullptr};
+  sensor::Sensor *status_Anlagentyp_ptr{nullptr};
+  sensor::Sensor *status_Softwareversion_ptr{nullptr};
+  sensor::Sensor *status_Bivalenzstufe_ptr{nullptr};
+  sensor::Sensor *status_Betriebszustand_ptr{nullptr};
+  sensor::Sensor *modus_Heizung_ptr{nullptr};
+  sensor::Sensor *modus_Warmwasser_ptr{nullptr};
 
   CallbackManager<void(std::string, std::string)> callback_;
 };

@@ -2,29 +2,32 @@
 
 namespace esphome {
 
-  luxtronik_v1_sensor::luxtronik_v1_sensor(): PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
-  // change all the other pointers to nullptr:
-   temp_RL(nullptr),temp_RL_Soll(nullptr),temp_Heissgas(nullptr),
-    temp_Aussen(nullptr), temp_BW(nullptr),
-    temp_BW_Soll(nullptr), temp_WQ_Ein(nullptr),
-    temp_Kaeltekreis(nullptr), temp_MK1_Vorl(nullptr),
-    temp_MK1VL_Soll(nullptr), temp_Raumstat(nullptr),
-    ein_Abtau_Soledruck_Durchfluss(nullptr), ein_Sperrzeit_EVU(nullptr),
-    ein_Hochdruckpressostat(nullptr), ein_Motorschutz(nullptr),
-    ein_Niederdruckpressostat(nullptr), ein_Fremdstromanode(nullptr),
-    aus_ATV(nullptr), aus_BWP(nullptr),
-    aus_FBHP(nullptr), aus_HZP(nullptr),
-    aus_Mischer_1_Auf(nullptr), aus_Mischer_1_Zu(nullptr),
-    aus_VentWP(nullptr), aus_VentBrunnen(nullptr),
-    aus_Verdichter_1(nullptr), aus_Verdichter_2(nullptr),
-    aus_ZPumpe(nullptr), aus_ZWE(nullptr),
-    aus_ZWE_Stoerung(nullptr), status_Anlagentyp(nullptr),
-    status_Softwareversion(nullptr), status_Bivalenzstufe(nullptr),
-    status_Betriebszustand(nullptr), modus_Heizung(nullptr),
-    modus_Warmwasser(nullptr) {}
-  
-void luxtronik_v1_sensor::loop() {
+luxtronik_v1_sensor::luxtronik_v1_sensor()
+    : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
+      temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
+      temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
+      temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
+      temp_Kaeltekreis_ptr(nullptr), temp_MK1_Vorl_ptr(nullptr),
+      temp_MK1VL_Soll_ptr(nullptr), temp_Raumstat_ptr(nullptr),
+      ein_Abtau_Soledruck_Durchfluss_ptr(nullptr), ein_Sperrzeit_EVU_ptr(nullptr),
+      ein_Hochdruckpressostat_ptr(nullptr), ein_Motorschutz_ptr(nullptr),
+      ein_Niederdruckpressostat_ptr(nullptr), ein_Fremdstromanode_ptr(nullptr),
+      aus_ATV_ptr(nullptr), aus_BWP_ptr(nullptr),
+      aus_FBHP_ptr(nullptr), aus_HZP_ptr(nullptr),
+      aus_Mischer_1_Auf_ptr(nullptr), aus_Mischer_1_Zu_ptr(nullptr),
+      aus_VentWP_ptr(nullptr), aus_VentBrunnen_ptr(nullptr),
+      aus_Verdichter_1_ptr(nullptr), aus_Verdichter_2_ptr(nullptr),
+      aus_ZPumpe_ptr(nullptr), aus_ZWE_ptr(nullptr),
+      aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
+      status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
+      status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
+      modus_Warmwasser_ptr(nullptr) {}
 
+luxtronik_v1_sensor::~luxtronik_v1_sensor() {
+  // Clean up resources if necessary
+}
+
+void luxtronik_v1_sensor::loop() {
   if (!this->uart_) {
     ESP_LOGE(TAG, "UART not initialized!");
     return;
@@ -66,7 +69,6 @@ float luxtronik_v1_sensor::GetValue(const std::string &message) {
 }
 
 void luxtronik_v1_sensor::send_cmd_(const std::string &message) {
-  
   if (!this->uart_) {
     ESP_LOGE(TAG, "UART not initialized!");
     return;
@@ -157,136 +159,164 @@ void luxtronik_v1_sensor::parse_water_mode_(const std::string &message) {
   parse_message_(message, sensors, 5);
 }
 
-void luxtronik_v1_sensor::parse_message_(const std::string &message, std::vector<std::unique_ptr<Sensor>*> &sensors, size_t start) {
-  size_t end = message.find(';', start);
-  for (auto &sensor : sensors) {
-    start = end + 1;
-    end = message.find(';', start);
-    std::string value = message.substr(start, end - start);
-    (*sensor)->publish_state(GetValue(value));
-  }
-}
 void luxtronik_v1_sensor::parse_message_(const std::string &message, std::vector<sensor::Sensor*> &sensors, size_t start) {
   size_t end = message.find(';', start);
   for (auto &sensor : sensors) {
     start = end + 1;
     end = message.find(';', start);
     std::string value = message.substr(start, end - start);
-    if (sensor != nullptr){
-        (*sensor)->publish_state(std::atof(value.c_str()) / 10);
+    if (sensor != nullptr) {
+      sensor->publish_state(std::atof(value.c_str()) / 10);
     }
   }
 }
+
 void luxtronik_v1_sensor::set_temp_VL(sensor::Sensor* temp_VL) {
   this->temp_VL_ptr = temp_VL;
-  }
+}
+
 void luxtronik_v1_sensor::set_temp_RL(sensor::Sensor* temp_RL) {
-    this->temp_RL_ptr = temp_RL;
-  }
+  this->temp_RL_ptr = temp_RL;
+}
+
 void luxtronik_v1_sensor::set_temp_RL_Soll(sensor::Sensor* temp_RL_Soll) {
-    this->temp_RL_Soll_ptr = temp_RL_Soll;
-  }
+  this->temp_RL_Soll_ptr = temp_RL_Soll;
+}
+
 void luxtronik_v1_sensor::set_temp_Heissgas(sensor::Sensor* temp_Heissgas) {
-    this->temp_Heissgas_ptr = temp_Heissgas;
-  }
+  this->temp_Heissgas_ptr = temp_Heissgas;
+}
+
 void luxtronik_v1_sensor::set_temp_Aussen(sensor::Sensor* temp_Aussen) {
-    this->temp_Aussen_ptr = temp_Aussen;
-  }
+  this->temp_Aussen_ptr = temp_Aussen;
+}
+
 void luxtronik_v1_sensor::set_temp_BW(sensor::Sensor* temp_BW) {
-    this->temp_BW_ptr = temp_BW;
-  }
+  this->temp_BW_ptr = temp_BW;
+}
+
 void luxtronik_v1_sensor::set_temp_BW_Soll(sensor::Sensor* temp_BW_Soll) {
-    this->temp_BW_Soll_ptr = temp_BW_Soll;
-  }
+  this->temp_BW_Soll_ptr = temp_BW_Soll;
+}
+
 void luxtronik_v1_sensor::set_temp_WQ_Ein(sensor::Sensor* temp_WQ_Ein) {
-    this->temp_WQ_Ein_ptr = temp_WQ_Ein;
-  }
+  this->temp_WQ_Ein_ptr = temp_WQ_Ein;
+}
+
 void luxtronik_v1_sensor::set_temp_Kaeltekreis(sensor::Sensor* temp_Kaeltekreis) {
-    this->temp_Kaeltekreis_ptr = temp_Kaeltekreis;
-  }
+  this->temp_Kaeltekreis_ptr = temp_Kaeltekreis;
+}
+
 void luxtronik_v1_sensor::set_temp_MK1_Vorl(sensor::Sensor* temp_MK1_Vorl) {
-    this->temp_MK1_Vorl_ptr = temp_MK1_Vorl;
-  }
+  this->temp_MK1_Vorl_ptr = temp_MK1_Vorl;
+}
+
 void luxtronik_v1_sensor::set_temp_MK1VL_Soll(sensor::Sensor* temp_MK1VL_Soll) {
-    this->temp_MK1VL_Soll_ptr = temp_MK1VL_Soll;
-  }
+  this->temp_MK1VL_Soll_ptr = temp_MK1VL_Soll;
+}
+
 void luxtronik_v1_sensor::set_temp_Raumstat(sensor::Sensor* temp_Raumstat) {
-    this->temp_Raumstat_ptr = temp_Raumstat;
-  }
+  this->temp_Raumstat_ptr = temp_Raumstat;
+}
+
 void luxtronik_v1_sensor::set_ein_Abtau_Soledruck_Durchfluss(sensor::Sensor* ein_Abtau_Soledruck_Durchfluss) {
-    this->ein_Abtau_Soledruck_Durchfluss_ptr = ein_Abtau_Soledruck_Durchfluss;
-  }
+  this->ein_Abtau_Soledruck_Durchfluss_ptr = ein_Abtau_Soledruck_Durchfluss;
+}
+
 void luxtronik_v1_sensor::set_ein_Sperrzeit_EVU(sensor::Sensor* ein_Sperrzeit_EVU) {
-    this->ein_Sperrzeit_EVU_ptr = ein_Sperrzeit_EVU;
-  }
+  this->ein_Sperrzeit_EVU_ptr = ein_Sperrzeit_EVU;
+}
+
 void luxtronik_v1_sensor::set_ein_Hochdruckpressostat(sensor::Sensor* ein_Hochdruckpressostat) {
-    this->ein_Hochdruckpressostat_ptr = ein_Hochdruckpressostat;
-  }
+  this->ein_Hochdruckpressostat_ptr = ein_Hochdruckpressostat;
+}
+
 void luxtronik_v1_sensor::set_ein_Motorschutz(sensor::Sensor* ein_Motorschutz) {
-    this->ein_Motorschutz_ptr = ein_Motorschutz;
-  }
+  this->ein_Motorschutz_ptr = ein_Motorschutz;
+}
+
 void luxtronik_v1_sensor::set_ein_Niederdruckpressostat(sensor::Sensor* ein_Niederdruckpressostat) {
-    this->ein_Niederdruckpressostat_ptr = ein_Niederdruckpressostat;
-  }
+  this->ein_Niederdruckpressostat_ptr = ein_Niederdruckpressostat;
+}
+
 void luxtronik_v1_sensor::set_ein_Fremdstromanode(sensor::Sensor* ein_Fremdstromanode) {
-    this->ein_Fremdstromanode_ptr = ein_Fremdstromanode
-  }
+  this->ein_Fremdstromanode_ptr = ein_Fremdstromanode;
+}
+
 void luxtronik_v1_sensor::set_aus_ATV(sensor::Sensor* aus_ATV) {
-    this->aus_ATV_ptr = aus_ATV;
-  }
-  void luxtronik_v1_sensor::set_aus_BWP(sensor::Sensor* aus_BWP) {
-    this->aus_BWP_ptr = aus_BWP;
-  }
+  this->aus_ATV_ptr = aus_ATV;
+}
+
+void luxtronik_v1_sensor::set_aus_BWP(sensor::Sensor* aus_BWP) {
+  this->aus_BWP_ptr = aus_BWP;
+}
+
 void luxtronik_v1_sensor::set_aus_FBHP(sensor::Sensor* aus_FBHP) {
-    this->aus_FBHP_ptr = aus_FBHP;
-  }
+  this->aus_FBHP_ptr = aus_FBHP;
+}
+
 void luxtronik_v1_sensor::set_aus_HZP(sensor::Sensor* aus_HZP) {
-    this->aus_HZP_ptr = aus_HZP;
-  }
+  this->aus_HZP_ptr = aus_HZP;
+}
+
 void luxtronik_v1_sensor::set_aus_Mischer_1_Auf(sensor::Sensor* aus_Mischer_1_Auf) {
-    this->aus_Mischer_1_Auf_ptr = aus_Mischer_1_Auf;
-  }
+  this->aus_Mischer_1_Auf_ptr = aus_Mischer_1_Auf;
+}
+
 void luxtronik_v1_sensor::set_aus_Mischer_1_Zu(sensor::Sensor* aus_Mischer_1_Zu) {
-    this->aus_Mischer_1_Zu_ptr = aus_Mischer_1_Zu;
-  }
+  this->aus_Mischer_1_Zu_ptr = aus_Mischer_1_Zu;
+}
+
 void luxtronik_v1_sensor::set_aus_VentWP(sensor::Sensor* aus_VentWP) {
-    this->aus_VentWP_ptr = aus_VentWP;
-  }
+  this->aus_VentWP_ptr = aus_VentWP;
+}
+
 void luxtronik_v1_sensor::set_aus_VentBrunnen(sensor::Sensor* aus_VentBrunnen) {
-    this->aus_VentBrunnen_ptr = aus_VentBrunnen;
-  }
+  this->aus_VentBrunnen_ptr = aus_VentBrunnen;
+}
+
 void luxtronik_v1_sensor::set_aus_Verdichter_1(sensor::Sensor* aus_Verdichter_1) {
-    this->aus_Verdichter_1_ptr = aus_Verdichter_1;
-  }
+  this->aus_Verdichter_1_ptr = aus_Verdichter_1;
+}
+
 void luxtronik_v1_sensor::set_aus_Verdichter_2(sensor::Sensor* aus_Verdichter_2) {
-    this->aus_Verdichter_2_ptr = aus_Verdichter_2;
-  }
+  this->aus_Verdichter_2_ptr = aus_Verdichter_2;
+}
+
 void luxtronik_v1_sensor::set_aus_ZPumpe(sensor::Sensor* aus_ZPumpe) {
-    this->aus_ZPumpe_ptr = aus_ZPumpe;
-  }
+  this->aus_ZPumpe_ptr = aus_ZPumpe;
+}
+
 void luxtronik_v1_sensor::set_aus_ZWE(sensor::Sensor* aus_ZWE) {
-    this->aus_ZWE_ptr = aus_ZWE;
-  }
+  this->aus_ZWE_ptr = aus_ZWE;
+}
+
 void luxtronik_v1_sensor::set_aus_ZWE_Stoerung(sensor::Sensor* aus_ZWE_Stoerung) {
-    this->aus_ZWE_Stoerung_ptr = aus_ZWE_Stoerung;
-  }
+  this->aus_ZWE_Stoerung_ptr = aus_ZWE_Stoerung;
+}
+
 void luxtronik_v1_sensor::set_status_Anlagentyp(sensor::Sensor* status_Anlagentyp) {
-    this->status_Anlagentyp_ptr = status_Anlagentyp;
-  }
+  this->status_Anlagentyp_ptr = status_Anlagentyp;
+}
+
 void luxtronik_v1_sensor::set_status_Softwareversion(sensor::Sensor* status_Softwareversion) {
-    this->status_Softwareversion_ptr = status_Softwareversion;
-  }
+  this->status_Softwareversion_ptr = status_Softwareversion;
+}
+
 void luxtronik_v1_sensor::set_status_Bivalenzstufe(sensor::Sensor* status_Bivalenzstufe) {
-    this->status_Bivalenzstufe_ptr = status_Bivalenzstufe;
-  }
+  this->status_Bivalenzstufe_ptr = status_Bivalenzstufe;
+}
+
 void luxtronik_v1_sensor::set_status_Betriebszustand(sensor::Sensor* status_Betriebszustand) {
-    this->status_Betriebszustand_ptr = status_Betriebszustand;
-  }
+  this->status_Betriebszustand_ptr = status_Betriebszustand;
+}
+
 void luxtronik_v1_sensor::set_modus_Heizung(sensor::Sensor* modus_Heizung) {
-    this->modus_Heizung_ptr = modus_Heizung;
-  }
+  this->modus_Heizung_ptr = modus_Heizung;
+}
+
 void luxtronik_v1_sensor::set_modus_Warmwasser(sensor::Sensor* modus_Warmwasser) {
-    this->modus_Warmwasser_ptr = modus_Warmwasser;
-  }
+  this->modus_Warmwasser_ptr = modus_Warmwasser;
+}
 
 }  // namespace esphome
