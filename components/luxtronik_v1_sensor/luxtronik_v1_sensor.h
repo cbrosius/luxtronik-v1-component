@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/uart/uart.h"
 #include <vector>
 
 namespace esphome {
@@ -17,11 +18,10 @@ static const char* TAG = "luxtronik_v1";
 
 class LuxtronikV1Sensor : public PollingComponent, public uart::UARTDevice {
  public:
-  // constructor
-  luxtronik_v1_sensor();
-
+  void setup() override;
   void loop() override;
   void update() override;
+  void dump_config() override;
   void set_uart(uart::UARTComponent *uart){
       this->uart_ = uart;
   }
