@@ -2,24 +2,15 @@ import esphome.config_validation as cv
 import esphome.codegen as cg
 from esphome.components import uart, sensor
 from esphome import core
-from esphome.const import (
-    CONF_ID,
-    DEVICE_CLASS_EMPTY,
-    DEVICE_CLASS_TEMPERATURE,
-    STATE_CLASS_MEASUREMENT,
-    STATE_CLASS_NONE,
-    UNIT_CELSIUS,
-    UNIT_EMPTY,
-)
 
-from .const import luxtronik_v1_ns
-
-# Declare the C++ class.
-LuxtronikV1Component = luxtronik_v1_ns.class_(
-    "LuxtronikV1Component", cg.PollingComponent, uart.UARTDevice
-)
+from .luxtronik_v1_sensor import luxtronik_v1_sensor
 
 DEPENDENCIES = ["uart"]
+
+luxtronik_v1_sensor_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
+LuxtronikV1Sensor = luxtronik_v1_sensor_ns.class_(
+    "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
+)
 
 CONF_UART_ID = "uart_id"
 CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
