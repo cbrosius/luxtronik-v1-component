@@ -1,8 +1,12 @@
-#include "esphome.h"
+#pragma once
+
+#include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include <vector>
 
 namespace esphome {
+
+namespace luxtronik_v1_sensor {
 
 const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
@@ -11,7 +15,7 @@ const uint8_t READ_BUFFER_LENGTH = 255;
 
 static const char* TAG = "luxtronik_v1";
 
-class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
+class LuxtronikV1Sensor : public PollingComponent, public uart::UARTDevice {
  public:
   // constructor
   luxtronik_v1_sensor();
@@ -118,4 +122,5 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   CallbackManager<void(std::string, std::string)> callback_;
 };
 
+}  // namespace luxtronik_v1_sensor
 }  // namespace esphome
