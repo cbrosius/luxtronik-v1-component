@@ -5,6 +5,8 @@ namespace esphome {
 
 namespace luxtronik_v1_sensor {
 
+  static const char *TAG = "luxtronik_v1_sensor.sensor";
+
   luxtronik_v1_sensor::luxtronik_v1_sensor(): PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
   // change all the other pointers to nullptr:
    temp_RL(nullptr),temp_RL_Soll(nullptr),temp_Heissgas(nullptr),
