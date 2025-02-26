@@ -28,6 +28,61 @@ namespace luxtronik_v1_sensor {
     status_Betriebszustand(nullptr), modus_Heizung(nullptr),
     modus_Warmwasser(nullptr) {}
   
+void LuxtronikV1Sensor::setup() {
+  ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
+      if(this->uart_ == nullptr){
+          ESP_LOGE(TAG,"Uart is nullptr");
+      } else {
+          ESP_LOGI(TAG,"Uart is set.");
+      }
+     // Clear Read Buffer
+     for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
+      read_buffer_[i] = 0;
+   }
+  // Send initial command
+  send_cmd_("1100");
+}
+
+void LuxtronikV1Sensor::dump_config() {
+  ESP_LOGCONFIG(TAG, "Luxtronik V1 Sensor:");
+  LOG_SENSOR("  ", "Temperature VL", this->temp_VL_ptr);
+  LOG_SENSOR("  ", "Temperature RL", this->temp_RL_ptr);
+  LOG_SENSOR("  ", "Temperature RL Soll", this->temp_RL_Soll_ptr);
+  LOG_SENSOR("  ", "Temperature Heissgas", this->temp_Heissgas_ptr);
+  LOG_SENSOR("  ", "Temperature Aussen", this->temp_Aussen_ptr);
+  LOG_SENSOR("  ", "Temperature BW", this->temp_BW_ptr);
+  LOG_SENSOR("  ", "Temperature BW Soll", this->temp_BW_Soll_ptr);
+  LOG_SENSOR("  ", "Temperature WQ Ein", this->temp_WQ_Ein_ptr);
+  LOG_SENSOR("  ", "Temperature Kaeltekreis", this->temp_Kaeltekreis_ptr);
+  LOG_SENSOR("  ", "Temperature MK1 Vorlauf", this->temp_MK1_Vorl_ptr);
+  LOG_SENSOR("  ", "Temperature MK1 Vorlauf Soll", this->temp_MK1VL_Soll_ptr);
+  LOG_SENSOR("  ", "Temperature Raumstat", this->temp_Raumstat_ptr);
+  LOG_SENSOR("  ", "Eingang Abtau Soledruck Durchfluss", this->ein_Abtau_Soledruck_Durchfluss_ptr);
+  LOG_SENSOR("  ", "Eingang Sperrzeit EVU", this->ein_Sperrzeit_EVU_ptr);
+  LOG_SENSOR("  ", "Eingang Hochdruckpressostat", this->ein_Hochdruckpressostat_ptr);
+  LOG_SENSOR("  ", "Eingang Motorschutz", this->ein_Motorschutz_ptr);
+  LOG_SENSOR("  ", "Eingang Niederdruckpressostat", this->ein_Niederdruckpressostat_ptr);
+  LOG_SENSOR("  ", "Eingang Fremdstromanode", this->ein_Fremdstromanode_ptr);
+  LOG_SENSOR("  ", "Ausgang ATV", this->aus_ATV_ptr);
+  LOG_SENSOR("  ", "Ausgang BWP", this->aus_BWP_ptr);
+  LOG_SENSOR("  ", "Ausgang FBHP", this->aus_FBHP_ptr);
+  LOG_SENSOR("  ", "Ausgang HZP", this->aus_HZP_ptr);
+  LOG_SENSOR("  ", "Ausgang Mischer 1 Auf", this->aus_Mischer_1_Auf_ptr);
+  LOG_SENSOR("  ", "Ausgang Mischer 1 Zu", this->aus_Mischer_1_Zu_ptr);
+  LOG_SENSOR("  ", "Ausgang Vent WP", this->aus_VentWP_ptr);
+  LOG_SENSOR("  ", "Ausgang Vent Brunnen", this->aus_VentBrunnen_ptr);
+  LOG_SENSOR("  ", "Ausgang Verdichter 1", this->aus_Verdichter_1_ptr);
+  LOG_SENSOR("  ", "Ausgang Verdichter 2", this->aus_Verdichter_2_ptr);
+  LOG_SENSOR("  ", "Ausgang ZPumpe", this->aus_ZPumpe_ptr);
+  LOG_SENSOR("  ", "Ausgang ZWE", this->aus_ZWE_ptr);
+  LOG_SENSOR("  ", "Ausgang ZWE Stoerung", this->aus_ZWE_Stoerung_ptr);
+  LOG_SENSOR("  ", "Status Anlagentyp", this->status_Anlagentyp_ptr);
+  LOG_SENSOR("  ", "Status Softwareversion", this->status_Softwareversion_ptr);
+  LOG_SENSOR("  ", "Status Bivalenzstufe", this->status_Bivalenzstufe_ptr);
+  LOG_SENSOR("  ", "Status Betriebszustand", this->status_Betriebszustand_ptr);
+  LOG_SENSOR("  ", "Modus Heizung", this->modus_Heizung_ptr);
+  LOG_SENSOR("  ", "Modus Warmwasser", this->modus_Warmwasser_ptr);}
+  
 void luxtronik_v1_sensor::loop() {
 
   if (!this->uart_) {
