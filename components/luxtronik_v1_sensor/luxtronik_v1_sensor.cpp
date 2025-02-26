@@ -1,6 +1,9 @@
+#include "esphome/core/log.h"
 #include "luxtronik_v1_sensor.h"
 
 namespace esphome {
+
+namespace luxtronik_v1_sensor {
 
   luxtronik_v1_sensor::luxtronik_v1_sensor(): PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
   // change all the other pointers to nullptr:
@@ -289,4 +292,5 @@ void luxtronik_v1_sensor::set_modus_Warmwasser(sensor::Sensor* modus_Warmwasser)
     this->modus_Warmwasser_ptr = modus_Warmwasser;
   }
 
+}  // namespace luxtronik_v1_sensor
 }  // namespace esphome
