@@ -7,6 +7,11 @@ from .luxtronik_v1_sensor import luxtronik_v1_sensor
 
 DEPENDENCIES = ["uart"]
 
+luxtronik_v1_sensor_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
+LuxtronikV1Sensor = luxtronik_v1_sensor_ns.class_(
+    "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
+)
+
 CONF_UART_ID = "uart_id"
 CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
 CONF_TEMP_VL = "temp_VL"
