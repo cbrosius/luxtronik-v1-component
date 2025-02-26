@@ -2,8 +2,8 @@
 # example configuration:
 
 sensor:
-  - platform: empty_uart_sensor
-    name: Empty UART sensor
+  - platform: luxtronik_v1_sensor
+    name: Luxtronik_v1 sensor
 
 uart:
   tx_pin: GPIO0
