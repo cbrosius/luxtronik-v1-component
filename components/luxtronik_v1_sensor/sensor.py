@@ -1,6 +1,6 @@
 import esphome.config_validation as cv
 import esphome.codegen as cg
-from esphome.components import uart, sensor
+from esphome.components import uart, sensor, button
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_EMPTY,
@@ -58,6 +58,7 @@ CONF_STATUS_BIVALENZSTUFE = "status_Bivalenzstufe"
 CONF_STATUS_BETRIEBSZUSTAND = "status_Betriebszustand"
 CONF_MODUS_HEIZUNG = "modus_Heizung"
 CONF_MODUS_WARMWASSER = "modus_Warmwasser"
+CONF_MANUAL_UPDATE_BUTTON = "manual_update_button"
 
 
 def luxtronik_v1_sensor_schema(is_binary=False, unit=UNIT_EMPTY, device_class=DEVICE_CLASS_EMPTY, state_class=STATE_CLASS_NONE):
@@ -69,6 +70,7 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(LuxtronikV1Sensor),
         cv.GenerateID(CONF_UART_ID): cv.use_id(uart.UARTComponent),
+        cv.Optional(CONF_MANUAL_UPDATE_BUTTON): cv.use_id(button.Button),
         cv.Optional(CONF_TEMP_VL): luxtronik_v1_sensor_schema(
             unit=UNIT_CELSIUS,
             device_class=DEVICE_CLASS_TEMPERATURE,
@@ -275,3 +277,7 @@ async def to_code(config):
         conf = config[CONF_MODUS_WARMWASSER]
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_modus_Warmwasser(sens))
+
+    if CONF_MANUAL_UPDATE_BUTTON in config:
+        btn = await cg.get_variable(config[CONF_MANUAL_UPDATE_BUTTON])
+        cg.add(var.set_manual_update_button(btn))

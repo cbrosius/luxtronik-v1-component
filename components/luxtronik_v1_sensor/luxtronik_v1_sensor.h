@@ -5,6 +5,7 @@
 #include "esphome/components/uart/uart.h"
 #include <vector>
 #include <memory>
+#include "esphome/components/button/button.h"
 
 namespace esphome {
 
@@ -62,6 +63,10 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   void set_status_Betriebszustand(sensor::Sensor* status_Betriebszustand);
   void set_modus_Heizung(sensor::Sensor* modus_Heizung);
   void set_modus_Warmwasser(sensor::Sensor* modus_Warmwasser);
+  void set_manual_update_button(button::Button *button) {
+    this->manual_update_button_ = button;
+    this->manual_update_button_->add_on_press_callback([this]() { this->send_cmd_("1100"); });
+  }
 
  protected:
   uart::UARTComponent* uart_;
@@ -123,6 +128,7 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   sensor::Sensor *status_Betriebszustand_ptr;
   sensor::Sensor *modus_Heizung_ptr;
   sensor::Sensor *modus_Warmwasser_ptr;
+  button::Button *manual_update_button_{nullptr};
 
   CallbackManager<void(std::string, std::string)> callback_;
 };
