@@ -35,9 +35,8 @@ void LuxtronikV1Sensor::setup() {
   for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
     read_buffer_[i] = 0;
   }
-  // Schedule immediate update
-  this->high_freq_loop_trigger_.start_interval(100);
-  this->update();
+  // Force immediate update by setting last_update_ to 0
+  this->last_update_ = 0;
 }
 
 void LuxtronikV1Sensor::dump_config() {
