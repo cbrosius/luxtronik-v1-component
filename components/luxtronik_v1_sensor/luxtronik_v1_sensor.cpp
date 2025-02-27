@@ -83,7 +83,6 @@ void LuxtronikV1Sensor::loop() {
 
   if (!is_connected_) {
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
-      ESP_LOGI(TAG, "not connectd, Retry not exceeded...");
       return;
     }
 
@@ -96,7 +95,7 @@ void LuxtronikV1Sensor::loop() {
 
     ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
     send_cmd_("1100");
-    return;
+    // return;
   }
 
   // Check if UART is valid before proceeding
