@@ -7,25 +7,26 @@ namespace luxtronik_v1_sensor {
 
 static const char *TAG = "luxtronik_v1_sensor.sensor";
 
-LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
-                                          temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
-                                          temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
-                                          temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
-                                          temp_Kaeltekreis_ptr(nullptr), temp_MK1_Vorl_ptr(nullptr),
-                                          temp_MK1VL_Soll_ptr(nullptr), temp_Raumstat_ptr(nullptr),
-                                          ein_Abtau_Soledruck_Durchfluss_ptr(nullptr), ein_Sperrzeit_EVU_ptr(nullptr),
-                                          ein_Hochdruckpressostat_ptr(nullptr), ein_Motorschutz_ptr(nullptr),
-                                          ein_Niederdruckpressostat_ptr(nullptr), ein_Fremdstromanode_ptr(nullptr),
-                                          aus_ATV_ptr(nullptr), aus_BWP_ptr(nullptr),
-                                          aus_FBHP_ptr(nullptr), aus_HZP_ptr(nullptr),
-                                          aus_Mischer_1_Auf_ptr(nullptr), aus_Mischer_1_Zu_ptr(nullptr),
-                                          aus_VentWP_ptr(nullptr), aus_VentBrunnen_ptr(nullptr),
-                                          aus_Verdichter_1_ptr(nullptr), aus_Verdichter_2_ptr(nullptr),
-                                          aus_ZPumpe_ptr(nullptr), aus_ZWE_ptr(nullptr),
-                                          aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
-                                          status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
-                                          status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-                                          modus_Warmwasser_ptr(nullptr) {}
+LuxtronikV1Sensor::LuxtronikV1Sensor() 
+    : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
+      temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
+      temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
+      temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
+      temp_Kaeltekreis_ptr(nullptr), temp_MK1_Vorl_ptr(nullptr),
+      temp_MK1VL_Soll_ptr(nullptr), temp_Raumstat_ptr(nullptr),
+      ein_Abtau_Soledruck_Durchfluss_ptr(nullptr), ein_Sperrzeit_EVU_ptr(nullptr),
+      ein_Hochdruckpressostat_ptr(nullptr), ein_Motorschutz_ptr(nullptr),
+      ein_Niederdruckpressostat_ptr(nullptr), ein_Fremdstromanode_ptr(nullptr),
+      aus_ATV_ptr(nullptr), aus_BWP_ptr(nullptr),
+      aus_FBHP_ptr(nullptr), aus_HZP_ptr(nullptr),
+      aus_Mischer_1_Auf_ptr(nullptr), aus_Mischer_1_Zu_ptr(nullptr),
+      aus_VentWP_ptr(nullptr), aus_VentBrunnen_ptr(nullptr),
+      aus_Verdichter_1_ptr(nullptr), aus_Verdichter_2_ptr(nullptr),
+      aus_ZPumpe_ptr(nullptr), aus_ZWE_ptr(nullptr),
+      aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
+      status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
+      status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
+      modus_Warmwasser_ptr(nullptr) {}
 
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");

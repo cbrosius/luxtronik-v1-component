@@ -15,7 +15,7 @@ const char ASCII_LF = 0x0A;
 
 const uint8_t READ_BUFFER_LENGTH = 255;
 
-class LuxtronikV1Sensor : public PollingComponent, public uart::UARTDevice {
+class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public uart::UARTDevice {
  public:
   LuxtronikV1Sensor();
   void setup() override;
