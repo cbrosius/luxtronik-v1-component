@@ -152,14 +152,13 @@ void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
 
   ESP_LOGD(TAG, "Sending: %s", message.c_str());
   
-  // Check if write operations succeed
-  bool success = true;
-  success &= this->uart_->write_str(message.c_str()) >= 0;
-  success &= this->uart_->write_byte(ASCII_CR) >= 0;
-  success &= this->uart_->write_byte(ASCII_LF) >= 0;
-
-  if (!success) {
-    ESP_LOGW(TAG, "Failed to send command");
+  this->uart_->write_str(message.c_str());
+  this->uart_->write_byte(ASCII_CR);
+  this->uart_->write_byte(ASCII_LF);
+  
+  // We can check uart_->available() or other indicators if needed
+  if (!this->uart_->available()) {
+    ESP_LOGW(TAG, "UART write may have failed");
     is_connected_ = false;
   }
 }
