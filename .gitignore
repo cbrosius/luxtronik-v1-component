@@ -30,3 +30,4 @@
 *.exe
 *.out
 *.app
+components/luxtronik_v1_sensor/luxtronik_v1_sensor.cpp

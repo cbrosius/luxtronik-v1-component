@@ -98,6 +98,13 @@ void LuxtronikV1Sensor::loop() {
     return;
   }
 
+  // Check if UART is valid before proceeding
+  if (this->uart_ == nullptr) {
+    ESP_LOGE(TAG, "UART is null! Cannot read data.");
+    is_connected_ = false;
+    return;
+  }
+  
   while (available()) {
     uint8_t byte;
     if (!this->read_byte(&byte)) {
