@@ -11,15 +11,16 @@ from esphome.const import (
     UNIT_EMPTY,
 )
 
+DEPENDENCIES = ["uart"]
+
+# Generate namespace for component
 luxtronik_v1_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
 LuxtronikV1Sensor = luxtronik_v1_ns.class_(
     "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
 )
 
-DEPENDENCIES = ["uart"]
-
+# Configuration variables
 CONF_UART_ID = "uart_id"
-CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
 CONF_TEMP_VL = "temp_VL"
 CONF_TEMP_RL = "temp_RL"
 CONF_TEMP_RL_SOLL = "temp_RL_Soll"
@@ -66,10 +67,18 @@ def luxtronik_v1_sensor_schema(is_binary=False, unit=UNIT_EMPTY, device_class=DE
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_UART_ID): cv.use_id(uart.UARTComponent),
         cv.GenerateID(): cv.declare_id(LuxtronikV1Sensor),
-        cv.Optional(CONF_TEMP_VL): luxtronik_v1_sensor_schema(unit=UNIT_CELSIUS, device_class=DEVICE_CLASS_TEMPERATURE, state_class=STATE_CLASS_MEASUREMENT),
-        cv.Optional(CONF_TEMP_RL): luxtronik_v1_sensor_schema(unit=UNIT_CELSIUS, device_class=DEVICE_CLASS_TEMPERATURE, state_class=STATE_CLASS_MEASUREMENT),
+        cv.GenerateID(CONF_UART_ID): cv.use_id(uart.UARTComponent),
+        cv.Optional(CONF_TEMP_VL): luxtronik_v1_sensor_schema(
+            unit=UNIT_CELSIUS,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_TEMP_RL): luxtronik_v1_sensor_schema(
+            unit=UNIT_CELSIUS,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT
+        ),
         cv.Optional(CONF_TEMP_RL_SOLL): luxtronik_v1_sensor_schema(unit=UNIT_CELSIUS, device_class=DEVICE_CLASS_TEMPERATURE, state_class=STATE_CLASS_MEASUREMENT),
         cv.Optional(CONF_TEMP_HEISSGAS): luxtronik_v1_sensor_schema(unit=UNIT_CELSIUS, device_class=DEVICE_CLASS_TEMPERATURE, state_class=STATE_CLASS_MEASUREMENT),
         cv.Optional(CONF_TEMP_AUSSEN): luxtronik_v1_sensor_schema(unit=UNIT_CELSIUS, device_class=DEVICE_CLASS_TEMPERATURE, state_class=STATE_CLASS_MEASUREMENT),
@@ -110,21 +119,17 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    # Create the object.
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    # Get the uart component.
+    
     uart_comp = await cg.get_variable(config[CONF_UART_ID])
     cg.add(var.set_uart(uart_comp))
 
-    # Temperature Sensors
     if CONF_TEMP_VL in config:
-        conf = config[CONF_TEMP_VL]
-        sens = await sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(config[CONF_TEMP_VL])
         cg.add(var.set_temp_VL(sens))
     if CONF_TEMP_RL in config:
-        conf = config[CONF_TEMP_RL]
-        sens = await sensor.new_sensor(conf)
+        sens = await sensor.new_sensor(config[CONF_TEMP_RL])
         cg.add(var.set_temp_RL(sens))
     if CONF_TEMP_RL_SOLL in config:
         conf = config[CONF_TEMP_RL_SOLL]
