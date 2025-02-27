@@ -82,6 +82,7 @@ void LuxtronikV1Sensor::loop() {
   const uint32_t now = millis();
 
   if (!is_connected_) {
+
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
       return;
     }
@@ -95,13 +96,7 @@ void LuxtronikV1Sensor::loop() {
 
     ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
     send_cmd_("1100");
-    // return;
-  }
-
-  // Check if UART is valid before proceeding
-  if (this->uart_ == nullptr) {
-    ESP_LOGE(TAG, "UART is null! Cannot read data.");
-    is_connected_ = false;
+    is_connected_ = true;
     return;
   }
 
