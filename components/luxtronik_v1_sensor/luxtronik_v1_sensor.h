@@ -4,6 +4,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
 #include <vector>
+#include <memory>
 
 namespace esphome {
 

@@ -217,15 +217,6 @@ void LuxtronikV1Sensor::parse_water_mode_(const std::string &message) {
   parse_message_(message, sensors, 5);
 }
 
-void LuxtronikV1Sensor::parse_message_(const std::string &message, std::vector<std::unique_ptr<Sensor>*> &sensors, size_t start) {
-  size_t end = message.find(';', start);
-  for (auto &sensor : sensors) {
-    start = end + 1;
-    end = message.find(';', start);
-    std::string value = message.substr(start, end - start);
-    (*sensor)->publish_state(GetValue(value));
-  }
-}
 void LuxtronikV1Sensor::parse_message_(const std::string &message, std::vector<sensor::Sensor*> &sensors, size_t start) {
   size_t end = message.find(';', start);
   for (auto &sensor : sensors) {
@@ -289,7 +280,7 @@ void LuxtronikV1Sensor::set_ein_Niederdruckpressostat(sensor::Sensor* ein_Nieder
     this->ein_Niederdruckpressostat_ptr = ein_Niederdruckpressostat;
   }
 void LuxtronikV1Sensor::set_ein_Fremdstromanode(sensor::Sensor* ein_Fremdstromanode) {
-    this->ein_Fremdstromanode_ptr = ein_Fremdstromanode
+    this->ein_Fremdstromanode_ptr = ein_Fremdstromanode;
   }
 void LuxtronikV1Sensor::set_aus_ATV(sensor::Sensor* aus_ATV) {
     this->aus_ATV_ptr = aus_ATV;
