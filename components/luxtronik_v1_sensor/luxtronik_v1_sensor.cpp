@@ -7,7 +7,7 @@ namespace luxtronik_v1_sensor {
 
 static const char *TAG = "luxtronik_v1_sensor.sensor";
 
-LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
+LuxtronikV1Sensor::LuxtronikV1Sensor : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
                                           temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
                                           temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
                                           temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
