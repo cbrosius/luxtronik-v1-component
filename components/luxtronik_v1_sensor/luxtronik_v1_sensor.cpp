@@ -26,21 +26,15 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-      modus_Warmwasser_ptr(nullptr) {}
+      modus_Warmwasser_ptr(nullptr), is_connected_(false), last_connection_attempt_(0) {}
 
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
-  if (this->uart_ == nullptr) {
-    ESP_LOGE(TAG, "Uart is nullptr");
-  } else {
-    ESP_LOGI(TAG, "Uart is set.");
-  }
+  
   // Clear Read Buffer
   for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
     read_buffer_[i] = 0;
   }
-  // Send initial command
-  send_cmd_("1100");
 }
 
 void LuxtronikV1Sensor::dump_config() {
@@ -85,9 +79,31 @@ void LuxtronikV1Sensor::dump_config() {
 }
 
 void LuxtronikV1Sensor::loop() {
+  const uint32_t now = millis();
+  
+  // Check connection state
+  if (!is_connected_) {
+    // Only try reconnecting after RETRY_INTERVAL has passed
+    if (now - last_connection_attempt_ < RETRY_INTERVAL) {
+      return;
+    }
+    
+    last_connection_attempt_ = now;
+    
+    if (this->uart_ == nullptr) {
+      ESP_LOGW(TAG, "UART not available, retrying in %d seconds...", RETRY_INTERVAL/1000);
+      return;
+    }
+    
+    // Try to establish connection
+    ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
+    send_cmd_("1100");
+    return;
+  }
 
+  // Normal operation when connected
   if (!this->uart_) {
-    ESP_LOGE(TAG, "UART not initialized!");
+    is_connected_ = false;
     return;
   }
 
@@ -95,22 +111,21 @@ void LuxtronikV1Sensor::loop() {
   while (available()) {
     uint8_t byte;
     this->uart_->read_byte(&byte);
-
+    
     if (this->read_pos_ == READ_BUFFER_LENGTH)
       this->read_pos_ = 0;
-
-    ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
 
     if (byte == ASCII_CR)
       continue;
     if (byte >= 0x7F)
-      byte = '?';  // need to be valid utf8 string for log functions.
+      byte = '?';
     this->read_buffer_[this->read_pos_] = byte;
 
     if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
       this->read_buffer_[this->read_pos_] = 0;
       this->read_pos_ = 0;
       this->parse_cmd_(this->read_buffer_);
+      is_connected_ = true;  // We got a response, mark as connected
     } else {
       this->read_pos_++;
     }
@@ -118,7 +133,9 @@ void LuxtronikV1Sensor::loop() {
 }
 
 void LuxtronikV1Sensor::update() {
-  // Ask for Temperatures
+  if (!is_connected_) {
+    return;  // Skip update if not connected
+  }
   send_cmd_("1100");
 }
 
@@ -127,16 +144,21 @@ float LuxtronikV1Sensor::GetValue(const std::string &message) {
 }
 
 void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
-  
   if (!this->uart_) {
-    ESP_LOGE(TAG, "UART not initialized!");
+    is_connected_ = false;
+    ESP_LOGW(TAG, "UART not initialized!");
     return;
   }
 
-  ESP_LOGD(TAG, "S: %s - %d", message.c_str(), 0);
-  this->uart_->write_str(message.c_str());
-  this->uart_->write_byte(ASCII_CR);
-  this->uart_->write_byte(ASCII_LF);
+  try {
+    ESP_LOGD(TAG, "Sending: %s", message.c_str());
+    this->uart_->write_str(message.c_str());
+    this->uart_->write_byte(ASCII_CR);
+    this->uart_->write_byte(ASCII_LF);
+  } catch (...) {
+    ESP_LOGW(TAG, "Failed to send command");
+    is_connected_ = false;
+  }
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {

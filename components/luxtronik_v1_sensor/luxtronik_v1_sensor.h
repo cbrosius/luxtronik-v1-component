@@ -69,6 +69,11 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
 
+  // Add connection state tracking
+  bool is_connected_{false};
+  uint32_t last_connection_attempt_{0};
+  static constexpr uint32_t RETRY_INTERVAL = 60000; // retry every minute
+
   float GetValue(const std::string &message);
   void send_cmd_(const std::string &message);
   void parse_cmd_(const std::string &message);
