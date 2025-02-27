@@ -112,6 +112,9 @@ void LuxtronikV1Sensor::loop() {
     uint8_t byte;
     this->uart_->read_byte(&byte);
     
+    // Log every received byte in hex and ASCII
+    ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '?');
+    
     if (this->read_pos_ == READ_BUFFER_LENGTH)
       this->read_pos_ = 0;
 
@@ -123,6 +126,7 @@ void LuxtronikV1Sensor::loop() {
 
     if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
       this->read_buffer_[this->read_pos_] = 0;
+      ESP_LOGD(TAG, "Complete message received: '%s'", this->read_buffer_);
       this->read_pos_ = 0;
       this->parse_cmd_(this->read_buffer_);
       is_connected_ = true;  // We got a response, mark as connected
@@ -150,13 +154,19 @@ void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
     return;
   }
 
-  ESP_LOGD(TAG, "Sending: %s", message.c_str());
+  ESP_LOGD(TAG, "Sending command: '%s'", message.c_str());
+  
+  // Log each byte being sent
+  for (char c : message) {
+    ESP_LOGVV(TAG, "Sending byte: 0x%02X ('%c')", c, c);
+  }
+  ESP_LOGVV(TAG, "Sending CR: 0x%02X", ASCII_CR);
+  ESP_LOGVV(TAG, "Sending LF: 0x%02X", ASCII_LF);
   
   this->uart_->write_str(message.c_str());
   this->uart_->write_byte(ASCII_CR);
   this->uart_->write_byte(ASCII_LF);
   
-  // We can check uart_->available() or other indicators if needed
   if (!this->uart_->available()) {
     ESP_LOGW(TAG, "UART write may have failed");
     is_connected_ = false;
