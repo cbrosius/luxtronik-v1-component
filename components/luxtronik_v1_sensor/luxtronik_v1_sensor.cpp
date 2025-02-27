@@ -224,7 +224,7 @@ void LuxtronikV1Sensor::parse_message_(const std::string &message, std::vector<s
     end = message.find(';', start);
     std::string value = message.substr(start, end - start);
     if (sensor != nullptr){
-        (*sensor)->publish_state(std::atof(value.c_str()) / 10);
+        sensor->publish_state(std::atof(value.c_str()) / 10);
     }
   }
 }
