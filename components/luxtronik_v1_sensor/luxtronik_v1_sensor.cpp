@@ -80,71 +80,52 @@ void LuxtronikV1Sensor::dump_config() {
 
 void LuxtronikV1Sensor::loop() {
   const uint32_t now = millis();
-  
-  // Check connection state
+
   if (!is_connected_) {
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
       return;
     }
-    
+
     last_connection_attempt_ = now;
-    
+
     if (this->uart_ == nullptr) {
-      ESP_LOGW(TAG, "UART not available, retrying in %d seconds...", RETRY_INTERVAL/1000);
+      ESP_LOGW(TAG, "UART not available, retrying in %d seconds...", RETRY_INTERVAL / 1000);
       return;
     }
-    
+
     ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
     send_cmd_("1100");
     return;
   }
 
-  // Check UART state
-  if (!this->uart_) {
-    ESP_LOGW(TAG, "UART lost connection");
-    is_connected_ = false;
-    return;
-  }
-
-  // Debug UART buffer state
-  ESP_LOGV(TAG, "UART available bytes: %d", this->uart_->available());
-
-  // Read message
-  while (this->uart_->available()) {
+  while (available()) {
     uint8_t byte;
-    if (!this->uart_->read_byte(&byte)) {
-      ESP_LOGW(TAG, "Failed to read byte");
+    if (!this->read_byte(&byte)) {
+      ESP_LOGW(TAG, "Failed to read byte from UART");
       continue;
     }
-    
-    // Log every received byte
-    ESP_LOGV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '?');
-    
-    if (this->read_pos_ >= READ_BUFFER_LENGTH) {
-      ESP_LOGW(TAG, "Buffer overflow at position %d, resetting", this->read_pos_);
-      this->read_pos_ = 0;
-    }
+
+    ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
     if (byte == ASCII_CR) {
-      ESP_LOGV(TAG, "Skipping CR");
+      ESP_LOGVV(TAG, "Skipping CR");
       continue;
     }
-    
-    this->read_buffer_[this->read_pos_] = byte;
-    
-    // Log buffer content for debugging
-    if (this->read_pos_ % 10 == 0) {
-      ESP_LOGV(TAG, "Current buffer content: '%.*s'", this->read_pos_, this->read_buffer_);
+
+    if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
+      ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
+      this->read_pos_ = 0;
+      continue;
     }
 
+    this->read_buffer_[this->read_pos_++] = byte;
+    this->read_buffer_[this->read_pos_] = 0;  // Null-terminate the string
+
     if (byte == ASCII_LF) {
-      this->read_buffer_[this->read_pos_] = 0;
-      ESP_LOGI(TAG, "Complete message received: '%s'", this->read_buffer_);
+      ESP_LOGI(TAG, "Received line: '%s'", this->read_buffer_);
+      parse_cmd_(this->read_buffer_);
       this->read_pos_ = 0;
-      this->parse_cmd_(this->read_buffer_);
       is_connected_ = true;
-    } else {
-      this->read_pos_++;
     }
   }
 }
