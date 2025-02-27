@@ -35,8 +35,8 @@ void LuxtronikV1Sensor::setup() {
   for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
     read_buffer_[i] = 0;
   }
-  // Force immediate update by setting last_update_ to 0
-  this->last_update_ = 0;
+  // Schedule immediate update
+  this->update();
 }
 
 void LuxtronikV1Sensor::dump_config() {
