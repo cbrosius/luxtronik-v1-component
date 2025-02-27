@@ -81,6 +81,7 @@ void LuxtronikV1Sensor::dump_config() {
 void LuxtronikV1Sensor::loop() {
   const uint32_t now = millis();
 
+/*
   if (!is_connected_) {
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
       return;
@@ -97,8 +98,8 @@ void LuxtronikV1Sensor::loop() {
     send_cmd_("1100");
     return;
   }
-
-  while (available()) {
+*/
+while (available()) {
     uint8_t byte;
     if (!this->read_byte(&byte)) {
       ESP_LOGW(TAG, "Failed to read byte from UART");
@@ -173,8 +174,8 @@ void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {
-  if (message.empty())
-    return;
+  // if (message.empty())
+  //  return;
 
   ESP_LOGD(TAG, "R: %s - %d", message.c_str(), 0);
 
