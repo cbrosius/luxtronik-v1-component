@@ -63,7 +63,7 @@ def luxtronik_v1_comp_schema(is_binary=False, unit=UNIT_EMPTY, device_class=DEVI
     if is_binary:
         return sensor.sensor_schema(unit_of_measurement=unit, device_class=device_class, state_class=state_class)
     return sensor.sensor_schema(unit_of_measurement=unit, accuracy_decimals=1, device_class=device_class, state_class=state_class)
-
+# Component schema
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_UART_ID): cv.use_id(uart.UARTComponent),
