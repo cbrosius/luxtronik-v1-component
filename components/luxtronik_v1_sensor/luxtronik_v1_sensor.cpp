@@ -82,8 +82,8 @@ void LuxtronikV1Sensor::loop() {
   const uint32_t now = millis();
 
   if (!is_connected_) {
-    ESP_LOGI(TAG, "not connectd...");
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
+      ESP_LOGI(TAG, "not connectd, Retry not exceeded...");
       return;
     }
 
