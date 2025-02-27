@@ -83,7 +83,6 @@ void LuxtronikV1Sensor::loop() {
   
   // Check connection state
   if (!is_connected_) {
-    // Only try reconnecting after RETRY_INTERVAL has passed
     if (now - last_connection_attempt_ < RETRY_INTERVAL) {
       return;
     }
@@ -95,39 +94,34 @@ void LuxtronikV1Sensor::loop() {
       return;
     }
     
-    // Try to establish connection
     ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
     send_cmd_("1100");
     return;
   }
 
-  // Normal operation when connected
+  // Check UART state
   if (!this->uart_) {
+    ESP_LOGW(TAG, "UART lost connection");
     is_connected_ = false;
     return;
   }
 
-  // Check if data is available
-  if (available()) {
-    ESP_LOGD(TAG, "Data available to read");
-  } else {
-    ESP_LOGV(TAG, "No data available");
-    return;
-  }
+  // Debug UART buffer state
+  ESP_LOGV(TAG, "UART available bytes: %d", this->uart_->available());
 
   // Read message
-  while (available()) {
+  while (this->uart_->available()) {
     uint8_t byte;
     if (!this->uart_->read_byte(&byte)) {
       ESP_LOGW(TAG, "Failed to read byte");
       continue;
     }
     
-    // Log every received byte in hex and ASCII
-    ESP_LOGD(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '?');
+    // Log every received byte
+    ESP_LOGV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '?');
     
-    if (this->read_pos_ == READ_BUFFER_LENGTH) {
-      ESP_LOGW(TAG, "Buffer overflow, resetting");
+    if (this->read_pos_ >= READ_BUFFER_LENGTH) {
+      ESP_LOGW(TAG, "Buffer overflow at position %d, resetting", this->read_pos_);
       this->read_pos_ = 0;
     }
 
@@ -136,19 +130,19 @@ void LuxtronikV1Sensor::loop() {
       continue;
     }
     
-    if (byte >= 0x7F) {
-      ESP_LOGW(TAG, "Invalid byte received: 0x%02X", byte);
-      byte = '?';
-    }
-    
     this->read_buffer_[this->read_pos_] = byte;
+    
+    // Log buffer content for debugging
+    if (this->read_pos_ % 10 == 0) {
+      ESP_LOGV(TAG, "Current buffer content: '%.*s'", this->read_pos_, this->read_buffer_);
+    }
 
     if (byte == ASCII_LF) {
       this->read_buffer_[this->read_pos_] = 0;
       ESP_LOGI(TAG, "Complete message received: '%s'", this->read_buffer_);
       this->read_pos_ = 0;
       this->parse_cmd_(this->read_buffer_);
-      is_connected_ = true;  // We got a response, mark as connected
+      is_connected_ = true;
     } else {
       this->read_pos_++;
     }
