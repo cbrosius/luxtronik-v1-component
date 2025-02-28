@@ -33,25 +33,25 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
 void LuxtronikV1Sensor::setup() {
     ESP_LOGE(TAG, "Setup starting...");  // Changed to ERROR level for visibility
     
-    if (this->uart_ == nullptr) {
-        ESP_LOGE(TAG, "UART is nullptr - Check your configuration!");
-        this->mark_failed();
-        return;
-    }
+//    if (this->uart_ == nullptr) {
+//        ESP_LOGE(TAG, "UART is nullptr - Check your configuration!");
+//        this->mark_failed();
+//        return;
+//    }
 
     ESP_LOGE(TAG, "UART configured successfully. ID: %p", (void*)this->uart_);
 
     // Clear and initialize buffer
-    memset(read_buffer_, 0, READ_BUFFER_LENGTH);
-    read_pos_ = 0;
+//    memset(read_buffer_, 0, READ_BUFFER_LENGTH);
+//    read_pos_ = 0;
 
     // Initial commands
     ESP_LOGE(TAG, "Sending initial commands...");
-    this->uart_->write_str("\r\n");
-    this->uart_->flush();
-    delay(100);
+//    this->uart_->write_str("\r\n");
+//    this->uart_->flush();
+//    delay(100);
 
-    send_cmd_("1100");
+//    send_cmd_("1100");
     ESP_LOGE(TAG, "Setup completed");
 }
 
