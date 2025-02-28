@@ -99,6 +99,7 @@ void LuxtronikV1Sensor::loop() {
   static uint32_t last_retry = 0;
   const uint32_t now = millis();
 
+  // Check UART availability
   if (!this->uart_) {
     // Retry connection every 5 seconds
     if (now - last_retry > 5000) {
@@ -110,7 +111,7 @@ void LuxtronikV1Sensor::loop() {
   }
 
   // Add watchdog counter
-  static uint32_t last_data = 0;
+  static uint32_t last_data = now;  // Initialize with current time
   if (now - last_data > 30000) {  // No data for 30 seconds
     ESP_LOGW(TAG, "No data received for 30 seconds, resetting UART");
     this->uart_->flush();
@@ -118,34 +119,40 @@ void LuxtronikV1Sensor::loop() {
     last_data = now;
   }
 
-  while (available()) {
-    last_data = now;  // Reset watchdog timer
+  // Read available data
+  while (this->available()) {
     uint8_t byte;
     if (!this->read_byte(&byte)) {
       ESP_LOGW(TAG, "Failed to read byte from UART");
       continue;
     }
 
-    ESP_LOGV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
+    // Update watchdog timer on successful read
+    last_data = now;
 
-    if (byte == ASCII_CR)
+    // Skip carriage return
+    if (byte == ASCII_CR) {
       continue;
+    }
 
+    // Check for buffer overflow
     if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
-      ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
+      ESP_LOGE(TAG, "Read buffer overflow! Resetting buffer.");
       this->read_pos_ = 0;
       memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
       continue;
     }
 
+    // Store byte in buffer
     this->read_buffer_[this->read_pos_] = byte;
-    
+
+    // Process complete line when LF is received
     if (byte == ASCII_LF) {
       this->read_buffer_[this->read_pos_] = 0;  // Null terminate
-      ESP_LOGI(TAG, "Received line: %s", this->read_buffer_);
+      ESP_LOGI(TAG, "Received line: '%s'", this->read_buffer_);
       this->parse_cmd_(this->read_buffer_);
-      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
       this->read_pos_ = 0;
+      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
     } else {
       this->read_pos_++;
     }
