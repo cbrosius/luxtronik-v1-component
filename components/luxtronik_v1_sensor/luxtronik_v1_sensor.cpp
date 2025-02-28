@@ -26,7 +26,7 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-      modus_Warmwasser_ptr(nullptr), is_connected_(false), last_connection_attempt_(0) {}
+      modus_Warmwasser_ptr(nullptr), last_connection_attempt_(0) {}
 
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
@@ -79,76 +79,40 @@ void LuxtronikV1Sensor::dump_config() {
 }
 
 void LuxtronikV1Sensor::loop() {
-  const uint32_t now = millis();
-  
-  // Check connection state
-  if (!is_connected_) {
-    // Only try reconnecting after RETRY_INTERVAL has passed
-    if (now - last_connection_attempt_ < RETRY_INTERVAL) {
-      return;
-    }
-    
-    last_connection_attempt_ = now;
-    
-    if (this->uart_ == nullptr) {
-      ESP_LOGW(TAG, "UART not available, retrying in %d seconds...", RETRY_INTERVAL/1000);
-      return;
-    }
-    
-    // Try to establish connection
-    ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
-    send_cmd_("1100");
+  if (this->uart_ == nullptr) {
+    ESP_LOGW(TAG, "UART not available");
     return;
   }
 
-  // Normal operation when connected
-  if (!this->uart_) {
-    is_connected_ = false;
-    return;
-  }
-
-  // Check if data is available
-  if (available()) {
-    ESP_LOGD(TAG, "Data available to read");
-  } else {
-    ESP_LOGV(TAG, "No data available");
-    return;
-  }
-
-  // Read message
+  // Process any available data
   while (available()) {
     uint8_t byte;
-    if (!this->uart_->read_byte(&byte)) {
-      ESP_LOGW(TAG, "Failed to read byte");
+    if (!this->read_byte(&byte)) {
+      ESP_LOGW(TAG, "Failed to read byte from UART");
       continue;
     }
     
-    // Log every received byte in hex and ASCII
-    ESP_LOGD(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '?');
-    
-    if (this->read_pos_ == READ_BUFFER_LENGTH) {
-      ESP_LOGW(TAG, "Buffer overflow, resetting");
-      this->read_pos_ = 0;
-    }
+    ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
     if (byte == ASCII_CR) {
-      ESP_LOGV(TAG, "Skipping CR");
       continue;
     }
-    
-    if (byte >= 0x7F) {
-      ESP_LOGW(TAG, "Invalid byte received: 0x%02X", byte);
-      byte = '?';
-    }
-    
-    this->read_buffer_[this->read_pos_] = byte;
 
-    if (byte == ASCII_LF) {
-      this->read_buffer_[this->read_pos_] = 0;
-      ESP_LOGI(TAG, "Complete message received: '%s'", this->read_buffer_);
+    if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
+      ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
       this->read_pos_ = 0;
+      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
+      continue;
+    }
+
+    this->read_buffer_[this->read_pos_] = byte;
+    
+    if (byte == ASCII_LF) {
+      this->read_buffer_[this->read_pos_] = 0;  // Null terminate
+      ESP_LOGI(TAG, "Received line: '%s'", this->read_buffer_);
       this->parse_cmd_(this->read_buffer_);
-      is_connected_ = true;  // We got a response, mark as connected
+      this->read_pos_ = 0;
+      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
     } else {
       this->read_pos_++;
     }
@@ -156,9 +120,6 @@ void LuxtronikV1Sensor::loop() {
 }
 
 void LuxtronikV1Sensor::update() {
-  if (!is_connected_) {
-    return;  // Skip update if not connected
-  }
   send_cmd_("1100");
 }
 
@@ -168,19 +129,11 @@ float LuxtronikV1Sensor::GetValue(const std::string &message) {
 
 void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
   if (!this->uart_) {
-    is_connected_ = false;
     ESP_LOGW(TAG, "UART not initialized!");
     return;
   }
 
   ESP_LOGI(TAG, "Sending command: '%s'", message.c_str());
-  
-  // Log each byte being sent
-  for (char c : message) {
-    ESP_LOGD(TAG, "Sending byte: 0x%02X ('%c')", c, c);
-  }
-  ESP_LOGD(TAG, "Sending CR: 0x%02X", ASCII_CR);
-  ESP_LOGD(TAG, "Sending LF: 0x%02X", ASCII_LF);
   
   // Send with delay between bytes to prevent overrun
   for (char c : message) {
@@ -191,10 +144,7 @@ void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
   delay(1);
   this->uart_->write_byte(ASCII_LF);
   
-  // Flush the buffer
   this->uart_->flush();
-  
-  ESP_LOGI(TAG, "Command sent, waiting for response...");
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {
