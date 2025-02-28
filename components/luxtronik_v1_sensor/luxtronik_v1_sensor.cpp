@@ -5,7 +5,7 @@ namespace esphome {
 
 namespace luxtronik_v1_sensor {
 
-static const char *const TAG = "luxtronik_v1";  // Simplified tag
+static const char *TAG = "luxtronik_v1_sensor.sensor";
 
 LuxtronikV1Sensor::LuxtronikV1Sensor() 
     : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
@@ -26,33 +26,15 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-      modus_Warmwasser_ptr(nullptr) {
-    ESP_LOGE(TAG, "Constructor called - Version 1.0");
-}
+      modus_Warmwasser_ptr(nullptr), is_connected_(false), last_connection_attempt_(0) {}
 
 void LuxtronikV1Sensor::setup() {
-    ESP_LOGE(TAG, "Setup starting...");  // Changed to ERROR level for visibility
-    
-//    if (this->uart_ == nullptr) {
-//        ESP_LOGE(TAG, "UART is nullptr - Check your configuration!");
-//        this->mark_failed();
-//        return;
-//    }
-
-    ESP_LOGE(TAG, "UART configured successfully. ID: %p", (void*)this->uart_);
-
-    // Clear and initialize buffer
-//    memset(read_buffer_, 0, READ_BUFFER_LENGTH);
-//    read_pos_ = 0;
-
-    // Initial commands
-    ESP_LOGE(TAG, "Sending initial commands...");
-//    this->uart_->write_str("\r\n");
-//    this->uart_->flush();
-//    delay(100);
-
-//    send_cmd_("1100");
-    ESP_LOGE(TAG, "Setup completed");
+  ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
+  
+  // Clear Read Buffer
+  for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
+    read_buffer_[i] = 0;
+  }
 }
 
 void LuxtronikV1Sensor::dump_config() {
@@ -97,71 +79,63 @@ void LuxtronikV1Sensor::dump_config() {
 }
 
 void LuxtronikV1Sensor::loop() {
-  static uint32_t last_retry = 0;
   const uint32_t now = millis();
 
-  // Check UART availability
-  if (!this->uart_) {
-    // Retry connection every 5 seconds
-    if (now - last_retry > 5000) {
-      ESP_LOGE(TAG, "UART not initialized! Retrying...");
-      last_retry = now;
-      setup();
+  if (!is_connected_) {
+
+    if (now - last_connection_attempt_ < RETRY_INTERVAL) {
+      return;
     }
+
+    last_connection_attempt_ = now;
+
+    if (this->uart_ == nullptr) {
+      ESP_LOGW(TAG, "UART not available, retrying in %d seconds...", RETRY_INTERVAL / 1000);
+      return;
+    }
+
+    ESP_LOGI(TAG, "Attempting to connect to Luxtronik...");
+    send_cmd_("1100");
+    is_connected_ = true;
     return;
   }
 
-  // Add watchdog counter
-  // static uint32_t last_data = now;  // Initialize with current time
-  if (now - last_data > 30000) {  // No data for 30 seconds
-    ESP_LOGW(TAG, "No data received for 30 seconds, resetting UART");
-  //  this->uart_->flush();
-  //  send_cmd_("1100");  // Retry initial command
-    last_data = now;
-  }
+  while (available()) {
+    uint8_t byte;
+    if (!this->read_byte(&byte)) {
+      ESP_LOGW(TAG, "Failed to read byte from UART");
+      continue;
+    }
 
-  // Read available data
-  //while (this->available()) {
-  //  uint8_t byte;
-  //  if (!this->read_byte(&byte)) {
-  //    ESP_LOGW(TAG, "Failed to read byte from UART");
-  //    continue;
-  //  }
+    ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
-    // Update watchdog timer on successful read
-    last_data = now;
-
-    // Skip carriage return
     if (byte == ASCII_CR) {
+      ESP_LOGVV(TAG, "Skipping CR");
       continue;
     }
 
-    // Check for buffer overflow
     if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
-      ESP_LOGE(TAG, "Read buffer overflow! Resetting buffer.");
+      ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
       this->read_pos_ = 0;
-      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
       continue;
     }
 
-    // Store byte in buffer
-    this->read_buffer_[this->read_pos_] = byte;
+    this->read_buffer_[this->read_pos_++] = byte;
+    this->read_buffer_[this->read_pos_] = 0;  // Null-terminate the string
 
-    // Process complete line when LF is received
     if (byte == ASCII_LF) {
-      this->read_buffer_[this->read_pos_] = 0;  // Null terminate
       ESP_LOGI(TAG, "Received line: '%s'", this->read_buffer_);
-      this->parse_cmd_(this->read_buffer_);
+      parse_cmd_(this->read_buffer_);
       this->read_pos_ = 0;
-      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
-    } else {
-      this->read_pos_++;
+      is_connected_ = true;
     }
   }
 }
 
 void LuxtronikV1Sensor::update() {
-  // Ask for Temperatures
+  if (!is_connected_) {
+    return;  // Skip update if not connected
+  }
   send_cmd_("1100");
 }
 
@@ -171,24 +145,40 @@ float LuxtronikV1Sensor::GetValue(const std::string &message) {
 
 void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
   if (!this->uart_) {
-    ESP_LOGE(TAG, "UART not initialized!");
+    is_connected_ = false;
+    ESP_LOGW(TAG, "UART not initialized!");
     return;
   }
 
-  ESP_LOGI(TAG, "Sending: %s", message.c_str());
-  this->uart_->write_str(message.c_str());
-  this->uart_->write_byte('\r');
-  this->uart_->write_byte('\n');
+  ESP_LOGI(TAG, "Sending command: '%s'", message.c_str());
+  
+  // Log each byte being sent
+  for (char c : message) {
+    ESP_LOGD(TAG, "Sending byte: 0x%02X ('%c')", c, c);
+  }
+  ESP_LOGD(TAG, "Sending CR: 0x%02X", ASCII_CR);
+  ESP_LOGD(TAG, "Sending LF: 0x%02X", ASCII_LF);
+  
+  // Send with delay between bytes to prevent overrun
+  for (char c : message) {
+    this->uart_->write_byte(c);
+    delay(1);  // 1ms delay between bytes
+  }
+  this->uart_->write_byte(ASCII_CR);
+  delay(1);
+  this->uart_->write_byte(ASCII_LF);
+  
+  // Flush the buffer
   this->uart_->flush();
+  
+  ESP_LOGI(TAG, "Command sent, waiting for response...");
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {
-  if (message.empty()) {
-    ESP_LOGW(TAG, "Received empty message");
-    return;
-  }
+  // if (message.empty())
+  //  return;
 
-  ESP_LOGI(TAG, "Parsing message: '%s'", message.c_str());
+  ESP_LOGD(TAG, "R: %s - %d", message.c_str(), 0);
 
   if (message.find("1100") == 0 && message.length() > 4) {
     parse_temperatures_(message);
