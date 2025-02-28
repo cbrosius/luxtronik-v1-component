@@ -31,18 +31,33 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
   
-  // Check UART configuration
   if (this->uart_ == nullptr) {
     ESP_LOGE(TAG, "UART is nullptr - Check your UART configuration!");
-    mark_failed();
+    this->mark_failed();
     return;
   }
+
+  // Initialize the UART with specific settings
+  this->uart_->begin(57600, UART_CONFIG_SERIAL_8N1);
+  
+  // Wait for UART to stabilize
+  delay(100);
 
   ESP_LOGI(TAG, "UART is configured.");
   
   // Clear Read Buffer
   memset(read_buffer_, 0, READ_BUFFER_LENGTH);
   read_pos_ = 0;
+
+  // Test UART connection
+  if (!this->uart_->write_str("\r\n")) {
+    ESP_LOGE(TAG, "Failed to write to UART!");
+    this->mark_failed();
+    return;
+  }
+
+  ESP_LOGI(TAG, "UART write test successful");
+  delay(100);  // Give device time to respond
 
   // Send initial command and log it
   ESP_LOGI(TAG, "Sending initial command...");
@@ -98,13 +113,23 @@ void LuxtronikV1Sensor::loop() {
     // Retry connection every 5 seconds
     if (now - last_retry > 5000) {
       ESP_LOGE(TAG, "UART not initialized! Retrying...");
-      setup();
       last_retry = now;
+      setup();
     }
     return;
   }
 
+  // Add watchdog counter
+  static uint32_t last_data = 0;
+  if (now - last_data > 30000) {  // No data for 30 seconds
+    ESP_LOGW(TAG, "No data received for 30 seconds, resetting UART");
+    this->uart_->flush();
+    send_cmd_("1100");  // Retry initial command
+    last_data = now;
+  }
+
   while (available()) {
+    last_data = now;  // Reset watchdog timer
     uint8_t byte;
     if (!this->read_byte(&byte)) {
       ESP_LOGW(TAG, "Failed to read byte from UART");
@@ -125,7 +150,6 @@ void LuxtronikV1Sensor::loop() {
 
     this->read_buffer_[this->read_pos_] = byte;
     
-    // Check if current byte is LF (not checking buffer position)
     if (byte == ASCII_LF) {
       this->read_buffer_[this->read_pos_] = 0;  // Null terminate
       ESP_LOGI(TAG, "Received line: %s", this->read_buffer_);
