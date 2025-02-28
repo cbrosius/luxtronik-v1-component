@@ -112,21 +112,21 @@ void LuxtronikV1Sensor::loop() {
   }
 
   // Add watchdog counter
-  static uint32_t last_data = now;  // Initialize with current time
+  // static uint32_t last_data = now;  // Initialize with current time
   if (now - last_data > 30000) {  // No data for 30 seconds
     ESP_LOGW(TAG, "No data received for 30 seconds, resetting UART");
-    this->uart_->flush();
-    send_cmd_("1100");  // Retry initial command
+  //  this->uart_->flush();
+  //  send_cmd_("1100");  // Retry initial command
     last_data = now;
   }
 
   // Read available data
-  while (this->available()) {
-    uint8_t byte;
-    if (!this->read_byte(&byte)) {
-      ESP_LOGW(TAG, "Failed to read byte from UART");
-      continue;
-    }
+  //while (this->available()) {
+  //  uint8_t byte;
+  //  if (!this->read_byte(&byte)) {
+  //    ESP_LOGW(TAG, "Failed to read byte from UART");
+  //    continue;
+  //  }
 
     // Update watchdog timer on successful read
     last_data = now;
