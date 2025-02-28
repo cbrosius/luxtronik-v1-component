@@ -30,16 +30,22 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
 
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
+  
+  // Check UART configuration
   if (this->uart_ == nullptr) {
-    ESP_LOGE(TAG, "Uart is nullptr");
-  } else {
-    ESP_LOGI(TAG, "Uart is set.");
+    ESP_LOGE(TAG, "UART is nullptr - Check your UART configuration!");
+    mark_failed();
+    return;
   }
+
+  ESP_LOGI(TAG, "UART is configured.");
+  
   // Clear Read Buffer
-  for (size_t i = 0; i < READ_BUFFER_LENGTH; i++) {
-    read_buffer_[i] = 0;
-  }
-  // Send initial command
+  memset(read_buffer_, 0, READ_BUFFER_LENGTH);
+  read_pos_ = 0;
+
+  // Send initial command and log it
+  ESP_LOGI(TAG, "Sending initial command...");
   send_cmd_("1100");
 }
 
@@ -85,8 +91,16 @@ void LuxtronikV1Sensor::dump_config() {
 }
 
 void LuxtronikV1Sensor::loop() {
+  static uint32_t last_retry = 0;
+  const uint32_t now = millis();
+
   if (!this->uart_) {
-    ESP_LOGE(TAG, "UART not initialized!");
+    // Retry connection every 5 seconds
+    if (now - last_retry > 5000) {
+      ESP_LOGE(TAG, "UART not initialized! Retrying...");
+      setup();
+      last_retry = now;
+    }
     return;
   }
 
