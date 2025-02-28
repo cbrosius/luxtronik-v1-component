@@ -37,26 +37,16 @@ void LuxtronikV1Sensor::setup() {
     return;
   }
 
-  // Initialize the UART with specific settings
-  this->uart_->begin(57600, UART_CONFIG_SERIAL_8N1);
-  
-  // Wait for UART to stabilize
-  delay(100);
-
-  ESP_LOGI(TAG, "UART is configured.");
-  
   // Clear Read Buffer
   memset(read_buffer_, 0, READ_BUFFER_LENGTH);
   read_pos_ = 0;
 
-  // Test UART connection
-  if (!this->uart_->write_str("\r\n")) {
-    ESP_LOGE(TAG, "Failed to write to UART!");
-    this->mark_failed();
-    return;
-  }
+  ESP_LOGI(TAG, "UART is configured.");
 
-  ESP_LOGI(TAG, "UART write test successful");
+  // Send test command
+  this->uart_->write_str("\r\n");
+  this->uart_->flush();
+
   delay(100);  // Give device time to respond
 
   // Send initial command and log it
@@ -177,11 +167,11 @@ void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
     return;
   }
 
-  ESP_LOGI(TAG, "Sending: %s", message.c_str());  // Changed to LOGI for better visibility
+  ESP_LOGI(TAG, "Sending: %s", message.c_str());
   this->uart_->write_str(message.c_str());
-  this->uart_->write_byte(ASCII_CR);
-  this->uart_->write_byte(ASCII_LF);
-  this->uart_->flush();  // Add flush to ensure data is sent
+  this->uart_->write_byte('\r');
+  this->uart_->write_byte('\n');
+  this->uart_->flush();
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {
