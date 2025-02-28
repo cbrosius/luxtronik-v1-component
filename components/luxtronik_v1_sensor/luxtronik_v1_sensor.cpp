@@ -90,7 +90,6 @@ void LuxtronikV1Sensor::loop() {
     return;
   }
 
-  // Read message
   while (available()) {
     uint8_t byte;
     if (!this->read_byte(&byte)) {
@@ -98,31 +97,29 @@ void LuxtronikV1Sensor::loop() {
       continue;
     }
 
-    ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
+    ESP_LOGV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
     if (byte == ASCII_CR)
       continue;
-    if (byte >= 0x7F)
-      byte = '?';  // need to be valid utf8 string for log functions.
-    this->read_buffer_[this->read_pos_] = byte;
-
-    ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
     if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
       ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
       this->read_pos_ = 0;
       memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
       continue;
-    } else {
-      this->read_pos_++;
     }
 
-    if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
-      this->read_buffer_[this->read_pos_] = 0;
+    this->read_buffer_[this->read_pos_] = byte;
+    
+    // Check if current byte is LF (not checking buffer position)
+    if (byte == ASCII_LF) {
+      this->read_buffer_[this->read_pos_] = 0;  // Null terminate
       ESP_LOGI(TAG, "Received line: %s", this->read_buffer_);
       this->parse_cmd_(this->read_buffer_);
       memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
       this->read_pos_ = 0;
+    } else {
+      this->read_pos_++;
     }
   }
 }
@@ -137,23 +134,25 @@ float LuxtronikV1Sensor::GetValue(const std::string &message) {
 }
 
 void LuxtronikV1Sensor::send_cmd_(const std::string &message) {
-  
   if (!this->uart_) {
     ESP_LOGE(TAG, "UART not initialized!");
     return;
   }
 
-  ESP_LOGD(TAG, "S: %s - %d", message.c_str(), 0);
+  ESP_LOGI(TAG, "Sending: %s", message.c_str());  // Changed to LOGI for better visibility
   this->uart_->write_str(message.c_str());
   this->uart_->write_byte(ASCII_CR);
   this->uart_->write_byte(ASCII_LF);
+  this->uart_->flush();  // Add flush to ensure data is sent
 }
 
 void LuxtronikV1Sensor::parse_cmd_(const std::string &message) {
-  // if (message.empty())
-  //  return;
+  if (message.empty()) {
+    ESP_LOGW(TAG, "Received empty message");
+    return;
+  }
 
-  ESP_LOGD(TAG, "R: %s - %d", message.c_str(), 0);
+  ESP_LOGI(TAG, "Parsing message: '%s'", message.c_str());
 
   if (message.find("1100") == 0 && message.length() > 4) {
     parse_temperatures_(message);
