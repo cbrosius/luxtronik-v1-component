@@ -5,7 +5,7 @@ namespace esphome {
 
 namespace luxtronik_v1_sensor {
 
-static const char *TAG = "luxtronik_v1_sensor.sensor";
+static const char *const TAG = "luxtronik_v1";  // Simplified tag
 
 LuxtronikV1Sensor::LuxtronikV1Sensor() 
     : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
@@ -27,37 +27,32 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
       modus_Warmwasser_ptr(nullptr) {
-    ESP_LOGD(TAG, "LuxtronikV1Sensor constructor called");
+    ESP_LOGE(TAG, "Constructor called - Version 1.0");
 }
 
 void LuxtronikV1Sensor::setup() {
-    ESP_LOGD(TAG, "Starting LuxtronikV1Sensor setup...");
-    ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
-  
+    ESP_LOGE(TAG, "Setup starting...");  // Changed to ERROR level for visibility
+    
     if (this->uart_ == nullptr) {
-        ESP_LOGE(TAG, "UART is nullptr - Check your UART configuration!");
+        ESP_LOGE(TAG, "UART is nullptr - Check your configuration!");
         this->mark_failed();
         return;
     }
 
-    // Clear Read Buffer
+    ESP_LOGE(TAG, "UART configured successfully. ID: %p", (void*)this->uart_);
+
+    // Clear and initialize buffer
     memset(read_buffer_, 0, READ_BUFFER_LENGTH);
     read_pos_ = 0;
 
-    ESP_LOGI(TAG, "UART is configured. ID: %p", (void*)this->uart_);
-
-    // Send test command with error checking
-    ESP_LOGD(TAG, "Sending test command...");
+    // Initial commands
+    ESP_LOGE(TAG, "Sending initial commands...");
     this->uart_->write_str("\r\n");
     this->uart_->flush();
+    delay(100);
 
-    delay(100);  // Give device time to respond
-
-    // Send initial command and log it
-    ESP_LOGI(TAG, "Sending initial command...");
     send_cmd_("1100");
-    
-    ESP_LOGI(TAG, "Setup completed successfully");
+    ESP_LOGE(TAG, "Setup completed");
 }
 
 void LuxtronikV1Sensor::dump_config() {
