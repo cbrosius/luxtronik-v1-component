@@ -85,7 +85,6 @@ void LuxtronikV1Sensor::dump_config() {
 }
 
 void LuxtronikV1Sensor::loop() {
-
   if (!this->uart_) {
     ESP_LOGE(TAG, "UART not initialized!");
     return;
@@ -94,10 +93,10 @@ void LuxtronikV1Sensor::loop() {
   // Read message
   while (available()) {
     uint8_t byte;
-    this->uart_->read_byte(&byte);
-
-    if (this->read_pos_ == READ_BUFFER_LENGTH)
-      this->read_pos_ = 0;
+    if (!this->read_byte(&byte)) {
+      ESP_LOGW(TAG, "Failed to read byte from UART");
+      continue;
+    }
 
     ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
 
@@ -109,17 +108,21 @@ void LuxtronikV1Sensor::loop() {
 
     ESP_LOGVV(TAG, "Received byte: 0x%02X ('%c')", byte, (byte >= 32 && byte < 127) ? byte : '.');
 
-    if (byte == ASCII_CR) {
-      ESP_LOGVV(TAG, "Skipping CR");
-      continue;
-    }
-
     if (this->read_pos_ >= READ_BUFFER_LENGTH - 1) {
       ESP_LOGE(TAG, "Read buffer overflow! Resetting.");
       this->read_pos_ = 0;
-      this->parse_cmd_(this->read_buffer_);
+      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
+      continue;
     } else {
       this->read_pos_++;
+    }
+
+    if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
+      this->read_buffer_[this->read_pos_] = 0;
+      ESP_LOGI(TAG, "Received line: %s", this->read_buffer_);
+      this->parse_cmd_(this->read_buffer_);
+      memset(this->read_buffer_, 0, READ_BUFFER_LENGTH);
+      this->read_pos_ = 0;
     }
   }
 }
