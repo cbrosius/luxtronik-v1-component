@@ -70,10 +70,9 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
 
  protected:
   uart::UARTComponent* uart_;
-  std::string sender_;
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
-
+  
   float GetValue(const std::string &message);
   void send_cmd_(const std::string &message);
   void parse_cmd_(const std::string &message);

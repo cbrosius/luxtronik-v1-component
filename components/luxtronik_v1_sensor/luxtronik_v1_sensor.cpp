@@ -8,8 +8,10 @@ namespace luxtronik_v1_sensor {
 static const char *TAG = "luxtronik_v1_sensor.sensor";
 
 LuxtronikV1Sensor::LuxtronikV1Sensor() 
-    : PollingComponent(60000), uart_(nullptr), temp_VL_ptr(nullptr),
-      temp_RL_ptr(nullptr), temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
+    : PollingComponent(60000), uart_(nullptr),
+      temp_VL_ptr(nullptr),
+      temp_RL_ptr(nullptr),
+      temp_RL_Soll_ptr(nullptr), temp_Heissgas_ptr(nullptr),
       temp_Aussen_ptr(nullptr), temp_BW_ptr(nullptr),
       temp_BW_Soll_ptr(nullptr), temp_WQ_Ein_ptr(nullptr),
       temp_Kaeltekreis_ptr(nullptr), temp_MK1_Vorl_ptr(nullptr),
@@ -26,7 +28,10 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-      modus_Warmwasser_ptr(nullptr) {}
+      modus_Warmwasser_ptr(nullptr) {
+  read_pos_ = 0;
+  memset(read_buffer_, 0, READ_BUFFER_LENGTH);
+}
 
 void LuxtronikV1Sensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
