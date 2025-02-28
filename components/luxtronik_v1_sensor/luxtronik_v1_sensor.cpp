@@ -26,32 +26,38 @@ LuxtronikV1Sensor::LuxtronikV1Sensor()
       aus_ZWE_Stoerung_ptr(nullptr), status_Anlagentyp_ptr(nullptr),
       status_Softwareversion_ptr(nullptr), status_Bivalenzstufe_ptr(nullptr),
       status_Betriebszustand_ptr(nullptr), modus_Heizung_ptr(nullptr),
-      modus_Warmwasser_ptr(nullptr) {}
+      modus_Warmwasser_ptr(nullptr) {
+    ESP_LOGD(TAG, "LuxtronikV1Sensor constructor called");
+}
 
 void LuxtronikV1Sensor::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
+    ESP_LOGD(TAG, "Starting LuxtronikV1Sensor setup...");
+    ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Sensor...");
   
-  if (this->uart_ == nullptr) {
-    ESP_LOGE(TAG, "UART is nullptr - Check your UART configuration!");
-    this->mark_failed();
-    return;
-  }
+    if (this->uart_ == nullptr) {
+        ESP_LOGE(TAG, "UART is nullptr - Check your UART configuration!");
+        this->mark_failed();
+        return;
+    }
 
-  // Clear Read Buffer
-  memset(read_buffer_, 0, READ_BUFFER_LENGTH);
-  read_pos_ = 0;
+    // Clear Read Buffer
+    memset(read_buffer_, 0, READ_BUFFER_LENGTH);
+    read_pos_ = 0;
 
-  ESP_LOGI(TAG, "UART is configured.");
+    ESP_LOGI(TAG, "UART is configured. ID: %p", (void*)this->uart_);
 
-  // Send test command
-  this->uart_->write_str("\r\n");
-  this->uart_->flush();
+    // Send test command with error checking
+    ESP_LOGD(TAG, "Sending test command...");
+    this->uart_->write_str("\r\n");
+    this->uart_->flush();
 
-  delay(100);  // Give device time to respond
+    delay(100);  // Give device time to respond
 
-  // Send initial command and log it
-  ESP_LOGI(TAG, "Sending initial command...");
-  send_cmd_("1100");
+    // Send initial command and log it
+    ESP_LOGI(TAG, "Sending initial command...");
+    send_cmd_("1100");
+    
+    ESP_LOGI(TAG, "Setup completed successfully");
 }
 
 void LuxtronikV1Sensor::dump_config() {

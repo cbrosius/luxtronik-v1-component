@@ -12,7 +12,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["button"]  # Add button component auto-loading
+AUTO_LOAD = ["sensor", "button"]  # Add button component auto-loading
 
 # Generate namespace for component
 luxtronik_v1_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
