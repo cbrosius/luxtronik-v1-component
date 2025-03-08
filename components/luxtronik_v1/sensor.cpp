@@ -22,6 +22,7 @@ void LuxtronikV1Sensor::setup() {
 }
 
 void LuxtronikV1Sensor::loop() {
+<<<<<<< HEAD
   uint32_t now = millis();
   if (now - this->last_loop_ms_ < 5000) {
     // Nur alle 5 Sekunden ausführen.
@@ -29,6 +30,8 @@ void LuxtronikV1Sensor::loop() {
   }
   this->last_loop_ms_ = now;
 
+=======
+>>>>>>> parent of 86b8421 (only check uart every 5 seconds)
   if (this->uart_ == nullptr) {
     ESP_LOGW(TAG, "Loop() - UART component not set in loop()");
     return;
