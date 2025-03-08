@@ -13,7 +13,18 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
  public:
   LuxtronikV1Sensor();
   
-  void set_uart(uart::UARTComponent *uart);
+  void set_uart(uart::UARTComponent *uart) {
+    this->uart_ = uart;
+  }
+  // Add a register_sensor function (even if it only logs registration for now)
+  void register_sensor(sensor::Sensor *sens) {
+    ESP_LOGD("luxtronik_v1.controller", "Sensor registered: %p", sens);
+    auto s = static_cast<LuxtronikV1Sensor*>(sens);
+    if (s != nullptr && this->uart_ != nullptr) {
+      s->set_uart(this->uart_);
+    }
+  }
+
   void loop() override;
   void update() override;
   bool register_sensor(sensor::Sensor *sens);

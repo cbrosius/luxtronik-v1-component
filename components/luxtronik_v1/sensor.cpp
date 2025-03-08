@@ -12,8 +12,6 @@ const uint8_t READ_BUFFER_LENGTH = 255;
 
 LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000) {}
 
-void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart; }
-
 void LuxtronikV1Sensor::loop() {
   uint32_t now = millis();
   if (now - this->last_loop_ms_ < 5000) {
