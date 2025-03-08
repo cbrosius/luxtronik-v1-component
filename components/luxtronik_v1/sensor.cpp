@@ -10,11 +10,11 @@ const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
 const uint8_t READ_BUFFER_LENGTH = 255;
 
-luxtronik_v1_sensor::luxtronik_v1_sensor() : PollingComponent(60000) {}
+LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000) {}
 
-void luxtronik_v1_sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart; }
+void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart; }
 
-void luxtronik_v1_sensor::loop() {
+void LuxtronikV1Sensor::loop() {
   // Read message
   while (this->available()) {
     uint8_t byte;
@@ -41,7 +41,7 @@ void luxtronik_v1_sensor::loop() {
   }
 }
 
-void luxtronik_v1_sensor::update() {
+void LuxtronikV1Sensor::update() {
   // Consider adding error handling
   if (this->uart_ == nullptr) {
     ESP_LOGW(TAG, "UART component not set");
@@ -55,18 +55,18 @@ void luxtronik_v1_sensor::update() {
   send_cmd_("1100");
 }
 
-float luxtronik_v1_sensor::GetFloatTemp(std::string message) { return std::atof(message.c_str()) / 10; }
+float LuxtronikV1Sensor::GetFloatTemp(std::string message) { return std::atof(message.c_str()) / 10; }
 
-float luxtronik_v1_sensor::GetInputOutputState(std::string message) { return std::atoi(message.c_str()); }
+float LuxtronikV1Sensor::GetInputOutputState(std::string message) { return std::atoi(message.c_str()); }
 
-void luxtronik_v1_sensor::send_cmd_(std::string message) {
+void LuxtronikV1Sensor::send_cmd_(std::string message) {
   ESP_LOGV(TAG, "S: %s - %d", message.c_str(), 0);
   this->write_str(message.c_str());
   this->write_byte(ASCII_CR);
   this->write_byte(ASCII_LF);
 }
 
-void luxtronik_v1_sensor::parse_cmd_(std::string message) {
+void LuxtronikV1Sensor::parse_cmd_(std::string message) {
   // Move this check to the beginning
   if (message.empty()) {
     ESP_LOGW(TAG, "Received empty message");
@@ -280,7 +280,7 @@ void luxtronik_v1_sensor::parse_cmd_(std::string message) {
   }
 }
 
-bool luxtronik_v1_sensor::register_sensor(sensor::Sensor *sens) {
+bool LuxtronikV1Sensor::register_sensor(sensor::Sensor *sens) {
   if (temp_VL == nullptr) {
     ESP_LOGD(TAG, "Registered temp_VL");
     temp_VL = sens;

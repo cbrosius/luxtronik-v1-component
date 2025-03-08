@@ -12,11 +12,10 @@ from esphome.const import (
 DEPENDENCIES = ['uart']
 AUTO_LOAD = ['sensor']
 
-# Configuration constants
 CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
 
 luxtronik_v1_ns = cg.esphome_ns.namespace('luxtronik_v1')
-LuxtronikV1Component = luxtronik_v1_ns.class_('luxtronik_v1_sensor', cg.PollingComponent, uart.UARTDevice)
+LuxtronikV1Component = luxtronik_v1_ns.class_('LuxtronikV1Sensor', cg.PollingComponent, uart.UARTDevice)
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
