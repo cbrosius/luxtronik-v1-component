@@ -7,9 +7,11 @@
 namespace esphome {
 namespace luxtronik_v1 {
 
-class LuxtronikV1Sensor : public PollingComponent, public uart::UARTDevice {
+class LuxtronikV1Component;  // Forward declaration
+
+class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public uart::UARTDevice {
  public:
-  LuxtronikV1Sensor();  // Changed class name to match Python code
+  LuxtronikV1Sensor();
   
   void set_uart(uart::UARTComponent *uart);
   void loop() override;

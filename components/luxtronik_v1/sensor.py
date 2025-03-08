@@ -12,7 +12,7 @@ from . import CONF_LUXTRONIK_V1_ID, luxtronik_v1_ns, LuxtronikV1Component
 
 DEPENDENCIES = ['luxtronik_v1']
 
-LuxtronikV1Sensor = luxtronik_v1_ns.class_('LuxtronikV1Sensor', sensor.Sensor)
+LuxtronikV1Sensor = luxtronik_v1_ns.class_('LuxtronikV1Sensor', sensor.Sensor, cg.PollingComponent)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
@@ -25,7 +25,7 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 })
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = await cg.new_Pvariable(config[CONF_ID])
     await sensor.register_sensor(var, config)
     
     controller = await cg.get_variable(config[CONF_LUXTRONIK_V1_ID])
