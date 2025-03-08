@@ -9,6 +9,9 @@ namespace luxtronik_v1 {
 
 class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
  public:
+  // Add constructor declaration
+  luxtronik_v1_sensor();
+  
   void set_uart(uart::UARTComponent *uart);
   void loop() override;
   void update() override;
