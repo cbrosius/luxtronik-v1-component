@@ -1,8 +1,8 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
+#include "esphome/components/sensor/sensor.h"
 
 namespace esphome {
 namespace luxtronik_v1 {
@@ -13,30 +13,26 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
  public:
   LuxtronikV1Sensor();
   
-  void setup() override;
+  void set_uart(uart::UARTComponent *uart);
   void loop() override;
   void update() override;
-  void dump_config() override;
-
-  // Methoden zum Setzen des UART-Pointers und zum Registrieren von Sensors
-  void set_uart(uart::UARTComponent *uart);
   bool register_sensor(sensor::Sensor *sens);
 
-  // Temperatur-Sensoren
+  // Temperature Sensors
   sensor::Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
   sensor::Sensor *temp_RL{nullptr};           // Temperatur Rücklauf
-  sensor::Sensor *temp_RL_Soll{nullptr};        // Temperatur Rücklauf-Soll
-  sensor::Sensor *temp_Heissgas{nullptr};       // Heissgas Temperature
-  sensor::Sensor *temp_Aussen{nullptr};         // Outside Temperature
-  sensor::Sensor *temp_BW{nullptr};             // Brauchwasser Temperature
-  sensor::Sensor *temp_BW_Soll{nullptr};        // Brauchwasser Soll Temperature
-  sensor::Sensor *temp_WQ_Ein{nullptr};         // Wärmequelle Input Temperature
-  sensor::Sensor *temp_Kaeltekreis{nullptr};     // Kältekreis Temperature
-  sensor::Sensor *temp_MK1_Vorl{nullptr};        // Mischkreis 1 Vorlauf
-  sensor::Sensor *temp_MK1VL_Soll{nullptr};      // Mischkreis 1 Vorlauf Soll
-  sensor::Sensor *temp_Raumstat{nullptr};        // Raumstation Temperature
+  sensor::Sensor *temp_RL_Soll{nullptr};      // Temperatur Rücklauf-Soll
+  sensor::Sensor *temp_Heissgas{nullptr};     // Heissgas Temperature
+  sensor::Sensor *temp_Aussen{nullptr};       // Outside Temperature
+  sensor::Sensor *temp_BW{nullptr};           // Brauchwasser Temperature
+  sensor::Sensor *temp_BW_Soll{nullptr};      // Brauchwasser Soll Temperature
+  sensor::Sensor *temp_WQ_Ein{nullptr};       // Wärmequelle Input Temperature
+  sensor::Sensor *temp_Kaeltekreis{nullptr};  // Kältekreis Temperature
+  sensor::Sensor *temp_MK1_Vorl{nullptr};     // Mischkreis 1 Vorlauf
+  sensor::Sensor *temp_MK1VL_Soll{nullptr};   // Mischkreis 1 Vorlauf Soll
+  sensor::Sensor *temp_Raumstat{nullptr};     // Raumstation Temperature
 
-  // Input-Sensoren
+  // Input Sensors
   sensor::Sensor *ein_Abtau_Soledruck_Durchfluss{nullptr};
   sensor::Sensor *ein_Sperrzeit_EVU{nullptr};
   sensor::Sensor *ein_Hochdruckpressostat{nullptr};
@@ -44,7 +40,7 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   sensor::Sensor *ein_Niederdruckpressostat{nullptr};
   sensor::Sensor *ein_Fremdstromanode{nullptr};
 
-  // Output-Sensoren
+  // Output Sensors
   sensor::Sensor *aus_ATV{nullptr};          // Abtauventil
   sensor::Sensor *aus_BWP{nullptr};          // Brauchwasserpumpe
   sensor::Sensor *aus_FBHP{nullptr};         // Fussbodenheizungspumpe
@@ -52,20 +48,20 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   sensor::Sensor *aus_Mischer_1_Auf{nullptr};
   sensor::Sensor *aus_Mischer_1_Zu{nullptr};
   sensor::Sensor *aus_VentWP{nullptr};       // Ventilation Wärmepumpe
-  sensor::Sensor *aus_VentBrunnen{nullptr};    // Ventilator/Brunnen
+  sensor::Sensor *aus_VentBrunnen{nullptr};  // Ventilator/Brunnen
   sensor::Sensor *aus_Verdichter_1{nullptr};
   sensor::Sensor *aus_Verdichter_2{nullptr};
-  sensor::Sensor *aus_ZPumpe{nullptr};         // Zusatzpumpe
-  sensor::Sensor *aus_ZWE{nullptr};            // Zweiter Wärmeerzeuger
-  sensor::Sensor *aus_ZWE_Stoerung{nullptr};     // ZWE Störung
+  sensor::Sensor *aus_ZPumpe{nullptr};       // Zusatzpumpe
+  sensor::Sensor *aus_ZWE{nullptr};          // Zweiter Wärmeerzeuger
+  sensor::Sensor *aus_ZWE_Stoerung{nullptr}; // ZWE Störung
 
-  // State-Sensoren
+  // State Sensors
   sensor::Sensor *state_Anlagentyp{nullptr};
   sensor::Sensor *state_Softwareversion{nullptr};
   sensor::Sensor *state_Bivalenzstufe{nullptr};
   sensor::Sensor *state_Betriebszustand{nullptr};
 
-  // Status-Sensoren
+  // Status Sensors
   sensor::Sensor *status_StartDate_Day{nullptr};
   sensor::Sensor *status_StartDate_Month{nullptr};
   sensor::Sensor *status_StartDate_Year{nullptr};
@@ -83,25 +79,7 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   void parse_cmd_(std::string message);
   float GetFloatTemp(std::string message);
   float GetInputOutputState(std::string message);
-  uint32_t last_loop_ms_{0};
-};
-
-class LuxtronikV1Controller : public Component {
- public:
-  void set_uart(uart::UARTComponent *uart) {
-    this->uart_ = uart;
-  }
-  // Add a register_sensor function (even if it only logs registration for now)
-  void register_sensor(sensor::Sensor *sens) {
-    ESP_LOGD("luxtronik_v1.controller", "Sensor registered: %p", sens);
-    auto s = static_cast<LuxtronikV1Sensor*>(sens);
-    if (s != nullptr && this->uart_ != nullptr) {
-      s->set_uart(this->uart_);
-    }
-  }
-  
- protected:
-  uart::UARTComponent *uart_{nullptr};
+  uint32_t last_loop_ms_{0};  
 };
 
 }  // namespace luxtronik_v1
