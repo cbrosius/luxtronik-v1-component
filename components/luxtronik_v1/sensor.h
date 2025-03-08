@@ -86,5 +86,16 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   uint32_t last_loop_ms_{0};  
 };
 
+class LuxtronikV1Controller : public Component {
+ public:
+  // Define at least a set_uart() method to match __init__.py behavior.
+  void set_uart(uart::UARTComponent *uart) {
+    this->uart_ = uart;
+  }
+  
+ protected:
+  uart::UARTComponent *uart_{nullptr};
+};
+
 }  // namespace luxtronik_v1
 }  // namespace esphome
