@@ -83,6 +83,7 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   void parse_cmd_(std::string message);
   float GetFloatTemp(std::string message);
   float GetInputOutputState(std::string message);
+  uint32_t last_loop_ms_{0};
 };
 
 class LuxtronikV1Controller : public Component {
