@@ -1,13 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor
-from esphome.const import (
-    CONF_ID,
-    CONF_UART_ID,
-    DEVICE_CLASS_TEMPERATURE,
-    STATE_CLASS_MEASUREMENT,
-    UNIT_CELSIUS,
-)
+from esphome.components import uart
+from esphome.const import CONF_ID, CONF_UART_ID
 
 DEPENDENCIES = ['uart']
 AUTO_LOAD = ['sensor']
@@ -26,6 +20,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     
+    # Get and set the UART component
     uart_component = await cg.get_variable(config[CONF_UART_ID])
     cg.add(var.set_uart(uart_component))
-    await uart.register_uart_device(var, config)
