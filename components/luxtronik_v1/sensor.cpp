@@ -10,7 +10,7 @@ const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
 const uint8_t READ_BUFFER_LENGTH = 255;
 
-luxtronik_v1_sensor::luxtronik_v1_sensor(UARTComponent *parent) : PollingComponent(60000) {}
+luxtronik_v1_sensor::luxtronik_v1_sensor() : PollingComponent(60000) {}
 
 void luxtronik_v1_sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart; }
 
