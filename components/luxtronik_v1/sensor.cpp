@@ -86,14 +86,18 @@ void luxtronik_v1_sensor::parse_cmd_(std::string message) {
     end = message.find(';', start);
     // Sensor *temp_VL           = new Sensor();     // Temperatur Vorlauf  -> 1100/2
     std::string tmp_VL = message.substr(start, end - start).c_str();
-    // ESP_LOGD(TAG, tmp_VL.c_str());
-    // temp_VL->publish_state(GetFloatTemp(tmp_VL));
+    ESP_LOGD(TAG, tmp_VL.c_str());
+    if (temp_VL != nullptr){
+      temp_VL->publish_state(GetFloatTemp(tmp_VL));
+    }
     start = end + 1;
     end = message.find(';', start);
     // Sensor *temp_RL           = new Sensor();     // Temperatur Rücklauf -> 1100/3
     std::string tmp_RL = message.substr(start, end - start).c_str();
-    // ESP_LOGD(TAG, tmp_RL.c_str());
-    // temp_RL->publish_state(GetFloatTemp(tmp_RL));
+    ESP_LOGD(TAG, tmp_RL.c_str());
+    if (temp_RL != nullptr){
+      temp_RL->publish_state(GetFloatTemp(tmp_RL));
+    }
     start = end + 1;
     end = message.find(';', start);
     // Sensor *temp_RL_Soll      = new Sensor();     // Temperatur Rücklauf-Soll -> 1100/4

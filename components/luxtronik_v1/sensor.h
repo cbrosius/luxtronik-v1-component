@@ -9,39 +9,38 @@ namespace luxtronik_v1 {
 
 class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
  public:
-  luxtronik_v1_sensor(UARTComponent *parent);
   void set_uart(uart::UARTComponent *uart);
   void loop() override;
   void update() override;
   bool register_sensor(sensor::Sensor *sens);
 
   // Temperature Sensors
-  Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
-  Sensor *temp_RL{nullptr};           // Temperatur Rücklauf
-  Sensor *temp_RL_Soll{nullptr};      // Temperatur Rücklauf-Soll
-  Sensor *temp_Heissgas{nullptr};     // Heissgas Temperature
-  Sensor *temp_Aussen{nullptr};       // Outside Temperature
-  Sensor *temp_BW{nullptr};           // Brauchwasser Temperature
-  Sensor *temp_BW_Soll{nullptr};      // Brauchwasser Soll Temperature
-  Sensor *temp_WQ_Ein{nullptr};       // Wärmequelle Input Temperature
-  Sensor *temp_Kaeltekreis{nullptr};  // Kältekreis Temperature
-  Sensor *temp_MK1_Vorl{nullptr};     // Mischkreis 1 Vorlauf
-  Sensor *temp_MK1VL_Soll{nullptr};   // Mischkreis 1 Vorlauf Soll
-  Sensor *temp_Raumstat{nullptr};     // Raumstation Temperature
+  sensor::Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
+  sensor::Sensor *temp_RL{nullptr};           // Temperatur Rücklauf
+  sensor::Sensor *temp_RL_Soll{nullptr};      // Temperatur Rücklauf-Soll
+  sensor::Sensor *temp_Heissgas{nullptr};     // Heissgas Temperature
+  sensor::Sensor *temp_Aussen{nullptr};       // Outside Temperature
+  sensor::Sensor *temp_BW{nullptr};           // Brauchwasser Temperature
+  sensor::Sensor *temp_BW_Soll{nullptr};      // Brauchwasser Soll Temperature
+  sensor::Sensor *temp_WQ_Ein{nullptr};       // Wärmequelle Input Temperature
+  sensor::Sensor *temp_Kaeltekreis{nullptr};  // Kältekreis Temperature
+  sensor::Sensor *temp_MK1_Vorl{nullptr};     // Mischkreis 1 Vorlauf
+  sensor::Sensor *temp_MK1VL_Soll{nullptr};   // Mischkreis 1 Vorlauf Soll
+  sensor::Sensor *temp_Raumstat{nullptr};     // Raumstation Temperature
 
   // Input Sensors
-  Sensor *ein_Abtau_Soledruck_Durchfluss{nullptr};
-  Sensor *ein_Sperrzeit_EVU{nullptr};
-  Sensor *ein_Hochdruckpressostat{nullptr};
-  Sensor *ein_Motorschutz{nullptr};
-  Sensor *ein_Niederdruckpressostat{nullptr};
-  Sensor *ein_Fremdstromanode{nullptr};
+  sensor::Sensor *ein_Abtau_Soledruck_Durchfluss{nullptr};
+  sensor::Sensor *ein_Sperrzeit_EVU{nullptr};
+  sensor::Sensor *ein_Hochdruckpressostat{nullptr};
+  sensor::Sensor *ein_Motorschutz{nullptr};
+  sensor::Sensor *ein_Niederdruckpressostat{nullptr};
+  sensor::Sensor *ein_Fremdstromanode{nullptr};
 
   // Output Sensors
-  Sensor *aus_ATV{nullptr};          // Abtauventil
-  Sensor *aus_BWP{nullptr};          // Brauchwasserpumpe
-  Sensor *aus_FBHP{nullptr};         // Fussbodenheizungspumpe
-  Sensor *aus_HZP{nullptr};          // Heizungspumpe
+  sensor::Sensor *aus_ATV{nullptr};          // Abtauventil
+  sensor::Sensor *aus_BWP{nullptr};          // Brauchwasserpumpe
+  sensor::Sensor *aus_FBHP{nullptr};         // Fussbodenheizungspumpe
+  sensor::Sensor *aus_HZP{nullptr};          // Heizungspumpe
   Sensor *aus_Mischer_1_Auf{nullptr};
   Sensor *aus_Mischer_1_Zu{nullptr};
   Sensor *aus_VentWP{nullptr};       // Ventilation Wärmepumpe
@@ -53,22 +52,20 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   Sensor *aus_ZWE_Stoerung{nullptr}; // ZWE Störung
 
   // State Sensors
-  Sensor *state_Anlagentyp{nullptr};
-  Sensor *state_Softwareversion{nullptr};
-  Sensor *state_Bivalenzstufe{nullptr};
-  Sensor *state_Betriebszustand{nullptr};
+  sensor::Sensor *state_Anlagentyp{nullptr};
+  sensor::Sensor *state_Softwareversion{nullptr};
+  sensor::Sensor *state_Bivalenzstufe{nullptr};
+  sensor::Sensor *state_Betriebszustand{nullptr};
 
   // Status Sensors
-  Sensor *status_StartDate_Day{nullptr};
-  Sensor *status_StartDate_Month{nullptr};
+  sensor::Sensor *status_StartDate_Day{nullptr};
+  sensor::Sensor *status_StartDate_Month{nullptr};
   Sensor *status_StartDate_Year{nullptr};
   Sensor *status_StartTime_Hour{nullptr};
   Sensor *status_StartTime_Min{nullptr};
   Sensor *status_StartTime_Sec{nullptr};
   Sensor *status_Compact{nullptr};
   
-  void set_temperature_sensor(size_t index, sensor::Sensor *sens);
-
  protected:
   uart::UARTComponent *uart_{nullptr};
   std::string sender_;

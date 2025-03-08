@@ -7,9 +7,9 @@ from esphome.const import (
     UNIT_CELSIUS,
     CONF_ID,
     CONF_NAME,
+    CONF_LUXTRONIK_V1_ID,  # Import the missing constant
 )
 from . import luxtronik_v1_ns, LuxtronikV1Component
-from . import CONF_LUXTRONIK_V1_ID  # Import the missing constant
 
 DEPENDENCIES = ['luxtronik_v1']
 
