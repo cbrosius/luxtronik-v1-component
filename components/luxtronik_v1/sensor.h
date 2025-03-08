@@ -65,6 +65,8 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   Sensor *status_StartTime_Sec{nullptr};
   Sensor *status_Compact{nullptr};
   
+  void set_temperature_sensor(size_t index, sensor::Sensor *sens);
+
  protected:
   std::string sender_;
   char read_buffer_[255];
