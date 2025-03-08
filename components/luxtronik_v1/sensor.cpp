@@ -2,9 +2,9 @@
 #include "sensor.h"
 
 namespace esphome {
-namespace luxtronik_v1 {
+namespace luxtronik_v1_sensor {
 
-static const char *const TAG = "luxtronik_v1";
+static const char *const TAG = "luxtronik_v1_sensor.sensor";
 
 const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
@@ -57,6 +57,10 @@ void LuxtronikV1Sensor::loop() {
       this->read_pos_++;
     }
   }
+}
+
+void EmptyUARTSensor::dump_config(){
+  ESP_LOGCONFIG(TAG, "Empty luxtronik_v1_:sensor");
 }
 
 void LuxtronikV1Sensor::update() {

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/uart/uart.h"
 
 namespace esphome {
-namespace luxtronik_v1 {
+namespace luxtronik_v1_sensor {
 
 class LuxtronikV1Component;  // Forward declaration
 
@@ -13,10 +13,10 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
  public:
   LuxtronikV1Sensor();
   
-  void set_uart(uart::UARTComponent *uart);
+  void setup() override;
   void loop() override;
   void update() override;
-  bool register_sensor(sensor::Sensor *sens);
+  void dump_config() override;
 
   // Temperature Sensors
   sensor::Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
