@@ -60,11 +60,11 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   // Status Sensors
   sensor::Sensor *status_StartDate_Day{nullptr};
   sensor::Sensor *status_StartDate_Month{nullptr};
-  Sensor *status_StartDate_Year{nullptr};
-  Sensor *status_StartTime_Hour{nullptr};
-  Sensor *status_StartTime_Min{nullptr};
-  Sensor *status_StartTime_Sec{nullptr};
-  Sensor *status_Compact{nullptr};
+  sensor::Sensor *status_StartDate_Year{nullptr};
+  sensor::Sensor *status_StartTime_Hour{nullptr};
+  sensor::Sensor *status_StartTime_Min{nullptr};
+  sensor::Sensor *status_StartTime_Sec{nullptr};
+  sensor::Sensor *status_Compact{nullptr};
   
  protected:
   uart::UARTComponent *uart_{nullptr};
