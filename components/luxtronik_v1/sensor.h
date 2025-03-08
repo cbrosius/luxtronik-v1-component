@@ -88,9 +88,13 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
 
 class LuxtronikV1Controller : public Component {
  public:
-  // Define at least a set_uart() method to match __init__.py behavior.
   void set_uart(uart::UARTComponent *uart) {
     this->uart_ = uart;
+  }
+  // Add a register_sensor function (even if it only logs registration for now)
+  void register_sensor(sensor::Sensor *sens) {
+    ESP_LOGD("luxtronik_v1.controller", "Sensor registered: %p", sens);
+    // You can store the sensor pointer if needed (e.g. in a vector)
   }
   
  protected:
