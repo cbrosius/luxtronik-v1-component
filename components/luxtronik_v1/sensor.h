@@ -27,7 +27,6 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
 
   void loop() override;
   void update() override;
-  bool register_sensor(sensor::Sensor *sens);
 
   // Temperature Sensors
   sensor::Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
