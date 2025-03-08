@@ -50,3 +50,7 @@ async def to_code(config):
         conf = config[CONF_TEMP_RL]
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_temp_RL(sens))
+
+sensor.SENSOR_PLATFORM_SCHEMA = sensor.SENSOR_PLATFORM_SCHEMA.extend({
+    cv.Optional("platform"): "luxtronik_v1",
+})
