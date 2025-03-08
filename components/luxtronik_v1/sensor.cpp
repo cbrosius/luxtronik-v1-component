@@ -59,8 +59,8 @@ void LuxtronikV1Sensor::loop() {
   }
 }
 
-void EmptyUARTSensor::dump_config(){
-  ESP_LOGCONFIG(TAG, "Empty luxtronik_v1_:sensor");
+void LuxtronikV1Sensor::dump_config(){
+  ESP_LOGCONFIG(TAG, "Empty luxtronik_v1sensor");
 }
 
 void LuxtronikV1Sensor::update() {

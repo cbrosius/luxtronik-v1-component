@@ -5,7 +5,7 @@
 #include "esphome/components/uart/uart.h"
 
 namespace esphome {
-namespace luxtronik_v1_sensor {
+namespace luxtronik_v1 {
 
 class LuxtronikV1Component;  // Forward declaration
 
@@ -17,6 +17,10 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   void loop() override;
   void update() override;
   void dump_config() override;
+
+  // Added declarations:
+  void set_uart(uart::UARTComponent *uart);
+  bool register_sensor(sensor::Sensor *sens);
 
   // Temperature Sensors
   sensor::Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
