@@ -27,8 +27,8 @@ async def to_code(config):
     await cg.register_component(var, config)
     
     uart_component = await cg.get_variable(config[CONF_UART_ID])
-    # Added debug print to verify the UART pointer
-    cg.add(cg.debug_print("luxtronik_v1: Retrieved UART pointer: 0x%p", uart_component))
+    # Instead of debug_print(), add a C++ comment for debugging.
+    cg.add(cg.cpp_comment("luxtronik_v1: Retrieved UART pointer: 0x%p", uart_component))
     
     cg.add(var.set_uart(uart_component))
     await uart.register_uart_device(var, config)
