@@ -15,6 +15,10 @@ LuxtronikV1Sensor::LuxtronikV1Sensor() : PollingComponent(60000) {}
 void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart; }
 
 void LuxtronikV1Sensor::loop() {
+  if (this->uart_ == nullptr) {
+    ESP_LOGW(TAG, "UART component not set in loop()");
+    return;
+  }
   if (!this->available()) {
     ESP_LOGW(TAG, "UART not available in loop()");
     return;
