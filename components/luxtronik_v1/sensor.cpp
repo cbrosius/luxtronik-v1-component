@@ -17,6 +17,10 @@ void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) {
   this->uart_ = uart; 
 }
 
+void LuxtronikV1Sensor::setup() {
+  // No setup actions defined; implement if needed.
+}
+
 void LuxtronikV1Sensor::loop() {
   uint32_t now = millis();
   if (now - this->last_loop_ms_ < 5000) {
