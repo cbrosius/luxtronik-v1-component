@@ -8,12 +8,11 @@ from esphome.const import (
     CONF_ID,
     CONF_NAME,
 )
-from . import luxtronik_v1_ns, LuxtronikV1Component
-from . import CONF_LUXTRONIK_V1_ID
+from . import CONF_LUXTRONIK_V1_ID, luxtronik_v1_ns, LuxtronikV1Component
 
 DEPENDENCIES = ['luxtronik_v1']
 
-LuxtronikV1Sensor = luxtronik_v1_ns.class_('LuxtronikV1Sensor', sensor.Sensor, cg.Component)
+LuxtronikV1Sensor = luxtronik_v1_ns.class_('LuxtronikV1Sensor', sensor.Sensor)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
@@ -22,13 +21,12 @@ CONFIG_SCHEMA = sensor.sensor_schema(
     state_class=STATE_CLASS_MEASUREMENT,
 ).extend({
     cv.GenerateID(): cv.declare_id(LuxtronikV1Sensor),
-    cv.GenerateID(CONF_LUXTRONIK_V1_ID): cv.use_id(LuxtronikV1Component),
-    cv.Required(CONF_NAME): cv.string,
+    cv.Required(CONF_LUXTRONIK_V1_ID): cv.use_id(LuxtronikV1Component),
 })
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-
-    paren = await cg.get_variable(config[CONF_LUXTRONIK_V1_ID])
-    cg.add(paren.register_sensor(var))
+    await sensor.register_sensor(var, config)
+    
+    controller = await cg.get_variable(config[CONF_LUXTRONIK_V1_ID])
+    cg.add(controller.register_sensor(var))
