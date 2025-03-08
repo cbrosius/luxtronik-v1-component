@@ -2,9 +2,9 @@
 #include "sensor.h"
 
 namespace esphome {
-namespace luxtronik_v1_sensor {
+namespace luxtronik_v1 {
 
-static const char *const TAG = "luxtronik_v1_sensor.sensor";
+static const char *const TAG = "luxtronik_v1.sensor";
 
 const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
