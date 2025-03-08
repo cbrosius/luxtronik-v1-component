@@ -41,15 +41,15 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *aus_BWP{nullptr};          // Brauchwasserpumpe
   sensor::Sensor *aus_FBHP{nullptr};         // Fussbodenheizungspumpe
   sensor::Sensor *aus_HZP{nullptr};          // Heizungspumpe
-  Sensor *aus_Mischer_1_Auf{nullptr};
-  Sensor *aus_Mischer_1_Zu{nullptr};
-  Sensor *aus_VentWP{nullptr};       // Ventilation Wärmepumpe
-  Sensor *aus_VentBrunnen{nullptr};  // Ventilator/Brunnen
-  Sensor *aus_Verdichter_1{nullptr};
-  Sensor *aus_Verdichter_2{nullptr};
-  Sensor *aus_ZPumpe{nullptr};       // Zusatzpumpe
-  Sensor *aus_ZWE{nullptr};          // Zweiter Wärmeerzeuger
-  Sensor *aus_ZWE_Stoerung{nullptr}; // ZWE Störung
+  sensor::Sensor *aus_Mischer_1_Auf{nullptr};
+  sensor::Sensor *aus_Mischer_1_Zu{nullptr};
+  sensor::Sensor *aus_VentWP{nullptr};       // Ventilation Wärmepumpe
+  sensor::Sensor *aus_VentBrunnen{nullptr};  // Ventilator/Brunnen
+  sensor::Sensor *aus_Verdichter_1{nullptr};
+  sensor::Sensor *aus_Verdichter_2{nullptr};
+  sensor::Sensor *aus_ZPumpe{nullptr};       // Zusatzpumpe
+  sensor::Sensor *aus_ZWE{nullptr};          // Zweiter Wärmeerzeuger
+  sensor::Sensor *aus_ZWE_Stoerung{nullptr}; // ZWE Störung
 
   // State Sensors
   sensor::Sensor *state_Anlagentyp{nullptr};
