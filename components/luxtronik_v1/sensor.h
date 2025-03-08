@@ -18,18 +18,26 @@ class LuxtronikV1Sensor : public sensor::Sensor, public PollingComponent, public
   }
   // Single inline implementation of register_sensor (returning void)
   void register_sensor(sensor::Sensor *sens) {
+    if (sens == nullptr) {
+        ESP_LOGW("luxtronik_v1.controller", "Received null sensor pointer");
+        return;
+    }
+    
     ESP_LOGD("luxtronik_v1.controller", "register_sensor called with sensor: %p", sens);
     auto s = static_cast<LuxtronikV1Sensor*>(sens);
-    if (s != nullptr) {
-        if (this->uart_ != nullptr) {
-            ESP_LOGD("luxtronik_v1.controller", "Forwarding UART %p to sensor %p", this->uart_, s);
-            s->set_uart(this->uart_);
-        } else {
-            ESP_LOGW("luxtronik_v1.controller", "Cannot forward UART to sensor: uart_ is null");
-        }
-    } else {
+    
+    if (s == nullptr) {
         ESP_LOGW("luxtronik_v1.controller", "Failed to cast sensor pointer");
+        return;
     }
+
+    if (this->uart_ == nullptr) {
+        ESP_LOGW("luxtronik_v1.controller", "Cannot forward UART to sensor: uart_ is null");
+        return;
+    }
+
+    ESP_LOGD("luxtronik_v1.controller", "Forwarding UART %p to sensor %p", this->uart_, s);
+    s->set_uart(this->uart_);
   }
 
   void loop() override;

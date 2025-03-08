@@ -28,13 +28,13 @@ CONFIG_SCHEMA = (
 
 async def to_code(config):
     """Generate code for Luxtronik V1 temperature sensor."""
-    # Get the parent component (controller)
+    # Get the parent component (controller) first
     controller = await cg.get_variable(config[CONF_LUXTRONIK_V1_ID])
     
-    # Create the sensor variable
+    # Create and register the sensor
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await sensor.register_sensor(var, config)
     
-    # Register this sensor with the controller
+    # Register with controller AFTER sensor is fully initialized
     cg.add(controller.register_sensor(var))
