@@ -16,11 +16,11 @@ void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) { this->uart_ = uart
 
 void LuxtronikV1Sensor::loop() {
   if (this->uart_ == nullptr) {
-    ESP_LOGW(TAG, "UART component not set in loop()");
+    ESP_LOGW(TAG, "Loop() - UART component not set in loop()");
     return;
   }
   if (!this->available()) {
-    ESP_LOGW(TAG, "UART not available in loop()");
+    ESP_LOGW(TAG, "Loop() - UART not available in loop()");
     return;
   }
   // Read message
@@ -52,11 +52,11 @@ void LuxtronikV1Sensor::loop() {
 void LuxtronikV1Sensor::update() {
   // Consider adding error handling
   if (this->uart_ == nullptr) {
-    ESP_LOGW(TAG, "UART component not set");
+    ESP_LOGW(TAG, "update() - UART component not set");
     return;
   }
   if (!this->available()) {
-    ESP_LOGW(TAG, "UART not available");
+    ESP_LOGW(TAG, "update() - UART not available");
     return;
   }
   // Ask for Temperatures
