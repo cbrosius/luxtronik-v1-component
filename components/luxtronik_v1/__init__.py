@@ -11,30 +11,37 @@ from esphome.const import (
 DEPENDENCIES = ['uart']
 AUTO_LOAD = ['sensor']
 
+# Configuration constants
 CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
-CONF_TEMPERATURE_SENSORS = "temperature_sensors"
+CONF_TEMP_VL = "temp_VL"
+CONF_TEMP_RL = "temp_RL"
 
 luxtronik_v1_ns = cg.esphome_ns.namespace('luxtronik_v1')
 LuxtronikV1Component = luxtronik_v1_ns.class_('luxtronik_v1_sensor', cg.PollingComponent, uart.UARTDevice)
 
+# Schema for individual temperature sensors
+TEMPERATURE_SCHEMA = cv.Schema({
+    cv.GenerateID(): cv.declare_id(sensor.Sensor),
+    cv.Required("name"): cv.string,
+})
+
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
-    cv.Optional(CONF_TEMPERATURE_SENSORS): cv.ensure_list(
-        sensor.sensor_schema(
-            unit_of_measurement=UNIT_CELSIUS,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            state_class=STATE_CLASS_MEASUREMENT
-        )
-    ),
-}).extend(cv.polling_component_schema('60s')).extend(uart.UART_DEVICE_SCHEMA)
+    cv.Optional(CONF_TEMP_VL): TEMPERATURE_SCHEMA,
+    cv.Optional(CONF_TEMP_RL): TEMPERATURE_SCHEMA,
+}).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
 
-    if CONF_TEMPERATURE_SENSORS in config:
-        for conf in config[CONF_TEMPERATURE_SENSORS]:
-            sens = await sensor.new_sensor(conf)
-            cg.add(var.set_temperature_sensor(sens))
+    if CONF_TEMP_VL in config:
+        conf = config[CONF_TEMP_VL]
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_temp_VL(sens))
+    
+    if CONF_TEMP_RL in config:
+        conf = config[CONF_TEMP_RL]
+        sens = await sensor.new_sensor(conf)
+        cg.add(var.set_temp_RL(sens))

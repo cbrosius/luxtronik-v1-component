@@ -8,6 +8,8 @@ from esphome.const import (
 )
 from . import luxtronik_v1_ns, LuxtronikV1Component
 
+CONFIG_SCHEMA = cv.Schema({})
+
 CONF_TEMPERATURE_SENSORS = "temperature_sensors"
 
 CONFIG_SCHEMA = sensor.sensor_schema(
