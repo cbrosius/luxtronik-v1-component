@@ -9,7 +9,7 @@ from esphome.const import (
 
 DEPENDENCIES = ['uart']
 
-# Change the namespace to match the folder name:
+# Namespace entspricht dem Ordnernamen
 luxtronik_v1_ns = cg.esphome_ns.namespace("luxtronik_v1")
 LuxtronikV1Sensor = luxtronik_v1_ns.class_(
     "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
@@ -30,4 +30,5 @@ CONFIG_SCHEMA = (
 async def to_code(config):
     var = await sensor.new_sensor(config)
     await cg.register_component(var, config)
-    await uart.register_uart_device(var, config)
+    # Hier wird kein eigener uart.register_uart_device aufgerufen,
+    # denn das UART wird vom Controller bereitgestellt.

@@ -18,13 +18,13 @@ void LuxtronikV1Sensor::set_uart(uart::UARTComponent *uart) {
 }
 
 void LuxtronikV1Sensor::setup() {
-  // No setup actions defined; implement if needed.
+  // Keine Setup-Aktionen definiert; hier ggf. initialisieren.
 }
 
 void LuxtronikV1Sensor::loop() {
   uint32_t now = millis();
   if (now - this->last_loop_ms_ < 5000) {
-    // Skip processing if less than 5s have passed.
+    // Nur alle 5 Sekunden ausführen.
     return;
   }
   this->last_loop_ms_ = now;
@@ -37,7 +37,7 @@ void LuxtronikV1Sensor::loop() {
     ESP_LOGW(TAG, "Loop() - UART not available in loop()");
     return;
   }
-  // Read message
+  // Lese die Nachricht
   while (this->available()) {
     uint8_t byte;
     this->read_byte(&byte);
@@ -50,7 +50,7 @@ void LuxtronikV1Sensor::loop() {
     if (byte == ASCII_CR)
       continue;
     if (byte >= 0x7F)
-      byte = '?';  // need to be valid utf8 string for log functions.
+      byte = '?';  // Um valide UTF8-Zeichen zu gewährleisten.
     this->read_buffer_[this->read_pos_] = byte;
 
     if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
@@ -64,11 +64,11 @@ void LuxtronikV1Sensor::loop() {
 }
 
 void LuxtronikV1Sensor::dump_config(){
-  ESP_LOGCONFIG(TAG, "Empty luxtronik_v1sensor");
+  ESP_LOGCONFIG(TAG, "luxtronik_v1_sensor:");
+  // Hier können noch Konfigurationsdetails ausgegeben werden.
 }
 
 void LuxtronikV1Sensor::update() {
-  // Consider adding error handling
   if (this->uart_ == nullptr) {
     ESP_LOGW(TAG, "update() - UART component not set");
     return;
@@ -77,7 +77,7 @@ void LuxtronikV1Sensor::update() {
     ESP_LOGW(TAG, "update() - UART not available");
     return;
   }
-  // Ask for Temperatures
+  // Befehl "1100" senden, um Temperaturen anzufragen.
   send_cmd_("1100");
 }
 
@@ -86,7 +86,7 @@ float LuxtronikV1Sensor::GetFloatTemp(std::string message) { return std::atof(me
 float LuxtronikV1Sensor::GetInputOutputState(std::string message) { return std::atoi(message.c_str()); }
 
 void LuxtronikV1Sensor::send_cmd_(std::string message) {
-  ESP_LOGV(TAG, "S: %s - %d", message.c_str(), 0);
+  ESP_LOGV(TAG, "S: %s", message.c_str());
   this->write_str(message.c_str());
   this->write_byte(ASCII_CR);
   this->write_byte(ASCII_LF);
@@ -99,7 +99,7 @@ void LuxtronikV1Sensor::parse_cmd_(std::string message) {
     return;
   }
 
-  ESP_LOGV(TAG, "R: %s - %d", message.c_str(), 0);
+  ESP_LOGV(TAG, "R: %s", message.c_str());
   std::string delimiter = ";";
 
   if (message.find("1100") == 0) {
