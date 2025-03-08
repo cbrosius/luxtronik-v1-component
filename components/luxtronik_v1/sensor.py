@@ -6,7 +6,7 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
 )
-from . import luxtronik_v1_ns, Luxtronik_v1_Component
+from . import luxtronik_v1_ns, Luxtronik_v1_Component, CONF_TEMPERATURE_SENSORS
 
 LuxtronikV1Sensor = luxtronik_v1_ns.class_("luxtronik_v1_sensor", sensor.Sensor)
 
@@ -20,5 +20,7 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 })
 
 async def to_code(config):
-    var = await sensor.new_sensor(config)
-    await cg.register_component(var, config)
+    if CONF_TEMPERATURE_SENSORS in config:
+        for conf in config[CONF_TEMPERATURE_SENSORS]:
+            var = await sensor.new_sensor(conf)
+            await cg.register_component(var, config)

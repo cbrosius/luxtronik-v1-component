@@ -12,11 +12,10 @@ DEPENDENCIES = ['uart']
 AUTO_LOAD = ['sensor']
 
 CONF_LUXTRONIK_V1_ID = "luxtronik_v1_id"
-CONF_SENSORS = "sensors"
 CONF_TEMPERATURE_SENSORS = "temperature_sensors"
 
 luxtronik_v1_ns = cg.esphome_ns.namespace('luxtronik_v1')
-Luxtronik_v1Component = luxtronik_v1_ns.class_('luxtronik_v1_sensor', cg.PollingComponent, uart.UARTDevice)
+Luxtronik_v1_Component = luxtronik_v1_ns.class_('luxtronik_v1_sensor', cg.PollingComponent, uart.UARTDevice)
 
 TEMPERATURE_SENSOR_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
@@ -26,7 +25,7 @@ TEMPERATURE_SENSOR_SCHEMA = sensor.sensor_schema(
 )
 
 CONFIG_SCHEMA = cv.Schema({
-    cv.GenerateID(): cv.declare_id(Luxtronik_v1Component),
+    cv.GenerateID(): cv.declare_id(Luxtronik_v1_Component),
     cv.Optional(CONF_TEMPERATURE_SENSORS): cv.ensure_list(TEMPERATURE_SENSOR_SCHEMA),
 }).extend(cv.polling_component_schema('60s')).extend(uart.UART_DEVICE_SCHEMA)
 
