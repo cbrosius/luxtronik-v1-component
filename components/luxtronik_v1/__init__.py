@@ -21,17 +21,20 @@ luxtronik_v1_ns = cg.esphome_ns.namespace('luxtronik_v1')
 LuxtronikV1Component = luxtronik_v1_ns.class_('luxtronik_v1_sensor', cg.PollingComponent, uart.UARTDevice)
 
 # Schema for individual temperature sensors
-TEMPERATURE_SCHEMA = cv.Schema({
-    cv.GenerateID(): cv.declare_id(sensor.Sensor),
-    cv.Required("name"): cv.string,
-})
+TEMPERATURE_SCHEMA = sensor.sensor_schema(
+    unit_of_measurement=UNIT_CELSIUS,
+    accuracy_decimals=1,
+    device_class=DEVICE_CLASS_TEMPERATURE,
+    state_class=STATE_CLASS_MEASUREMENT,
+)
 
+MULTI_CONF = True
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
     cv.Required(CONF_UART_ID): cv.use_id(uart.UARTComponent),
     cv.Optional(CONF_TEMP_VL): TEMPERATURE_SCHEMA,
     cv.Optional(CONF_TEMP_RL): TEMPERATURE_SCHEMA,
-}).extend(cv.COMPONENT_SCHEMA)
+}).extend(cv.COMPONENT_SCHEMA).extend(sensor.sensor_schema())
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -50,7 +53,3 @@ async def to_code(config):
         conf = config[CONF_TEMP_RL]
         sens = await sensor.new_sensor(conf)
         cg.add(var.set_temp_RL(sens))
-
-sensor.SENSOR_PLATFORM_SCHEMA = sensor.SENSOR_PLATFORM_SCHEMA.extend({
-    cv.Optional("platform"): "luxtronik_v1",
-})
