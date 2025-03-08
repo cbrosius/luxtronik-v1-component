@@ -9,8 +9,9 @@ from esphome.const import (
 
 DEPENDENCIES = ['uart']
 
-luxtronik_v1_sensor_ns = cg.esphome_ns.namespace("luxtronik_v1_sensor")
-LuxtronikV1Sensor = luxtronik_v1_sensor_ns.class_(
+# Change the namespace to match the folder name:
+luxtronik_v1_ns = cg.esphome_ns.namespace("luxtronik_v1")
+LuxtronikV1Sensor = luxtronik_v1_ns.class_(
     "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
 )
 
