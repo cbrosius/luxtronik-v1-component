@@ -5,21 +5,29 @@ from esphome.const import (
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
+    CONF_ID,
+    CONF_NAME,
 )
 from . import luxtronik_v1_ns, LuxtronikV1Component
 
-CONFIG_SCHEMA = cv.Schema({})
+DEPENDENCIES = ['luxtronik_v1']
 
-CONF_TEMPERATURE_SENSORS = "temperature_sensors"
+LuxtronikV1Sensor = luxtronik_v1_ns.class_('LuxtronikV1Sensor', sensor.Sensor, cg.Component)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
     accuracy_decimals=1,
     device_class=DEVICE_CLASS_TEMPERATURE,
     state_class=STATE_CLASS_MEASUREMENT,
-)
+).extend({
+    cv.GenerateID(): cv.declare_id(LuxtronikV1Sensor),
+    cv.GenerateID(CONF_LUXTRONIK_V1_ID): cv.use_id(LuxtronikV1Component),
+    cv.Required(CONF_NAME): cv.string,
+})
 
 async def to_code(config):
-    paren = await cg.get_variable(config[CONF_TEMPERATURE_SENSORS])
-    var = await sensor.new_sensor(config)
-    cg.add(paren.set_temperature_sensor(var))
+    var = cg.new_Pvariable(config[CONF_ID])
+    await cg.register_component(var, config)
+
+    paren = await cg.get_variable(config[CONF_LUXTRONIK_V1_ID])
+    cg.add(paren.register_sensor(var))

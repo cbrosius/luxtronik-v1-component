@@ -10,8 +10,10 @@ namespace luxtronik_v1 {
 class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
  public:
   luxtronik_v1_sensor(UARTComponent *parent);
+  void set_uart(uart::UARTComponent *uart);
   void loop() override;
   void update() override;
+  bool register_sensor(sensor::Sensor *sens);
 
   // Temperature Sensors
   Sensor *temp_VL{nullptr};           // Temperatur Vorlauf
@@ -68,6 +70,7 @@ class luxtronik_v1_sensor : public PollingComponent, public uart::UARTDevice {
   void set_temperature_sensor(size_t index, sensor::Sensor *sens);
 
  protected:
+  uart::UARTComponent *uart_{nullptr};
   std::string sender_;
   char read_buffer_[255];
   size_t read_pos_{0};
