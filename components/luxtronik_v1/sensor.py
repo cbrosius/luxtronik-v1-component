@@ -7,9 +7,11 @@ from esphome.const import (
     UNIT_CELSIUS,
 )
 
+# Import the controller class from __init__.py
+from . import LuxtronikV1Controller
+
 DEPENDENCIES = ['uart']
 
-# Namespace entspricht dem Ordnernamen
 luxtronik_v1_ns = cg.esphome_ns.namespace("luxtronik_v1")
 LuxtronikV1Sensor = luxtronik_v1_ns.class_(
     "LuxtronikV1Sensor", cg.PollingComponent, uart.UARTDevice
@@ -25,10 +27,15 @@ CONFIG_SCHEMA = (
     )
     .extend(cv.polling_component_schema("60s"))
     .extend(uart.UART_DEVICE_SCHEMA)
+    .extend({
+         cv.Required("luxtronik_v1_id"): cv.use_id(LuxtronikV1Controller),
+    })
 )
 
 async def to_code(config):
     var = await sensor.new_sensor(config)
     await cg.register_component(var, config)
-    # Hier wird kein eigener uart.register_uart_device aufgerufen,
-    # denn das UART wird vom Controller bereitgestellt.
+    # The sensor will later receive the UART pointer from its controller.
+    # Additionally, register the sensor with the controller:
+    controller = await cg.get_variable(config["luxtronik_v1_id"])
+    cg.add(controller.register_sensor(var))
