@@ -94,7 +94,10 @@ class LuxtronikV1Controller : public Component {
   // Add a register_sensor function (even if it only logs registration for now)
   void register_sensor(sensor::Sensor *sens) {
     ESP_LOGD("luxtronik_v1.controller", "Sensor registered: %p", sens);
-    // You can store the sensor pointer if needed (e.g. in a vector)
+    auto s = dynamic_cast<LuxtronikV1Sensor*>(sens);
+    if (s != nullptr && this->uart_ != nullptr) {
+      s->set_uart(this->uart_);
+    }
   }
   
  protected:
