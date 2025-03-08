@@ -293,20 +293,20 @@ void LuxtronikV1Sensor::parse_cmd_(std::string message) {
   }
 }
 
-bool LuxtronikV1Sensor::register_sensor(sensor::Sensor *sens) {
-  if (temp_VL == nullptr) {
-    ESP_LOGD(TAG, "Registered temp_VL");
-    temp_VL = sens;
-    return true;
-  }
-  if (temp_RL == nullptr) {
-    ESP_LOGD(TAG, "Registered temp_RL");
-    temp_RL = sens;
-    return true;
-  }
-  ESP_LOGW(TAG, "All sensors already registered!");
-  return false;
-}
+// bool LuxtronikV1Sensor::register_sensor(sensor::Sensor *sens) {
+//   if (temp_VL == nullptr) {
+//     ESP_LOGD(TAG, "Registered temp_VL");
+//     temp_VL = sens;
+//     return true;
+//   }
+//   if (temp_RL == nullptr) {
+//     ESP_LOGD(TAG, "Registered temp_RL");
+//     temp_RL = sens;
+//     return true;
+//   }
+//   ESP_LOGW(TAG, "All sensors already registered!");
+//   return false;
+// }
 
 }  // namespace luxtronik_v1
 }  // namespace esphome
