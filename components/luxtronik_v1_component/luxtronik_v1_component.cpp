@@ -21,7 +21,7 @@ void LuxtronikV1Component::loop() {
         return;
     }
     
-    bool parsed_something = false;
+    bool parsed_something = false; // Reset parsed_something at the beginning of the loop
 
     while (this->parent_->available()) {
         uint8_t c;
