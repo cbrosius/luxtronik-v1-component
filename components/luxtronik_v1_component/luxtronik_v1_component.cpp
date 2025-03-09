@@ -222,6 +222,7 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
                 ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
             }
             temperature_parse_state_ = 0;
+            temperature_msg_ = ""; // Clear the temperature message
             // Request input values after temperature values are parsed
             this->parent_->write_str("1200\r\n");
             break;
@@ -305,6 +306,7 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
                 ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
             }
             input_parse_state_ = 0;
+            input_msg_ = ""; // Clear the input message
             break;
     }
 }
