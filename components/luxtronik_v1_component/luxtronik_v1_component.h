@@ -46,8 +46,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_eingang_fremdstromanode_sensor(sensor::Sensor *sens) { eingang_fremdstromanode_ = sens; }
 
  protected:
-  void parse_message_(const char* message);
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
+  void parse_message_(const char* message);
+  void parse_temperature_message_(const char* message);
+  void parse_input_message_(const char* message);
 
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];
