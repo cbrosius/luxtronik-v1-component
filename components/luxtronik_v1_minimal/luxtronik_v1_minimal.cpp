@@ -19,8 +19,8 @@ void LuxtronikV1MinimalSensor::loop() {
 }
 
 void LuxtronikV1MinimalSensor::dump_config(){
-    ESP_LOGCONFIG(TAG, "Empty UART sensor");
+    ESP_LOGCONFIG(TAG, "LuxtronikV1MinimalSensor");
 }
 
-}  // namespace empty_UART_sensor
+}  // namespace luxtronik_v1_minimal
 }  // namespace esphome
