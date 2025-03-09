@@ -40,7 +40,7 @@ void LuxtronikV1MinimalSensor::send_cmd(std::string message) {
         return;
     }
     
-    ESP_LOGV(TAG, "Sending command: %s", message.c_str());
+    ESP_LOGW(TAG, "Sending command: %s", message.c_str());
     message += "\r\n";
     this->parent_->write_str(message.c_str());
 }
