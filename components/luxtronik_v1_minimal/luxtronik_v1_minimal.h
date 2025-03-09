@@ -10,8 +10,12 @@ namespace luxtronik_v1_minimal {
 
 class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent, public uart::UARTDevice {
  public:
-  // Constructor with 60s polling interval
+  // Constructor with polling interval
   LuxtronikV1MinimalSensor() : PollingComponent(5000) {}
+
+  void set_uart_parent(uart::UARTComponent *parent) { 
+    this->set_uart_device(parent); 
+  }
 
   void setup() override;
   void update() override;
