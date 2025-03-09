@@ -21,6 +21,8 @@ void LuxtronikV1Component::loop() {
         return;
     }
     
+    bool parsed_something = false;
+
     while (this->parent_->available()) {
         uint8_t c;
         if (!this->parent_->read_byte(&c)) {
@@ -33,12 +35,24 @@ void LuxtronikV1Component::loop() {
                 ESP_LOGD(TAG, "Received: %s", this->read_buffer_);
                 parse_message_(this->read_buffer_);
                 this->read_pos_ = 0;
+                parsed_something = true;
             }
         } else {
             this->read_buffer_[this->read_pos_++] = c;
             if (this->read_pos_ >= READ_BUFFER_LENGTH) {
                 this->read_pos_ = 0;
             }
+        }
+    }
+
+    // Continue parsing even if no new data is available, but only if there's a message
+    // and the state machine is not yet finished.
+    if (!this->parent_->available() || parsed_something) {
+        if (!temperature_msg_.empty() && temperature_parse_state_ < 12) {
+            parse_temperature_message_(temperature_msg_.c_str());
+        }
+        if (!input_msg_.empty() && input_parse_state_ < 6) {
+            parse_input_message_(input_msg_.c_str());
         }
     }
 }
