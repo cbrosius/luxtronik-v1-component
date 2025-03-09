@@ -15,7 +15,7 @@ static const char ASCII_LF = '\n';
 class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent, public uart::UARTDevice {
  public:
   // Constructor with polling interval
-  LuxtronikV1MinimalSensor() : PollingComponent(5000) {}
+  LuxtronikV1MinimalSensor() : PollingComponent() {}
 
   void set_uart_parent(uart::UARTComponent *parent) { 
     this->parent_ = parent;
