@@ -75,12 +75,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *eingang_motorschutz_{nullptr};
   sensor::Sensor *eingang_niederdruckpressostat_{nullptr};
   sensor::Sensor *eingang_fremdstromanode_{nullptr};
-
- private:
-  uint8_t temperature_parse_state_ = 0;
-  uint8_t input_parse_state_ = 0;
-  std::string temperature_msg_;
-  std::string input_msg_;
 };
 
 }  // namespace luxtronik_v1_component
