@@ -36,13 +36,7 @@ void LuxtronikV1MinimalSensor::loop() {
         byte = '?';  // need to be valid utf8 string for log functions.
         this->read_buffer_[this->read_pos_] = byte;
 
-        if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
-        this->read_buffer_[this->read_pos_] = 0;
-        this->read_pos_ = 0;
-        this->parse_cmd_(this->read_buffer_);
-        } else {
         this->read_pos_++;
-        }
     }
 }
 
