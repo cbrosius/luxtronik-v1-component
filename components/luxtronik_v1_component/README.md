@@ -78,13 +78,13 @@ luxtronik_v1_component:
     name: "Temperatur Kältekreis"
     id: temperature_kaeltekreis
   temperature_mischkreis1_vorlauf:
-    name: "Temperatur mischkreis1 Vorlauf"
+    name: "Temperatur Mischkreis1 Vorlauf"
     id: temperature_mischkreis1_vorlauf
   temperature_mischkreis1_vorlauf_soll:
-    name: "Temperatur mischkreis1 Vorlauf Soll"
+    name: "Temperatur Mischkreis1 Vorlauf Soll"
     id: temperature_mischkreis1_vorlauf_soll
   temperature_raumstation:
-    name: "Temperatur raumstation"
+    name: "Temperatur Raumstation"
     id: temperature_raumstation
 
 sensor:
