@@ -24,7 +24,7 @@ void LuxtronikV1MinimalSensor::dump_config(){
 }
 
 void LuxtronikV1MinimalSensor::send_cmd(std::string message) {
-    if (this->uart == nullptr) {
+    if (this->uart_ == nullptr) {
         ESP_LOGW(TAG, "send_cmd_() - UART not set");
         return;
     }
