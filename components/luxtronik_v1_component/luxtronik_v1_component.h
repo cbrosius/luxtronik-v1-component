@@ -16,6 +16,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   LuxtronikV1Component() : PollingComponent(10000) {}  // Default to 10 seconds
 
   void setup() override;
+  void loop() override;
   void update() override;
   void dump_config() override;
 
