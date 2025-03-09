@@ -174,6 +174,78 @@ void LuxtronikV1Component::parse_message_(const char* message) {
             temperature_raumstation_->publish_state(value);
             ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
         }
+
+        // Request input values
+        this->parent_->write_str("1200\r\n");
+
+    }
+    // Check if it's an input message
+    else if (msg.find("1200") == 0) {
+        ESP_LOGD(TAG, "Input message received: %s", message);
+        
+        // Split message by semicolon
+        std::string delimiter = ";";
+        size_t start = 5;  // Skip "1200;"
+        size_t end = msg.find(delimiter, start);
+        
+        // Skip count
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        
+        // First value is Eingang Abtau Soledruck Durchfluss
+        if (eingang_abtau_soledruck_durchfluss_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_abtau_soledruck_durchfluss_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.1f", value);
+        }
+        
+        // Second value is Eingang Sperrzeit EVU
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (eingang_sperrzeit_evu_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_sperrzeit_evu_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.1f", value);
+        }
+
+        // Add parsing for additional input sensors
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (eingang_hochdruckpressostat_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_hochdruckpressostat_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (eingang_motorschutz_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_motorschutz_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Motorschutz: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (eingang_niederdruckpressostat_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_niederdruckpressostat_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (eingang_fremdstromanode_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            eingang_fremdstromanode_->publish_state(value);
+            ESP_LOGD(TAG, "Eingang Fremdstromanode: %.1f", value);
+        }
     }
 }
 
@@ -192,6 +264,12 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Mischkreis1 Vorlauf: %s", this->temperature_mischkreis1_vorlauf_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Mischkreis1 Vorlauf Soll: %s", this->temperature_mischkreis1_vorlauf_soll_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Raumstation: %s", this->temperature_raumstation_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Abtau Soledruck Durchfluss: %s", this->eingang_abtau_soledruck_durchfluss_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Sperrzeit EVU: %s", this->eingang_sperrzeit_evu_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Hochdruckpressostat: %s", this->eingang_hochdruckpressostat_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Motorschutz: %s", this->eingang_motorschutz_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Niederdruckpressostat: %s", this->eingang_niederdruckpressostat_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Eingang Fremdstromanode: %s", this->eingang_fremdstromanode_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component
