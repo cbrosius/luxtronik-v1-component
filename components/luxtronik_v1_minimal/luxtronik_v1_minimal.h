@@ -33,9 +33,6 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
   
-  // Timing
-  uint32_t last_read_{0};
-  
   // UART parent
   uart::UARTComponent *parent_{nullptr};
 };
