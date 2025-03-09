@@ -44,7 +44,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/cbrosius/luxtronik-v1-component
-      ref: restart
+      ref: Input-sensors
     components: [ luxtronik_v1_component ]
     refresh: 0s
 
@@ -86,6 +86,24 @@ luxtronik_v1_component:
   temperature_raumstation:
     name: "Temperatur Raumstation"
     id: temperature_raumstation
+  eingang_abtau_soledruck_durchfluss:
+    name: "Eingang Abtau Soledruck Durchfluss"
+    id: eingang_abtau_soledruck_durchfluss
+  eingang_sperrzeit_evu:
+    name: "Eingang Sperrzeit EVU"
+    id: eingang_sperrzeit_evu
+  eingang_hochdruckpressostat:
+    name: "Eingang Hochdruckpressostat"
+    id: eingang_hochdruckpressostat
+  eingang_motorschutz:
+    name: "Eingang Motorschutz"
+    id: eingang_motorschutz
+  eingang_niederdruckpressostat:
+    name: "Eingang Niederdruckpressostat"
+    id: eingang_niederdruckpressostat
+  eingang_fremdstromanode:
+    name: "Eingang Fremdstromanode"
+    id: eingang_fremdstromanode
 
 sensor:
   - platform: uptime

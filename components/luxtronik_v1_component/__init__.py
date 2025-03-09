@@ -21,6 +21,12 @@ CONF_TEMPERATURE_KAELTEKREIS = "temperature_kaeltekreis"
 CONF_TEMPERATURE_MISCHKREIS1_VORLAUF = "temperature_mischkreis1_vorlauf"
 CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL = "temperature_mischkreis1_vorlauf_soll"
 CONF_TEMPERATURE_RAUMSTATION = "temperature_raumstation"
+CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS = "eingang_abtau_soledruck_durchfluss"
+CONF_EINGANG_SPERRZEIT_EVU = "eingang_sperrzeit_evu"
+CONF_EINGANG_HOCHDRUCKPRESSOSTAT = "eingang_hochdruckpressostat"
+CONF_EINGANG_MOTORSCHUTZ = "eingang_motorschutz"
+CONF_EINGANG_NIEDERDRUCKPRESSOSTAT = "eingang_niederdruckpressostat"
+CONF_EINGANG_FREMDSTROMANODE = "eingang_fremdstromanode"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -49,6 +55,12 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_TEMPERATURE_MISCHKREIS1_VORLAUF): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_TEMPERATURE_RAUMSTATION): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_SPERRZEIT_EVU): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_HOCHDRUCKPRESSOSTAT): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_MOTORSCHUTZ): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_NIEDERDRUCKPRESSOSTAT): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_EINGANG_FREMDSTROMANODE): TEMPERATURE_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -106,3 +118,27 @@ async def to_code(config):
     if CONF_TEMPERATURE_RAUMSTATION in config:
         sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RAUMSTATION])
         cg.add(var.set_temperature_raumstation_sensor(sens))
+
+    if CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS])
+        cg.add(var.set_eingang_abtau_soledruck_durchfluss_sensor(sens))
+
+    if CONF_EINGANG_SPERRZEIT_EVU in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_SPERRZEIT_EVU])
+        cg.add(var.set_eingang_sperrzeit_evu_sensor(sens))
+
+    if CONF_EINGANG_HOCHDRUCKPRESSOSTAT in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_HOCHDRUCKPRESSOSTAT])
+        cg.add(var.set_eingang_hochdruckpressostat_sensor(sens))
+
+    if CONF_EINGANG_MOTORSCHUTZ in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_MOTORSCHUTZ])
+        cg.add(var.set_eingang_motorschutz_sensor(sens))
+
+    if CONF_EINGANG_NIEDERDRUCKPRESSOSTAT in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_NIEDERDRUCKPRESSOSTAT])
+        cg.add(var.set_eingang_niederdruckpressostat_sensor(sens))
+
+    if CONF_EINGANG_FREMDSTROMANODE in config:
+        sens = await sensor.new_sensor(config[CONF_EINGANG_FREMDSTROMANODE])
+        cg.add(var.set_eingang_fremdstromanode_sensor(sens))

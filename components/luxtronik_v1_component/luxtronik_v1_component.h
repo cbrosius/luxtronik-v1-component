@@ -13,7 +13,7 @@ static const uint8_t READ_BUFFER_LENGTH = 255;
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
-  LuxtronikV1Component() : PollingComponent(10000) {}  // Default to 10 seconds
+  LuxtronikV1Component() : PollingComponent(30000) {}  // Default to 30 seconds
 
   void setup() override;
   void loop() override;
@@ -37,6 +37,13 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_temperature_mischkreis1_vorlauf_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_ = sens; }
   void set_temperature_mischkreis1_vorlauf_soll_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_soll_ = sens; }
   void set_temperature_raumstation_sensor(sensor::Sensor *sens) { temperature_raumstation_ = sens; }
+  // Add input sensor setters
+  void set_eingang_abtau_soledruck_durchfluss_sensor(sensor::Sensor *sens) { eingang_abtau_soledruck_durchfluss_ = sens; }
+  void set_eingang_sperrzeit_evu_sensor(sensor::Sensor *sens) { eingang_sperrzeit_evu_ = sens; }
+  void set_eingang_hochdruckpressostat_sensor(sensor::Sensor *sens) { eingang_hochdruckpressostat_ = sens; }
+  void set_eingang_motorschutz_sensor(sensor::Sensor *sens) { eingang_motorschutz_ = sens; }
+  void set_eingang_niederdruckpressostat_sensor(sensor::Sensor *sens) { eingang_niederdruckpressostat_ = sens; }
+  void set_eingang_fremdstromanode_sensor(sensor::Sensor *sens) { eingang_fremdstromanode_ = sens; }
 
  protected:
   void parse_message_(const char* message);
@@ -59,6 +66,13 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *temperature_mischkreis1_vorlauf_{nullptr};
   sensor::Sensor *temperature_mischkreis1_vorlauf_soll_{nullptr};
   sensor::Sensor *temperature_raumstation_{nullptr};
+  sensor::Sensor *eingang_abtau_soledruck_durchfluss_{nullptr};
+  // Input sensor pointers
+  sensor::Sensor *eingang_sperrzeit_evu_{nullptr};
+  sensor::Sensor *eingang_hochdruckpressostat_{nullptr};
+  sensor::Sensor *eingang_motorschutz_{nullptr};
+  sensor::Sensor *eingang_niederdruckpressostat_{nullptr};
+  sensor::Sensor *eingang_fremdstromanode_{nullptr};
 };
 
 }  // namespace luxtronik_v1_component
