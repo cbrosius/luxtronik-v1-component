@@ -14,7 +14,7 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
   LuxtronikV1MinimalSensor() : PollingComponent(5000) {}
 
   void set_uart_parent(uart::UARTComponent *parent) { 
-    this->set_uart_device(parent); 
+    this->parent_ = parent;  // Store UART parent
   }
 
   void setup() override;
@@ -25,6 +25,7 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
  protected:
   void send_cmd(std::string message);
   uint32_t last_read_{0};
+  uart::UARTComponent *parent_{nullptr};  // Add parent pointer
 };
 
 }  // namespace luxtronik_v1_minimal
