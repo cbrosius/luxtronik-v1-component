@@ -83,7 +83,7 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  VL Sensor: %s", this->temp_vl_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  RL Sensor: %s", this->temp_rl_ ? "Not Set": "Not Set");
+    ESP_LOGCONFIG(TAG, "  RL Sensor: %s", this->temp_rl_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component
