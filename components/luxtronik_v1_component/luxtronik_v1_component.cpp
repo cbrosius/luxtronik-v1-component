@@ -180,7 +180,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 
     }
     // Check if it's an input message
-    else if (msg.find("1200") == 0) {
+    if (msg.find("1200") == 0) {
         ESP_LOGD(TAG, "Input message received: %s", message);
         
         // Split message by semicolon
