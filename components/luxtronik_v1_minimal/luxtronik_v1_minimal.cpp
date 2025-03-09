@@ -26,7 +26,11 @@ void LuxtronikV1MinimalSensor::loop() {
     }
     
     while (this->parent_->available()) {
-        char c = this->parent_->read();
+        uint8_t c;
+        if (!this->parent_->read_byte(&c)) {
+            continue;
+        }
+        
         if (c == ASCII_CR || c == ASCII_LF) {
             if (this->read_pos_ > 0) {
                 this->read_buffer_[this->read_pos_] = '\0';
