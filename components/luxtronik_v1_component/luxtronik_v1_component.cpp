@@ -56,14 +56,15 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     // Check if it's a temperature message
     if (msg.find("1100") == 0) {
         parse_temperature_message_(message);
-        // Request input values after temperature values are parsed
-        this->parent_->write_str("1200\r\n");
     }
     // Check if it's an input message
     if (msg.find("1200") == 0) {
         parse_input_message_(message);
     }
-}
+    // Check if it's an output message
+    if (msg.find("1300") == 0) {
+        parse_output_message_(message);
+    }}
 
 void LuxtronikV1Component::parse_temperature_message_(const char* message) {
     ESP_LOGD(TAG, "Temperature message received: %s", message);
@@ -186,6 +187,10 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
         temperature_raumstation_->publish_state(value);
         ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
     }
+
+    // Request input values after temperature values are parsed
+    this->parent_->write_str("1200\r\n");
+
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
@@ -255,7 +260,52 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
         eingang_fremdstromanode_->publish_state(value);
         ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
     }
+
+    // Request output values after input values are parsed
+    this->parent_->write_str("1300\r\n");
 }
+
+void LuxtronikV1Component::parse_output_message_(const char* message) {
+    ESP_LOGD(TAG, "Output message received: %s", message);
+    std::string msg(message);
+    
+    // Split message by semicolon
+    std::string delimiter = ";";
+    size_t start = 5;  // Skip "1300;"
+    size_t end = msg.find(delimiter, start);
+    
+    // Skip count
+    start = end + 1;
+    end = msg.find(delimiter, start);
+    
+    // Parse each output value
+    auto parse_and_publish = [&](sensor::Sensor* sensor, const char* name) {
+        if (sensor != nullptr && end != std::string::npos) {
+            std::string value_str = msg.substr(start, end - start);
+            float value = std::atof(value_str.c_str());
+            sensor->publish_state(value);
+            ESP_LOGD(TAG, "Output %s: %.0f", name, value);
+        }
+        start = end + 1;
+        end = msg.find(delimiter, start);
+    };
+
+    parse_and_publish(ausgang_abtauventil_, "Abtauventil");
+    parse_and_publish(ausgang_bwp_, "BWP");
+    parse_and_publish(ausgang_fbhp_, "FBHP");
+    parse_and_publish(ausgang_hzp_, "HZP");
+    parse_and_publish(ausgang_mischer_1_auf_, "Mischer 1 Auf");
+    parse_and_publish(ausgang_mischer_1_zu_, "Mischer 1 Zu");
+    parse_and_publish(ausgang_vent_wp_, "Vent WP");
+    parse_and_publish(ausgang_vent_brunnen_, "Vent Brunnen");
+    parse_and_publish(ausgang_verdichter_1_, "Verdichter 1");
+    parse_and_publish(ausgang_verdichter_2_, "Verdichter 2");
+    parse_and_publish(ausgang_zpumpe_, "ZPumpe");
+    parse_and_publish(ausgang_zwe_, "ZWE");
+    parse_and_publish(ausgang_zwe_stoerung_, "ZWE Störung");
+}
+
+
 
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
@@ -278,6 +328,19 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Motorschutz: %s", this->eingang_motorschutz_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Niederdruckpressostat: %s", this->eingang_niederdruckpressostat_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Fremdstromanode: %s", this->eingang_fremdstromanode_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Abtauventil: %s", this->ausgang_abtauventil_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang BWP: %s", this->ausgang_bwp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang FBHP: %s", this->ausgang_fbhp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang HZP: %s", this->ausgang_hzp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Mischer 1 Auf: %s", this->ausgang_mischer_1_auf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Mischer 1 Zu: %s", this->ausgang_mischer_1_zu_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Vent WP: %s", this->ausgang_vent_wp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Vent Brunnen: %s", this->ausgang_vent_brunnen_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Verdichter 1: %s", this->ausgang_verdichter_1_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Verdichter 2: %s", this->ausgang_verdichter_2_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZPumpe: %s", this->ausgang_zpumpe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE: %s", this->ausgang_zwe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE Störung: %s", this->ausgang_zwe_stoerung_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

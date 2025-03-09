@@ -44,12 +44,27 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_eingang_motorschutz_sensor(sensor::Sensor *sens) { eingang_motorschutz_ = sens; }
   void set_eingang_niederdruckpressostat_sensor(sensor::Sensor *sens) { eingang_niederdruckpressostat_ = sens; }
   void set_eingang_fremdstromanode_sensor(sensor::Sensor *sens) { eingang_fremdstromanode_ = sens; }
+  // Output sensor setters
+  void set_ausgang_abtauventil_sensor(sensor::Sensor *sens) { ausgang_abtauventil_ = sens; }
+  void set_ausgang_bwp_sensor(sensor::Sensor *sens) { ausgang_bwp_ = sens; }
+  void set_ausgang_fbhp_sensor(sensor::Sensor *sens) { ausgang_fbhp_ = sens; }
+  void set_ausgang_hzp_sensor(sensor::Sensor *sens) { ausgang_hzp_ = sens; }
+  void set_ausgang_mischer_1_auf_sensor(sensor::Sensor *sens) { ausgang_mischer_1_auf_ = sens; }
+  void set_ausgang_mischer_1_zu_sensor(sensor::Sensor *sens) { ausgang_mischer_1_zu_ = sens; }
+  void set_ausgang_vent_wp_sensor(sensor::Sensor *sens) { ausgang_vent_wp_ = sens; }
+  void set_ausgang_vent_brunnen_sensor(sensor::Sensor *sens) { ausgang_vent_brunnen_ = sens; }
+  void set_ausgang_verdichter_1_sensor(sensor::Sensor *sens) { ausgang_verdichter_1_ = sens; }
+  void set_ausgang_verdichter_2_sensor(sensor::Sensor *sens) { ausgang_verdichter_2_ = sens; }
+  void set_ausgang_zpumpe_sensor(sensor::Sensor *sens) { ausgang_zpumpe_ = sens; }
+  void set_ausgang_zwe_sensor(sensor::Sensor *sens) { ausgang_zwe_ = sens; }
+  void set_ausgang_zwe_stoerung_sensor(sensor::Sensor *sens) { ausgang_zwe_stoerung_ = sens; }
 
- protected:
+  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
   void parse_temperature_message_(const char* message);
   void parse_input_message_(const char* message);
+  void parse_output_message_(const char* message);
 
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];
@@ -75,7 +90,19 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *eingang_motorschutz_{nullptr};
   sensor::Sensor *eingang_niederdruckpressostat_{nullptr};
   sensor::Sensor *eingang_fremdstromanode_{nullptr};
-};
-
+  // Output sensor pointers
+  sensor::Sensor *ausgang_abtauventil_{nullptr};
+  sensor::Sensor *ausgang_bwp_{nullptr};
+  sensor::Sensor *ausgang_fbhp_{nullptr};
+  sensor::Sensor *ausgang_hzp_{nullptr};
+  sensor::Sensor *ausgang_mischer_1_auf_{nullptr};
+  sensor::Sensor *ausgang_mischer_1_zu_{nullptr};
+  sensor::Sensor *ausgang_vent_wp_{nullptr};
+  sensor::Sensor *ausgang_vent_brunnen_{nullptr};
+  sensor::Sensor *ausgang_verdichter_1_{nullptr};
+  sensor::Sensor *ausgang_verdichter_2_{nullptr};
+  sensor::Sensor *ausgang_zpumpe_{nullptr};
+  sensor::Sensor *ausgang_zwe_{nullptr};
+  sensor::Sensor *ausgang_zwe_stoerung_{nullptr};
 }  // namespace luxtronik_v1_component
 }  // namespace esphome

@@ -104,7 +104,47 @@ luxtronik_v1_component:
   eingang_fremdstromanode:
     name: "Eingang Fremdstromanode"
     id: eingang_fremdstromanode
-
+  # Output sensors
+  ausgang_abtauventil:
+    name: "Ausgang Abtauventil"
+    id: ausgang_abtauventil
+  ausgang_bwp:
+    name: "Ausgang Brauchwasserpumpe"
+    id: ausgang_bwp
+  ausgang_fbhp:
+    name: "Ausgang Fußbodenheizungspumpe"
+    id: ausgang_fbhp
+  ausgang_hzp:
+    name: "Ausgang Heizungspumpe"
+    id: ausgang_hzp
+  ausgang_mischer_1_auf:
+    name: "Ausgang Mischer 1 Auf"
+    id: ausgang_mischer_1_auf
+  ausgang_mischer_1_zu:
+    name: "Ausgang Mischer 1 Zu"
+    id: ausgang_mischer_1_zu
+  ausgang_vent_wp:
+    name: "Ausgang Ventilator Wärmepumpe"
+    id: ausgang_vent_wp
+  ausgang_vent_brunnen:
+    name: "Ausgang Ventilator Brunnen"
+    id: ausgang_vent_brunnen
+  ausgang_verdichter_1:
+    name: "Ausgang Verdichter 1"
+    id: ausgang_verdichter_1
+  ausgang_verdichter_2:
+    name: "Ausgang Verdichter 2"
+    id: ausgang_verdichter_2
+  ausgang_zpumpe:
+    name: "Ausgang Zirkulationspumpe"
+    id: ausgang_zpumpe
+  ausgang_zwe:
+    name: "Ausgang Zweiter Wärmeerzeuger"
+    id: ausgang_zwe
+  ausgang_zwe_stoerung:
+    name: "Ausgang ZWE Störung"
+    id: ausgang_zwe_stoerung
+    
 sensor:
   - platform: uptime
     name: "Uptime Sensor"
