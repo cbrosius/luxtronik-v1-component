@@ -72,8 +72,8 @@ luxtronik_v1_component:
     name: "Temperatur Brauchwasser Soll"
     id: temperature_brauchwasser_soll
   temperature_waermequelle_ein:
-    name: "Temperatur Wärmequelle Ein"
-    id: temperature_waermequelle_ein
+    name: "Temperatur Wärmequelle Eingang"
+    id: temperature_waermequelle_eingang
   temperature_kaeltekreis:
     name: "Temperatur Kältekreis"
     id: temperature_kaeltekreis
