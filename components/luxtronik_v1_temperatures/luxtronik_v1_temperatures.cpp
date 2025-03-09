@@ -1,10 +1,10 @@
 #include "esphome/core/log.h"
-#include "luxtronik_v1_temperature.h"
+#include "luxtronik_v1_temperatures.h"
 
 namespace esphome {
-namespace luxtronik_v1_temperature {
+namespace luxtronik_v1_temperatures {
 
-static const char *TAG = "luxtronik_v1_temperature.sensor";
+static const char *TAG = "luxtronik_v1_temperatures.sensor";
 
 void LuxtronikV1TemperaturesSensor::setup() {
     ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Minimal...");
@@ -63,5 +63,5 @@ void LuxtronikV1TemperaturesSensor::send_cmd(std::string message) {
 }
 
 
-}  // namespace luxtronik_v1_temperature
+}  // namespace luxtronik_v1_temperatures
 }  // namespace esphome

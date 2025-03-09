@@ -6,7 +6,7 @@
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace luxtronik_v1_minimal {
+namespace luxtronik_v1_temperatures {
 
 static const uint8_t READ_BUFFER_LENGTH = 255;
 static const char ASCII_CR = '\r';
@@ -37,5 +37,5 @@ class LuxtronikV1TemperaturesSensor : public sensor::Sensor, public PollingCompo
   uart::UARTComponent *parent_{nullptr};
 };
 
-}  // namespace luxtronik_v1_minimal
+}  // namespace luxtronik_v1_temperatures
 }  // namespace esphome
