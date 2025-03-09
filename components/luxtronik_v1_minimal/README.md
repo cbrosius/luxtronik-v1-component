@@ -1,3 +1,6 @@
+Test eines Minimalen Sensors der über UART mit der Wärmepumpe kommuniziert
+Es werden Daten gesendet und empfangen, es findet noch keinerlei Auswertung statt
+
 ```yaml
 # example configuration:
 esphome:

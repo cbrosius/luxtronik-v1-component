@@ -1,3 +1,5 @@
+Dieser Ansatz hat nicht funktioniert, da jeder Sensor sein eigenes Polling durchführen würde
+
 ```yaml
 # example configuration:
 esphome:
