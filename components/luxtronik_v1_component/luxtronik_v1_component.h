@@ -3,7 +3,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
-#include "esphome/components/time/real_time_clock.h"
 
 namespace esphome {
 namespace luxtronik_v1_component {
@@ -14,7 +13,7 @@ static const uint8_t READ_BUFFER_LENGTH = 255;
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
-  LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
+  LuxtronikV1Component() : PollingComponent(10000) {}  // Default to 10 seconds
 
   void setup() override;
   void update() override;
