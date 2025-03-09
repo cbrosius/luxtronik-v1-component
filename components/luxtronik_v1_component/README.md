@@ -1,7 +1,6 @@
 ```yaml
 # example configuration:
 
-# example configuration:
 esphome:
   name: luxtronik-test
   friendly_name: luxtronik-test
@@ -61,6 +60,18 @@ luxtronik_v1_component:
 sensor:
   - platform: uptime
     name: "Uptime Sensor"
+  - platform: template
+    name: "Polling Interval"
+    id: polling_interval
+    unit_of_measurement: "s"
+    accuracy_decimals: 0
+    update_interval: 10s
+    lambda: |-
+      return id(luxtronik_v1_component_1).get_update_interval() / 1000.0;
+    on_value:
+      then:
+        - lambda: |-
+            id(luxtronik_v1_component_1).set_polling_interval(x * 1000);
 
 button:
   - platform: template
@@ -77,8 +88,4 @@ button:
       then:
         - uart.write:
             data: "1100\r\n"
-
-
-
-
 ```
