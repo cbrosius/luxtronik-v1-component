@@ -55,205 +55,243 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     
     // Check if it's a temperature message
     if (msg.find("1100") == 0) {
+        temperature_msg_ = message;
         parse_temperature_message_(message);
-        // Request input values after temperature values are parsed
-        this->parent_->write_str("1200\r\n");
     }
     // Check if it's an input message
     if (msg.find("1200") == 0) {
+        input_msg_ = message;
         parse_input_message_(message);
     }
 }
 
 void LuxtronikV1Component::parse_temperature_message_(const char* message) {
-    ESP_LOGD(TAG, "Temperature message received: %s", message);
-    std::string msg(message);
+    ESP_LOGD(TAG, "Parsing temperature message, state: %d", temperature_parse_state_);
+    std::string msg = temperature_msg_;
     
     // Split message by semicolon
     std::string delimiter = ";";
     size_t start = 5;  // Skip "1100;"
-    size_t end = msg.find(delimiter, start);
+    size_t end;
     
     // Skip count
-    start = end + 1;
+    start = msg.find(delimiter, start) + 1;
     end = msg.find(delimiter, start);
-    
-    // First value is VL temperature
-    if (temperature_vorlauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_vorlauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Vorlauf: %.1f", value);
-    }
-    
-    // Second value is RL temperature
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_ruecklauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_ruecklauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Rücklauf: %.1f", value);
-    }
 
-    // Add parsing for additional sensors
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_ruecklauf_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_ruecklauf_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Rücklauf Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_heissgas_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_heissgas_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Heissgas: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_aussen_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_aussen_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Aussen: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_brauchwasser_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_brauchwasser_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Brauchwasser: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_brauchwasser_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_brauchwasser_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Brauchwasser Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_waermequelle_eingang_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_waermequelle_eingang_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Wärmequelle Eingang: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_kaeltekreis_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_kaeltekreis_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Kältekreis: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_mischkreis1_vorlauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_mischkreis1_vorlauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_mischkreis1_vorlauf_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_mischkreis1_vorlauf_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_raumstation_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_raumstation_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
+    switch (temperature_parse_state_) {
+        case 0:
+            if (temperature_vorlauf_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_vorlauf_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Vorlauf: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 1:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_ruecklauf_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_ruecklauf_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Rücklauf: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 2:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_ruecklauf_soll_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_ruecklauf_soll_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Rücklauf Soll: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 3:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_heissgas_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_heissgas_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Heissgas: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 4:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_aussen_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_aussen_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Aussen: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 5:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_brauchwasser_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_brauchwasser_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Brauchwasser: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 6:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_brauchwasser_soll_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_brauchwasser_soll_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Brauchwasser Soll: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 7:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_waermequelle_eingang_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_waermequelle_eingang_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Wärmequelle Eingang: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 8:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_kaeltekreis_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_kaeltekreis_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Kältekreis: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 9:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_mischkreis1_vorlauf_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_mischkreis1_vorlauf_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 10:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_mischkreis1_vorlauf_soll_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_mischkreis1_vorlauf_soll_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf Soll: %.1f", value);
+            }
+            temperature_parse_state_++;
+            break;
+        case 11:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (temperature_raumstation_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = get_float_temp_(temp);
+                temperature_raumstation_->publish_state(value);
+                ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
+            }
+            temperature_parse_state_ = 0;
+            // Request input values after temperature values are parsed
+            this->parent_->write_str("1200\r\n");
+            break;
     }
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
-    ESP_LOGD(TAG, "Input message received: %s", message);
-    std::string msg(message);
+    ESP_LOGD(TAG, "Parsing input message, state: %d", input_parse_state_);
+    std::string msg = input_msg_;
     
     // Split message by semicolon
     std::string delimiter = ";";
     size_t start = 5;  // Skip "1200;"
-    size_t end = msg.find(delimiter, start);
+    size_t end;
     
     // Skip count
-    start = end + 1;
+    start = msg.find(delimiter, start) + 1;
     end = msg.find(delimiter, start);
-    
-    // First value is Eingang Abtau Soledruck Durchfluss
-    if (eingang_abtau_soledruck_durchfluss_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_abtau_soledruck_durchfluss_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.0f", value);
-    }
-    
-    // Second value is Eingang Sperrzeit EVU
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_sperrzeit_evu_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_sperrzeit_evu_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.0f", value);
-    }
 
-    // Add parsing for additional input sensors
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_hochdruckpressostat_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_hochdruckpressostat_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_motorschutz_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_motorschutz_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Motorschutz: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_niederdruckpressostat_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_niederdruckpressostat_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_fremdstromanode_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_fremdstromanode_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
+    switch (input_parse_state_) {
+        case 0:
+            if (eingang_abtau_soledruck_durchfluss_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_abtau_soledruck_durchfluss_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.0f", value);
+            }
+            input_parse_state_++;
+            break;
+        case 1:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (eingang_sperrzeit_evu_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_sperrzeit_evu_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.0f", value);
+            }
+            input_parse_state_++;
+            break;
+        case 2:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (eingang_hochdruckpressostat_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_hochdruckpressostat_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.0f", value);
+            }
+            input_parse_state_++;
+            break;
+        case 3:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (eingang_motorschutz_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_motorschutz_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Motorschutz: %.0f", value);
+            }
+            input_parse_state_++;
+            break;
+        case 4:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (eingang_niederdruckpressostat_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_niederdruckpressostat_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.0f", value);
+            }
+            input_parse_state_++;
+            break;
+        case 5:
+            start = end + 1;
+            end = msg.find(delimiter, start);
+            if (eingang_fremdstromanode_ != nullptr && end != std::string::npos) {
+                std::string temp = msg.substr(start, end - start);
+                float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
+                eingang_fremdstromanode_->publish_state(value);
+                ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
+            }
+            input_parse_state_ = 0;
+            break;
     }
 }
 
