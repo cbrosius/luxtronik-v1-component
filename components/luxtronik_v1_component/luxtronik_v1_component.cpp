@@ -86,7 +86,7 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
     // Split message by semicolon
     std::string delimiter = ";";
     size_t start = 5;  // Skip "1100;"
-    size_t end;
+    size_t end = msg.find(delimiter, start);
     
     // Skip count
     start = msg.find(delimiter, start) + 1;
@@ -100,121 +100,121 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
                 temperature_vorlauf_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Vorlauf: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 1:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_ruecklauf_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_ruecklauf_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Rücklauf: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 2:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_ruecklauf_soll_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_ruecklauf_soll_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Rücklauf Soll: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 3:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_heissgas_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_heissgas_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Heissgas: %.1f", value);
             }
+             start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 4:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_aussen_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_aussen_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Aussen: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 5:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_brauchwasser_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_brauchwasser_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Brauchwasser: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 6:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_brauchwasser_soll_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_brauchwasser_soll_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Brauchwasser Soll: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 7:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_waermequelle_eingang_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_waermequelle_eingang_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Wärmequelle Eingang: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 8:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_kaeltekreis_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_kaeltekreis_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Kältekreis: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 9:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_mischkreis1_vorlauf_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_mischkreis1_vorlauf_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 10:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_mischkreis1_vorlauf_soll_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
                 temperature_mischkreis1_vorlauf_soll_->publish_state(value);
                 ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf Soll: %.1f", value);
             }
+            start = end + 1; // Update start for the next sensor
+            end = msg.find(delimiter, start);
             temperature_parse_state_++;
             break;
         case 11:
-            start = end + 1;
-            end = msg.find(delimiter, start);
             if (temperature_raumstation_ != nullptr && end != std::string::npos) {
                 std::string temp = msg.substr(start, end - start);
                 float value = get_float_temp_(temp);
