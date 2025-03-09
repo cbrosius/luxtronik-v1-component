@@ -132,11 +132,11 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temperature_waermequelle_ein_ != nullptr && end != std::string::npos) {
+        if (temperature_waermequelle_eingang_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_waermequelle_ein_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature Wärmequelle Ein: %.1f", value);
+            temperature_waermequelle_eingang_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Wärmequelle Eingang: %.1f", value);
         }
 
         start = end + 1;
@@ -150,29 +150,29 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temperature_mk1_vorlauf_ != nullptr && end != std::string::npos) {
+        if (temperature_mischkreis1_vorlauf_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_mk1_vorlauf_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature MK1 Vorlauf: %.1f", value);
+            temperature_mischkreis1_vorlauf_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature mischkreis1 Vorlauf: %.1f", value);
         }
 
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temperature_mk1_vorlauf_soll_ != nullptr && end != std::string::npos) {
+        if (temperature_mischkreis1_vorlauf_soll_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_mk1_vorlauf_soll_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature MK1 Vorlauf Soll: %.1f", value);
+            temperature_mischkreis1_vorlauf_soll_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature mischkreis1 Vorlauf Soll: %.1f", value);
         }
 
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temperature_raumstat_ != nullptr && end != std::string::npos) {
+        if (temperature_raumstation_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_raumstat_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature Raumstat: %.1f", value);
+            temperature_raumstation_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature raumstation: %.1f", value);
         }
     }
 }
@@ -187,11 +187,11 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Aussen: %s", this->temperature_aussen_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser: %s", this->temperature_brauchwasser_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser Soll: %s", this->temperature_brauchwasser_soll_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Wärmequelle Ein: %s", this->temperature_waermequelle_ein_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Wärmequelle Eingang: %s", this->temperature_waermequelle_eingang_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Temperature Kältekreis: %s", this->temperature_kaeltekreis_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature MK1 Vorlauf: %s", this->temperature_mk1_vorlauf_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature MK1 Vorlauf Soll: %s", this->temperature_mk1_vorlauf_soll_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Raumstat: %s", this->temperature_raumstat_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature mischkreis1 Vorlauf: %s", this->temperature_mischkreis1_vorlauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature mischkreis1 Vorlauf Soll: %s", this->temperature_mischkreis1_vorlauf_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature raumstation: %s", this->temperature_raumstation_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

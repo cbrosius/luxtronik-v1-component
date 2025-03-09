@@ -11,10 +11,8 @@ static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
 
-class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
+class LuxtronikV1Component : public uart::UARTDevice, public Component {
  public:
-  LuxtronikV1Component() : PollingComponent(10000) {}  // Default to 10 seconds
-
   void setup() override;
   void loop() override;
   void update() override;
@@ -32,11 +30,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_temperature_aussen_sensor(sensor::Sensor *sens) { temperature_aussen_ = sens; }
   void set_temperature_brauchwasser_sensor(sensor::Sensor *sens) { temperature_brauchwasser_ = sens; }
   void set_temperature_brauchwasser_soll_sensor(sensor::Sensor *sens) { temperature_brauchwasser_soll_ = sens; }
-  void set_temperature_waermequelle_ein_sensor(sensor::Sensor *sens) { temperature_waermequelle_ein_ = sens; }
+  void set_temperature_waermequelle_eingang_sensor(sensor::Sensor *sens) { temperature_waermequelle_eingang_ = sens; }
   void set_temperature_kaeltekreis_sensor(sensor::Sensor *sens) { temperature_kaeltekreis_ = sens; }
-  void set_temperature_mk1_vorlauf_sensor(sensor::Sensor *sens) { temperature_mk1_vorlauf_ = sens; }
-  void set_temperature_mk1_vorlauf_soll_sensor(sensor::Sensor *sens) { temperature_mk1_vorlauf_soll_ = sens; }
-  void set_temperature_raumstat_sensor(sensor::Sensor *sens) { temperature_raumstat_ = sens; }
+  void set_temperature_mischkreis1_vorlauf_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_ = sens; }
+  void set_temperature_mischkreis1_vorlauf_soll_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_soll_ = sens; }
+  void set_temperature_raumstation_sensor(sensor::Sensor *sens) { temperature_raumstation_ = sens; }
 
  protected:
   void parse_message_(const char* message);
@@ -54,11 +52,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *temperature_aussen_{nullptr};
   sensor::Sensor *temperature_brauchwasser_{nullptr};
   sensor::Sensor *temperature_brauchwasser_soll_{nullptr};
-  sensor::Sensor *temperature_waermequelle_ein_{nullptr};
+  sensor::Sensor *temperature_waermequelle_eingang_{nullptr};
   sensor::Sensor *temperature_kaeltekreis_{nullptr};
-  sensor::Sensor *temperature_mk1_vorlauf_{nullptr};
-  sensor::Sensor *temperature_mk1_vorlauf_soll_{nullptr};
-  sensor::Sensor *temperature_raumstat_{nullptr};
+  sensor::Sensor *temperature_mischkreis1_vorlauf_{nullptr};
+  sensor::Sensor *temperature_mischkreis1_vorlauf_soll_{nullptr};
+  sensor::Sensor *temperature_raumstation_{nullptr};
 };
 
 }  // namespace luxtronik_v1_component
