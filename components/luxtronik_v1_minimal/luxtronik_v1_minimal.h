@@ -13,6 +13,8 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
   void update() override;
   void loop() override;
   void dump_config() override;
+ protected:
+  void send_cmd(std::string message);
 };
 
 }  // namespace luxtronik_v1_minimal
