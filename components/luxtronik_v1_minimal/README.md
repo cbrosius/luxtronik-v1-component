@@ -1,11 +1,31 @@
 ```yaml
 # example configuration:
+esphome:
+  name: luxtronik-test
+  friendly_name: luxtronik-test
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   fast_connect: True
 
+# Enable logging
+logger:
+  level: VERBOSE
+  # disable serial loggin
+  baud_rate: 0
+
 web_server:
+
+api:
+
+ota:
+  platform: esphome
 
 uart:
   id: uart_bus
@@ -49,5 +69,6 @@ button:
       then:
         - uart.write:
             data: "1100\r\n"
+
 
 ```
