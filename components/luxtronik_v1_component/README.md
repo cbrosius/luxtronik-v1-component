@@ -1,6 +1,7 @@
 ```yaml
 # example configuration:
 
+# example configuration:
 esphome:
   name: luxtronik-test
   friendly_name: luxtronik-test
@@ -76,4 +77,8 @@ button:
       then:
         - uart.write:
             data: "1100\r\n"
+
+
+
+
 ```
