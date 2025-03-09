@@ -15,7 +15,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public Component {
  public:
   void setup() override;
   void loop() override;
-  void update() override;
   void dump_config() override;
 
   void set_uart_parent(uart::UARTComponent *parent) { 
@@ -37,6 +36,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public Component {
   void set_temperature_raumstation_sensor(sensor::Sensor *sens) { temperature_raumstation_ = sens; }
 
  protected:
+  void update();
   void parse_message_(const char* message);
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
 
