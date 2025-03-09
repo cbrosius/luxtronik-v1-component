@@ -28,7 +28,7 @@ void LuxtronikV1MinimalSensor::loop() {
         if (this->read_pos_ == READ_BUFFER_LENGTH)
         this->read_pos_ = 0;
 
-        ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
+        ESP_LOGV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
 
         if (byte == ASCII_CR)
         continue;
@@ -62,10 +62,6 @@ void LuxtronikV1MinimalSensor::send_cmd(std::string message) {
     this->parent_->write_str(message.c_str());
 }
 
-void LuxtronikV1MinimalSensor::parse_cmd_(const char *buffer) {
-    ESP_LOGD(TAG, "Received: %s", buffer);
-    // TODO: Implement parsing logic
-}
 
 }  // namespace luxtronik_v1_minimal
 }  // namespace esphome

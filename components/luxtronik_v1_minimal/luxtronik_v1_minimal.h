@@ -28,7 +28,6 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
 
  protected:
   void send_cmd(std::string message);
-  void parse_cmd_(const char *buffer);  // Add parse_cmd_ declaration
   
   // Buffer management
   char read_buffer_[READ_BUFFER_LENGTH];
