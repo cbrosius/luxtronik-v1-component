@@ -28,13 +28,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_temp_vl_sensor(sensor::Sensor *sens) { temp_vl_ = sens; }
   void set_temp_rl_sensor(sensor::Sensor *sens) { temp_rl_ = sens; }
 
-  // Add method to set polling interval
-  void set_polling_interval(uint32_t interval) {
-    if (interval >= 10000 && interval <= 600000) {
-      this->set_update_interval(interval);
-    }
-  }
-
  protected:
   void parse_message_(const char* message);
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
