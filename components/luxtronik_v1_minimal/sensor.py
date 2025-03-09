@@ -17,7 +17,7 @@ CONFIG_SCHEMA = (
         icon=ICON_EMPTY,
         accuracy_decimals=1,
     )
-    .extend(cv.polling_component_schema("60s"))
+    .extend(cv.polling_component_schema("5s"))
     .extend(uart.UART_DEVICE_SCHEMA)
 )
 
