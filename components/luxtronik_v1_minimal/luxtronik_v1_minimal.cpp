@@ -30,10 +30,6 @@ void LuxtronikV1MinimalSensor::loop() {
 
         ESP_LOGV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
 
-        if (byte == ASCII_CR)
-        continue;
-        if (byte >= 0x7F)
-        byte = '?';  // need to be valid utf8 string for log functions.
         this->read_buffer_[this->read_pos_] = byte;
 
         this->read_pos_++;
