@@ -43,6 +43,13 @@ void LuxtronikV1Component::loop() {
     }
 }
 
+void LuxtronikV1Component::update() {
+    ESP_LOGD(TAG, "Polling Luxtronik V1 Component...");
+    if (this->parent_ != nullptr) {
+        this->parent_->write_str("1100\r\n");
+    }
+}
+
 void LuxtronikV1Component::parse_message_(const char* message) {
     std::string msg(message);
     
