@@ -51,6 +51,12 @@ external_components:
 
 luxtronik_v1_component:
   id: luxtronik_v1_component_1
+  temp_vl:
+    name: "Vorlauftemperatur"
+    id: temp_vl
+  temp_rl:
+    name: "Rücklauftemperatur" 
+    id: temp_rl
 
 sensor:
   - platform: uptime

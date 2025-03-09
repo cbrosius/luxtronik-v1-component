@@ -31,6 +31,7 @@ void LuxtronikV1Component::loop() {
             if (this->read_pos_ > 0) {
                 this->read_buffer_[this->read_pos_] = '\0';
                 ESP_LOGD(TAG, "Received: %s", this->read_buffer_);
+                parse_message_(this->read_buffer_);
                 this->read_pos_ = 0;
             }
         } else {
@@ -42,9 +43,47 @@ void LuxtronikV1Component::loop() {
     }
 }
 
-void LuxtronikV1Component::dump_config(){
-    ESP_LOGCONFIG(TAG, "Luxtronik_v1 component");
+void LuxtronikV1Component::parse_message_(const char* message) {
+    std::string msg(message);
+    
+    // Check if it's a temperature message
+    if (msg.find("1100") == 0) {
+        ESP_LOGD(TAG, "Temperature message received: %s", message);
+        
+        // Split message by semicolon
+        std::string delimiter = ";";
+        size_t start = 5;  // Skip "1100;"
+        size_t end = msg.find(delimiter, start);
+        
+        // Skip count
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        
+        // First value is VL temperature
+        if (temp_vl_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temp_vl_->publish_state(value);
+            ESP_LOGD(TAG, "VL Temperature: %.1f", value);
+        }
+        
+        // Second value is RL temperature
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temp_rl_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temp_rl_->publish_state(value);
+            ESP_LOGD(TAG, "RL Temperature: %.1f", value);
+        }
+    }
+}
+
+void LuxtronikV1Component::dump_config() {
+    ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  VL Sensor: %s", this->temp_vl_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  RL Sensor: %s", this->temp_rl_ ? "Not Set": "Not Set");
 }
 
 }  // namespace luxtronik_v1_component
