@@ -61,17 +61,11 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     std::string prefix = msg.substr(0, 4);
     
     if (prefix == "1100") {
-        this->defer([this, msg]() {
-            parse_temperature_message_(msg.c_str());
-        });
+        parse_temperature_message_(msg.c_str());
     } else if (prefix == "1200") {
-        this->defer([this, msg]() {
-            parse_input_message_(msg.c_str());
-        });
+        parse_input_message_(msg.c_str());
     } else if (prefix == "1300") {
-        this->defer([this, msg]() {
-            parse_output_message_(msg.c_str());
-        });
+        parse_output_message_(msg.c_str());
     }
 }
 
