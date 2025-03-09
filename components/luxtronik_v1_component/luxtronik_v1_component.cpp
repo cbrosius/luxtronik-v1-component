@@ -53,213 +53,100 @@ void LuxtronikV1Component::update() {
 void LuxtronikV1Component::parse_message_(const char* message) {
     std::string msg(message);
     
-    // Check if it's a temperature message
-    if (msg.find("1100") == 0) {
-        parse_temperature_message_(message);
+    if (msg.empty() || msg.length() < 4) {
+        return;
     }
-    // Check if it's an input message
-    if (msg.find("1200") == 0) {
-        parse_input_message_(message);
+
+    // Use substring comparison for better performance
+    std::string prefix = msg.substr(0, 4);
+    
+    if (prefix == "1100") {
+        this->defer([this, msg]() {
+            parse_temperature_message_(msg.c_str());
+        });
+    } else if (prefix == "1200") {
+        this->defer([this, msg]() {
+            parse_input_message_(msg.c_str());
+        });
+    } else if (prefix == "1300") {
+        this->defer([this, msg]() {
+            parse_output_message_(msg.c_str());
+        });
     }
-    // Check if it's an output message
-    if (msg.find("1300") == 0) {
-        parse_output_message_(message);
-    }}
+}
 
 void LuxtronikV1Component::parse_temperature_message_(const char* message) {
-    ESP_LOGD(TAG, "Temperature message received: %s", message);
     std::string msg(message);
-    
-    // Split message by semicolon
-    std::string delimiter = ";";
+    std::vector<std::string> values;
     size_t start = 5;  // Skip "1100;"
-    size_t end = msg.find(delimiter, start);
+    size_t end = 0;
     
-    // Skip count
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    
-    // First value is VL temperature
-    if (temperature_vorlauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_vorlauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Vorlauf: %.1f", value);
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
     }
     
-    // Second value is RL temperature
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_ruecklauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_ruecklauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Rücklauf: %.1f", value);
-    }
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 1;  // Skip count
+    auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float temp = get_float_temp_(value);
+            sensor->publish_state(temp);
+            ESP_LOGD(TAG, "Temperature %s: %.1f", name, temp);
+        }
+    };
 
-    // Add parsing for additional sensors
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_ruecklauf_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_ruecklauf_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Rücklauf Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_heissgas_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_heissgas_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Heissgas: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_aussen_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_aussen_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Aussen: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_brauchwasser_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_brauchwasser_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Brauchwasser: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_brauchwasser_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_brauchwasser_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Brauchwasser Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_waermequelle_eingang_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_waermequelle_eingang_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Wärmequelle Eingang: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_kaeltekreis_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_kaeltekreis_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Kältekreis: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_mischkreis1_vorlauf_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_mischkreis1_vorlauf_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_mischkreis1_vorlauf_soll_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_mischkreis1_vorlauf_soll_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Mischkreis1 Vorlauf Soll: %.1f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (temperature_raumstation_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = get_float_temp_(temp);
-        temperature_raumstation_->publish_state(value);
-        ESP_LOGD(TAG, "Temperature Raumstation: %.1f", value);
-    }
+    // Process all temperature sensors
+    if (idx < values.size()) publish_temp(temperature_vorlauf_, values[idx++], "Vorlauf");
+    if (idx < values.size()) publish_temp(temperature_ruecklauf_, values[idx++], "Rücklauf");
+    if (idx < values.size()) publish_temp(temperature_ruecklauf_soll_, values[idx++], "Rücklauf Soll");
+    if (idx < values.size()) publish_temp(temperature_heissgas_, values[idx++], "Heissgas");
+    if (idx < values.size()) publish_temp(temperature_aussen_, values[idx++], "Aussen");
+    if (idx < values.size()) publish_temp(temperature_brauchwasser_, values[idx++], "Brauchwasser");
+    if (idx < values.size()) publish_temp(temperature_brauchwasser_soll_, values[idx++], "Brauchwasser Soll");
+    if (idx < values.size()) publish_temp(temperature_waermequelle_eingang_, values[idx++], "Wärmequelle Eingang");
+    if (idx < values.size()) publish_temp(temperature_kaeltekreis_, values[idx++], "Kältekreis");
+    if (idx < values.size()) publish_temp(temperature_mischkreis1_vorlauf_, values[idx++], "Mischkreis1 Vorlauf");
+    if (idx < values.size()) publish_temp(temperature_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
+    if (idx < values.size()) publish_temp(temperature_raumstation_, values[idx++], "Raumstation");
 
     // Request input values after temperature values are parsed
     this->parent_->write_str("1200\r\n");
-
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
     ESP_LOGD(TAG, "Input message received: %s", message);
     std::string msg(message);
-    
-    // Split message by semicolon
-    std::string delimiter = ";";
+    std::vector<std::string> values;
     size_t start = 5;  // Skip "1200;"
-    size_t end = msg.find(delimiter, start);
+    size_t end = 0;
     
-    // Skip count
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    
-    // First value is Eingang Abtau Soledruck Durchfluss
-    if (eingang_abtau_soledruck_durchfluss_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_abtau_soledruck_durchfluss_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.0f", value);
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
     }
     
-    // Second value is Eingang Sperrzeit EVU
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_sperrzeit_evu_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_sperrzeit_evu_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.0f", value);
-    }
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 1;  // Skip count
+    auto publish_input = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            sensor->publish_state(val);
+            ESP_LOGD(TAG, "Input %s: %.0f", name, val);
+        }
+    };
 
-    // Add parsing for additional input sensors
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_hochdruckpressostat_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_hochdruckpressostat_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_motorschutz_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_motorschutz_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Motorschutz: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_niederdruckpressostat_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_niederdruckpressostat_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.0f", value);
-    }
-
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    if (eingang_fremdstromanode_ != nullptr && end != std::string::npos) {
-        std::string temp = msg.substr(start, end - start);
-        float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
-        eingang_fremdstromanode_->publish_state(value);
-        ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
-    }
+    // Process all input sensors
+    if (idx < values.size()) publish_input(eingang_abtau_soledruck_durchfluss_, values[idx++], "Abtau Soledruck Durchfluss");
+    if (idx < values.size()) publish_input(eingang_sperrzeit_evu_, values[idx++], "Sperrzeit EVU");
+    if (idx < values.size()) publish_input(eingang_hochdruckpressostat_, values[idx++], "Hochdruckpressostat");
+    if (idx < values.size()) publish_input(eingang_motorschutz_, values[idx++], "Motorschutz");
+    if (idx < values.size()) publish_input(eingang_niederdruckpressostat_, values[idx++], "Niederdruckpressostat");
+    if (idx < values.size()) publish_input(eingang_fremdstromanode_, values[idx++], "Fremdstromanode");
 
     // Request output values after input values are parsed
     this->parent_->write_str("1300\r\n");
@@ -268,44 +155,42 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
 void LuxtronikV1Component::parse_output_message_(const char* message) {
     ESP_LOGD(TAG, "Output message received: %s", message);
     std::string msg(message);
-    
-    // Split message by semicolon
-    std::string delimiter = ";";
+    std::vector<std::string> values;
     size_t start = 5;  // Skip "1300;"
-    size_t end = msg.find(delimiter, start);
+    size_t end = 0;
     
-    // Skip count
-    start = end + 1;
-    end = msg.find(delimiter, start);
-    
-    // Parse each output value
-    auto parse_and_publish = [&](sensor::Sensor* sensor, const char* name) {
-        if (sensor != nullptr && end != std::string::npos) {
-            std::string value_str = msg.substr(start, end - start);
-            float value = std::atof(value_str.c_str());
-            sensor->publish_state(value);
-            ESP_LOGD(TAG, "Output %s: %.0f", name, value);
-        }
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
         start = end + 1;
-        end = msg.find(delimiter, start);
+    }
+    
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 1;  // Skip count
+    auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            sensor->publish_state(val);
+            ESP_LOGD(TAG, "Output %s: %.0f", name, val);
+        }
     };
 
-    parse_and_publish(ausgang_abtauventil_, "Abtauventil");
-    parse_and_publish(ausgang_bwp_, "BWP");
-    parse_and_publish(ausgang_fbhp_, "FBHP");
-    parse_and_publish(ausgang_hzp_, "HZP");
-    parse_and_publish(ausgang_mischer_1_auf_, "Mischer 1 Auf");
-    parse_and_publish(ausgang_mischer_1_zu_, "Mischer 1 Zu");
-    parse_and_publish(ausgang_vent_wp_, "Vent WP");
-    parse_and_publish(ausgang_vent_brunnen_, "Vent Brunnen");
-    parse_and_publish(ausgang_verdichter_1_, "Verdichter 1");
-    parse_and_publish(ausgang_verdichter_2_, "Verdichter 2");
-    parse_and_publish(ausgang_zpumpe_, "ZPumpe");
-    parse_and_publish(ausgang_zwe_, "ZWE");
-    parse_and_publish(ausgang_zwe_stoerung_, "ZWE Störung");
+    // Process all output sensors
+    if (idx < values.size()) publish_output(ausgang_abtauventil_, values[idx++], "Abtauventil");
+    if (idx < values.size()) publish_output(ausgang_bwp_, values[idx++], "BWP");
+    if (idx < values.size()) publish_output(ausgang_fbhp_, values[idx++], "FBHP");
+    if (idx < values.size()) publish_output(ausgang_hzp_, values[idx++], "HZP");
+    if (idx < values.size()) publish_output(ausgang_mischer_1_auf_, values[idx++], "Mischer 1 Auf");
+    if (idx < values.size()) publish_output(ausgang_mischer_1_zu_, values[idx++], "Mischer 1 Zu");
+    if (idx < values.size()) publish_output(ausgang_vent_wp_, values[idx++], "Vent WP");
+    if (idx < values.size()) publish_output(ausgang_vent_brunnen_, values[idx++], "Vent Brunnen");
+    if (idx < values.size()) publish_output(ausgang_verdichter_1_, values[idx++], "Verdichter 1");
+    if (idx < values.size()) publish_output(ausgang_verdichter_2_, values[idx++], "Verdichter 2");
+    if (idx < values.size()) publish_output(ausgang_zpumpe_, values[idx++], "ZPumpe");
+    if (idx < values.size()) publish_output(ausgang_zwe_, values[idx++], "ZWE");
+    if (idx < values.size()) publish_output(ausgang_zwe_stoerung_, values[idx++], "ZWE Störung");
 }
-
-
 
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
