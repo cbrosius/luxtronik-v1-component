@@ -16,9 +16,7 @@ void LuxtronikV1MinimalSensor::setup() {
 }
 
 void LuxtronikV1MinimalSensor::update() {
-    if (this->parent_ != nullptr) {
         send_cmd("1100");
-    }
 }
 
 void LuxtronikV1MinimalSensor::loop() {
