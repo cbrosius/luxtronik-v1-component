@@ -195,9 +195,9 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         // First value is Eingang Abtau Soledruck Durchfluss
         if (eingang_abtau_soledruck_durchfluss_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_abtau_soledruck_durchfluss_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Abtau Soledruck Durchfluss: %.0f", value);
         }
         
         // Second value is Eingang Sperrzeit EVU
@@ -205,9 +205,9 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         end = msg.find(delimiter, start);
         if (eingang_sperrzeit_evu_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_sperrzeit_evu_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Sperrzeit EVU: %.0f", value);
         }
 
         // Add parsing for additional input sensors
@@ -215,36 +215,36 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         end = msg.find(delimiter, start);
         if (eingang_hochdruckpressostat_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_hochdruckpressostat_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Hochdruckpressostat: %.0f", value);
         }
 
         start = end + 1;
         end = msg.find(delimiter, start);
         if (eingang_motorschutz_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_motorschutz_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Motorschutz: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Motorschutz: %.0f", value);
         }
 
         start = end + 1;
         end = msg.find(delimiter, start);
         if (eingang_niederdruckpressostat_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_niederdruckpressostat_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Niederdruckpressostat: %.0f", value);
         }
 
         start = end + 1;
         end = msg.find(delimiter, start);
         if (eingang_fremdstromanode_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
-            float value = get_float_temp_(temp);
+            float value = std::atof(temp.c_str());  // Don't divide by 10 for input values
             eingang_fremdstromanode_->publish_state(value);
-            ESP_LOGD(TAG, "Eingang Fremdstromanode: %.1f", value);
+            ESP_LOGD(TAG, "Eingang Fremdstromanode: %.0f", value);
         }
     }
 }
