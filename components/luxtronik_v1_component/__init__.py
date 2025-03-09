@@ -9,15 +9,15 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-CONF_TEMP_VL = "temp_vl"
-CONF_TEMP_RL = "temp_rl"
+CONF_TEMPERATURE_VL = "temp_vl"
+CONF_TEMPERATURE_RL = "temp_rl"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
     "LuxtronikV1Component", cg.Component, uart.UARTDevice
 )
 
-TEMP_SCHEMA = sensor.sensor_schema(
+TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
     state_class=STATE_CLASS_MEASUREMENT,
     unit_of_measurement=UNIT_CELSIUS,
@@ -27,8 +27,8 @@ TEMP_SCHEMA = sensor.sensor_schema(
 CONFIG_SCHEMA = (
     cv.Schema({
         cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
-        cv.Optional(CONF_TEMP_VL): TEMP_SCHEMA,
-        cv.Optional(CONF_TEMP_RL): TEMP_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_VL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_RL): TEMPERATURE_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -39,10 +39,10 @@ async def to_code(config):
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
     
-    if CONF_TEMP_VL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMP_VL])
-        cg.add(var.set_temp_vl_sensor(sens))
+    if CONF_TEMPERATURE_VL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_VL])
+        cg.add(var.set_temperature_vl_sensor(sens))
     
-    if CONF_TEMP_RL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMP_RL])
-        cg.add(var.set_temp_rl_sensor(sens))
+    if CONF_TEMPERATURE_RL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RL])
+        cg.add(var.set_temperature_rl_sensor(sens))

@@ -66,22 +66,22 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         start = end + 1;
         end = msg.find(delimiter, start);
         
-        // First value is VL temperature
-        if (temp_vl_ != nullptr && end != std::string::npos) {
+        // First value is temperature VL
+        if (temperature_vl_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temp_vl_->publish_state(value);
-            ESP_LOGD(TAG, "VL Temperature: %.1f", value);
+            temperature_vl_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature VL: %.1f", value);
         }
         
-        // Second value is RL temperature
+        // Second value is temperature RL
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temp_rl_ != nullptr && end != std::string::npos) {
+        if (temperature_rl_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temp_rl_->publish_state(value);
-            ESP_LOGD(TAG, "RL Temperature: %.1f", value);
+            temperature_rl_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature RL: %.1f", value);
         }
     }
 }
@@ -89,8 +89,8 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  VL Sensor: %s", this->temp_vl_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  RL Sensor: %s", this->temp_rl_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature VL: %s", this->temperature_vl_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature RL: %s", this->temperature_rl_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

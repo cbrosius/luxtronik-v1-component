@@ -25,8 +25,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   }
 
   // Add temperature sensor setters
-  void set_temp_vl_sensor(sensor::Sensor *sens) { temp_vl_ = sens; }
-  void set_temp_rl_sensor(sensor::Sensor *sens) { temp_rl_ = sens; }
+  void set_temperature_vl_sensor(sensor::Sensor *sens) { temperature_vl_ = sens; }
+  void set_temperature_rl_sensor(sensor::Sensor *sens) { temperature_rl_ = sens; }
 
  protected:
   void parse_message_(const char* message);
@@ -37,8 +37,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   size_t read_pos_{0};
 
   // Temperature sensor pointers
-  sensor::Sensor *temp_vl_{nullptr};  // Vorlauf temperature
-  sensor::Sensor *temp_rl_{nullptr};  // Rücklauf temperature
+  sensor::Sensor *temperature_vl_{nullptr};  // Vorlauf Temperatur
+  sensor::Sensor *temperature_rl_{nullptr};  // Rücklauf Temperatur
 };
 
 }  // namespace luxtronik_v1_component
