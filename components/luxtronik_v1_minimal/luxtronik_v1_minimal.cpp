@@ -20,19 +20,25 @@ void LuxtronikV1MinimalSensor::update() {
 }
 
 void LuxtronikV1MinimalSensor::loop() {
-    // Read message
-    while (this->available()) {
-        uint8_t byte;
-        this->read_byte(&byte);
-
-        if (this->read_pos_ == READ_BUFFER_LENGTH)
-        this->read_pos_ = 0;
-
-        ESP_LOGV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
-
-        this->read_buffer_[this->read_pos_] = byte;
-
-        this->read_pos_++;
+    if (this->parent_ == nullptr) {
+        ESP_LOGW(TAG, "Cannot loop - UART parent not set");
+        return;
+    }
+    
+    while (this->parent_->available()) {
+        char c = this->parent_->read();
+        if (c == ASCII_CR || c == ASCII_LF) {
+            if (this->read_pos_ > 0) {
+                this->read_buffer_[this->read_pos_] = '\0';
+                ESP_LOGD(TAG, "Received: %s", this->read_buffer_);
+                this->read_pos_ = 0;
+            }
+        } else {
+            this->read_buffer_[this->read_pos_++] = c;
+            if (this->read_pos_ >= READ_BUFFER_LENGTH) {
+                this->read_pos_ = 0;
+            }
+        }
     }
 }
 
