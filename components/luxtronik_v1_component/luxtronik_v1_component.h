@@ -104,5 +104,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *ausgang_zpumpe_{nullptr};
   sensor::Sensor *ausgang_zwe_{nullptr};
   sensor::Sensor *ausgang_zwe_stoerung_{nullptr};
+};
+
 }  // namespace luxtronik_v1_component
 }  // namespace esphome
