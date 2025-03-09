@@ -20,11 +20,30 @@ void LuxtronikV1MinimalSensor::update() {
 }
 
 void LuxtronikV1MinimalSensor::loop() {
-    const uint32_t now = millis();
-    if (now - this->last_read_ < 5000) {
-        return;
+    // Read message
+    while (this->available()) {
+        uint8_t byte;
+        this->read_byte(&byte);
+
+        if (this->read_pos_ == READ_BUFFER_LENGTH)
+        this->read_pos_ = 0;
+
+        ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
+
+        if (byte == ASCII_CR)
+        continue;
+        if (byte >= 0x7F)
+        byte = '?';  // need to be valid utf8 string for log functions.
+        this->read_buffer_[this->read_pos_] = byte;
+
+        if (this->read_buffer_[this->read_pos_] == ASCII_LF) {
+        this->read_buffer_[this->read_pos_] = 0;
+        this->read_pos_ = 0;
+        this->parse_cmd_(this->read_buffer_);
+        } else {
+        this->read_pos_++;
+        }
     }
-    this->last_read_ = now;
 }
 
 void LuxtronikV1MinimalSensor::dump_config() {
