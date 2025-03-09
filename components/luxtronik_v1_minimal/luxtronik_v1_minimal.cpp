@@ -62,5 +62,10 @@ void LuxtronikV1MinimalSensor::send_cmd(std::string message) {
     this->parent_->write_str(message.c_str());
 }
 
+void LuxtronikV1MinimalSensor::parse_cmd_(const char *buffer) {
+    ESP_LOGD(TAG, "Received: %s", buffer);
+    // TODO: Implement parsing logic
+}
+
 }  // namespace luxtronik_v1_minimal
 }  // namespace esphome

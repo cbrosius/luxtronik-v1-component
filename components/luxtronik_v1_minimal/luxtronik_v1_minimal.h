@@ -8,13 +8,17 @@
 namespace esphome {
 namespace luxtronik_v1_minimal {
 
+static const uint8_t READ_BUFFER_LENGTH = 255;
+static const char ASCII_CR = '\r';
+static const char ASCII_LF = '\n';
+
 class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent, public uart::UARTDevice {
  public:
   // Constructor with polling interval
   LuxtronikV1MinimalSensor() : PollingComponent(5000) {}
 
   void set_uart_parent(uart::UARTComponent *parent) { 
-    this->parent_ = parent;  // Store UART parent
+    this->parent_ = parent;
   }
 
   void setup() override;
@@ -24,8 +28,17 @@ class LuxtronikV1MinimalSensor : public sensor::Sensor, public PollingComponent,
 
  protected:
   void send_cmd(std::string message);
+  void parse_cmd_(const char *buffer);  // Add parse_cmd_ declaration
+  
+  // Buffer management
+  char read_buffer_[READ_BUFFER_LENGTH];
+  size_t read_pos_{0};
+  
+  // Timing
   uint32_t last_read_{0};
-  uart::UARTComponent *parent_{nullptr};  // Add parent pointer
+  
+  // UART parent
+  uart::UARTComponent *parent_{nullptr};
 };
 
 }  // namespace luxtronik_v1_minimal
