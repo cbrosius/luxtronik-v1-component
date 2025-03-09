@@ -94,7 +94,7 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             sensor->publish_state(temp);
-            ESP_LOGD(TAG, "Temperature %s: %.1f", name, temp);
+            // ESP_LOGD(TAG, "Temperature %s: %.1f", name, temp);
         }
     };
 
@@ -136,7 +136,7 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
             sensor->publish_state(val);
-            ESP_LOGD(TAG, "Input %s: %.0f", name, val);
+            // ESP_LOGD(TAG, "Input %s: %.0f", name, val);
         }
     };
 
@@ -172,7 +172,7 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
             sensor->publish_state(val);
-            ESP_LOGD(TAG, "Output %s: %.0f", name, val);
+            // ESP_LOGD(TAG, "Output %s: %.0f", name, val);
         }
     };
 
