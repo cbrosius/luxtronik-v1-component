@@ -1,7 +1,6 @@
 ```yaml
 # example configuration:
 
-# example configuration:
 esphome:
   name: luxtronik-test
   friendly_name: luxtronik-test
@@ -51,12 +50,42 @@ external_components:
 
 luxtronik_v1_component:
   id: luxtronik_v1_component_1
-  temp_vl:
-    name: "Vorlauftemperatur"
-    id: temperature_vl
-  temp_rl:
-    name: "Rücklauftemperatur" 
-    id: temperature_rl
+  temperature_vorlauf:
+    name: "Temperatur Vorlauf"
+    id: temperature_vorlauf
+  temperature_ruecklauf:
+    name: "Temperatur Rücklauf"
+    id: temperature_ruecklauf
+  temperature_ruecklauf_soll:
+    name: "Temperatur Rücklauf Soll"
+    id: temperature_ruecklauf_soll
+  temperature_heissgas:
+    name: "Temperatur Heissgas"
+    id: temperature_heissgas
+  temperature_aussen:
+    name: "Temperatur Aussen"
+    id: temperature_aussen
+  temperature_brauchwasser:
+    name: "Temperatur Brauchwasser"
+    id: temperature_brauchwasser
+  temperature_brauchwasser_soll:
+    name: "Temperatur Brauchwasser Soll"
+    id: temperature_brauchwasser_soll
+  temperature_waermequelle_ein:
+    name: "Temperatur Wärmequelle Ein"
+    id: temperature_waermequelle_ein
+  temperature_kaeltekreis:
+    name: "Temperatur Kältekreis"
+    id: temperature_kaeltekreis
+  temperature_mk1_vorlauf:
+    name: "Temperatur MK1 Vorlauf"
+    id: temperature_mk1_vorlauf
+  temperature_mk1_vorlauf_soll:
+    name: "Temperatur MK1 Vorlauf Soll"
+    id: temperature_mk1_vorlauf_soll
+  temperature_raumstat:
+    name: "Temperatur Raumstat"
+    id: temperature_raumstat
 
 sensor:
   - platform: uptime
@@ -77,8 +106,4 @@ button:
       then:
         - uart.write:
             data: "1100\r\n"
-
-
-
-
 ```

@@ -43,13 +43,6 @@ void LuxtronikV1Component::loop() {
     }
 }
 
-void LuxtronikV1Component::update() {
-    ESP_LOGD(TAG, "Polling Luxtronik V1 Component...");
-    if (this->parent_ != nullptr) {
-        this->parent_->write_str("1100\r\n");
-    }
-}
-
 void LuxtronikV1Component::parse_message_(const char* message) {
     std::string msg(message);
     
@@ -66,22 +59,113 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         start = end + 1;
         end = msg.find(delimiter, start);
         
-        // First value is temperature VL
-        if (temperature_vl_ != nullptr && end != std::string::npos) {
+        // First value is VL temperature
+        if (temperature_vorlauf_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_vl_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature VL: %.1f", value);
+            temperature_vorlauf_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Vorlauf: %.1f", value);
         }
         
-        // Second value is temperature RL
+        // Second value is RL temperature
         start = end + 1;
         end = msg.find(delimiter, start);
-        if (temperature_rl_ != nullptr && end != std::string::npos) {
+        if (temperature_ruecklauf_ != nullptr && end != std::string::npos) {
             std::string temp = msg.substr(start, end - start);
             float value = get_float_temp_(temp);
-            temperature_rl_->publish_state(value);
-            ESP_LOGD(TAG, "Temperature RL: %.1f", value);
+            temperature_ruecklauf_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Rücklauf: %.1f", value);
+        }
+
+        // Add parsing for additional sensors
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_ruecklauf_soll_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_ruecklauf_soll_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Rücklauf Soll: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_heissgas_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_heissgas_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Heissgas: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_aussen_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_aussen_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Aussen: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_brauchwasser_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_brauchwasser_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Brauchwasser: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_brauchwasser_soll_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_brauchwasser_soll_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Brauchwasser Soll: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_waermequelle_ein_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_waermequelle_ein_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Wärmequelle Ein: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_kaeltekreis_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_kaeltekreis_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Kältekreis: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_mk1_vorlauf_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_mk1_vorlauf_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature MK1 Vorlauf: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_mk1_vorlauf_soll_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_mk1_vorlauf_soll_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature MK1 Vorlauf Soll: %.1f", value);
+        }
+
+        start = end + 1;
+        end = msg.find(delimiter, start);
+        if (temperature_raumstat_ != nullptr && end != std::string::npos) {
+            std::string temp = msg.substr(start, end - start);
+            float value = get_float_temp_(temp);
+            temperature_raumstat_->publish_state(value);
+            ESP_LOGD(TAG, "Temperature Raumstat: %.1f", value);
         }
     }
 }
@@ -89,8 +173,18 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature VL: %s", this->temperature_vl_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature RL: %s", this->temperature_rl_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Vorlauf: %s", this->temperature_vorlauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Rücklauf: %s", this->temperature_ruecklauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Rücklauf Soll: %s", this->temperature_ruecklauf_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Heissgas: %s", this->temperature_heissgas_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Aussen: %s", this->temperature_aussen_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser: %s", this->temperature_brauchwasser_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser Soll: %s", this->temperature_brauchwasser_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Wärmequelle Ein: %s", this->temperature_waermequelle_ein_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Kältekreis: %s", this->temperature_kaeltekreis_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature MK1 Vorlauf: %s", this->temperature_mk1_vorlauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature MK1 Vorlauf Soll: %s", this->temperature_mk1_vorlauf_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperature Raumstat: %s", this->temperature_raumstat_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

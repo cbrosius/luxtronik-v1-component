@@ -9,8 +9,18 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-CONF_TEMPERATURE_VL = "temp_vl"
-CONF_TEMPERATURE_RL = "temp_rl"
+CONF_TEMPERATURE_VORLAUF = "temperature_vorlauf"
+CONF_TEMPERATURE_RUECKLAUF = "temperature_ruecklauf"
+CONF_TEMPERATURE_RUECKLAUF_SOLL = "temperature_ruecklauf_soll"
+CONF_TEMPERATURE_HEISSGAS = "temperature_heissgas"
+CONF_TEMPERATURE_AUSSEN = "temperature_aussen"
+CONF_TEMPERATURE_BRAUCHWASSER = "temperature_brauchwasser"
+CONF_TEMPERATURE_BRAUCHWASSER_SOLL = "temperature_brauchwasser_soll"
+CONF_TEMPERATURE_WAERMEQUELLE_EIN = "temperature_waermequelle_ein"
+CONF_TEMPERATURE_KAELTEKREIS = "temperature_kaeltekreis"
+CONF_TEMPERATURE_MK1_VORLAUF = "temperature_mk1_vorlauf"
+CONF_TEMPERATURE_MK1_VORLAUF_SOLL = "temperature_mk1_vorlauf_soll"
+CONF_TEMPERATURE_RAUMSTAT = "temperature_raumstat"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -27,8 +37,18 @@ TEMPERATURE_SCHEMA = sensor.sensor_schema(
 CONFIG_SCHEMA = (
     cv.Schema({
         cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
-        cv.Optional(CONF_TEMPERATURE_VL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_RL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_VORLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_RUECKLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_RUECKLAUF_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_HEISSGAS): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_AUSSEN): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_BRAUCHWASSER): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_BRAUCHWASSER_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_WAERMEQUELLE_EIN): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_KAELTEKREIS): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_MK1_VORLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_MK1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATURE_RAUMSTAT): TEMPERATURE_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -39,10 +59,50 @@ async def to_code(config):
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
     
-    if CONF_TEMPERATURE_VL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_VL])
-        cg.add(var.set_temperature_vl_sensor(sens))
+    if CONF_TEMPERATURE_VORLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_VORLAUF])
+        cg.add(var.set_temperature_vorlauf_sensor(sens))
     
-    if CONF_TEMPERATURE_RL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RL])
-        cg.add(var.set_temperature_rl_sensor(sens))
+    if CONF_TEMPERATURE_RUECKLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RUECKLAUF])
+        cg.add(var.set_temperature_ruecklauf_sensor(sens))
+
+    if CONF_TEMPERATURE_RUECKLAUF_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RUECKLAUF_SOLL])
+        cg.add(var.set_temperature_ruecklauf_soll_sensor(sens))
+
+    if CONF_TEMPERATURE_HEISSGAS in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_HEISSGAS])
+        cg.add(var.set_temperature_heissgas_sensor(sens))
+
+    if CONF_TEMPERATURE_AUSSEN in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_AUSSEN])
+        cg.add(var.set_temperature_aussen_sensor(sens))
+
+    if CONF_TEMPERATURE_BRAUCHWASSER in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_BRAUCHWASSER])
+        cg.add(var.set_temperature_brauchwasser_sensor(sens))
+
+    if CONF_TEMPERATURE_BRAUCHWASSER_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_BRAUCHWASSER_SOLL])
+        cg.add(var.set_temperature_brauchwasser_soll_sensor(sens))
+
+    if CONF_TEMPERATURE_WAERMEQUELLE_EIN in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_WAERMEQUELLE_EIN])
+        cg.add(var.set_temperature_waermequelle_ein_sensor(sens))
+
+    if CONF_TEMPERATURE_KAELTEKREIS in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_KAELTEKREIS])
+        cg.add(var.set_temperature_kaeltekreis_sensor(sens))
+
+    if CONF_TEMPERATURE_MK1_VORLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_MK1_VORLAUF])
+        cg.add(var.set_temperature_mk1_vorlauf_sensor(sens))
+
+    if CONF_TEMPERATURE_MK1_VORLAUF_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_MK1_VORLAUF_SOLL])
+        cg.add(var.set_temperature_mk1_vorlauf_soll_sensor(sens))
+
+    if CONF_TEMPERATURE_RAUMSTAT in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RAUMSTAT])
+        cg.add(var.set_temperature_raumstat_sensor(sens))
