@@ -144,11 +144,11 @@ luxtronik_v1_component:
     name: "Ausgang Zweiter Wärmeerzeuger Störung"
     id: ausgang_zweiter_waermeerzeuger_stoerung
   modus_heizung:
-    name: "Heizung Modus"
-    id: heizung_modus
+    name: "Modus Heizung"
+    id: modus_heizung
   modus_warmwasser:
-    name: "Warmwasser Modus"
-    id: warmwasser_modus
+    name: "Modus Warmwasser"
+    id: modus_warmwasser
     
 sensor:
   - platform: uptime
