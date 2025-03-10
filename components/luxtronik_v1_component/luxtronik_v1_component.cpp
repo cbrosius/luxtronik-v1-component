@@ -223,7 +223,7 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         start = end + 1;
     }
     
-    if (values.size() >= 2) {  // At least count and mode value
+    if (values.size() >= 1) {  // At least count and mode value
         if (modus_heizung_ != nullptr) {
             float val = std::atof(values[1].c_str());
             publish_state_deferred_(modus_heizung_, val, "Mode", "Heizung");
@@ -245,7 +245,7 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
         start = end + 1;
     }
     
-    if (values.size() >= 2) {  // At least count and mode value
+    if (values.size() >= 1) {  // At least count and mode value
         if (modus_warmwasser_ != nullptr) {
             float val = std::atof(values[1].c_str());
             publish_state_deferred_(modus_warmwasser_, val, "Mode", "Warmwasser");
