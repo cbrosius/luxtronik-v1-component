@@ -150,14 +150,14 @@ sensor:
 
 button:
   - platform: template
-    name: _CheckUART
+    name: " UART prüfen"
     id: check_uart
     on_press:
       then:
         - uart.write:
             data: "\r\n"
   - platform: template
-    name: _Ask for Values
+    name: " Werte manuell abfragen"
     id: ask_for_values
     on_press:
       then:

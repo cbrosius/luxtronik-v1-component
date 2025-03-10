@@ -13,6 +13,9 @@ void LuxtronikV1Component::setup() {
         this->mark_failed();
         return;
     }
+
+    // Request initial values immediately after setup
+    this->parent_->write_str("1100\r\n");
 }
 
 void LuxtronikV1Component::loop() {
