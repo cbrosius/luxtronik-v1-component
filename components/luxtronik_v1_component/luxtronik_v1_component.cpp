@@ -70,7 +70,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     
     if (prefix == "1100") {
         this->defer([this, msg]() {
-            parse_temperature_message_(msg.c_str());
+            parse_temperatur_message_(msg.c_str());
         });
     } else if (prefix == "1200") {
         this->defer([this, msg]() {
@@ -83,7 +83,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     }
 }
 
-void LuxtronikV1Component::parse_temperature_message_(const char* message) {
+void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 5;  // Skip "1100;"
@@ -101,23 +101,23 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
     auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
-            publish_state_deferred_(sensor, temp, "Temperature", name);
+            publish_state_deferred_(sensor, temp, "Temperatur", name);
         }
     };
 
     // Process all temperature sensors
-    if (idx < values.size()) publish_temp(temperature_vorlauf_, values[idx++], "Vorlauf");
-    if (idx < values.size()) publish_temp(temperature_ruecklauf_, values[idx++], "Rücklauf");
-    if (idx < values.size()) publish_temp(temperature_ruecklauf_soll_, values[idx++], "Rücklauf Soll");
-    if (idx < values.size()) publish_temp(temperature_heissgas_, values[idx++], "Heissgas");
-    if (idx < values.size()) publish_temp(temperature_aussen_, values[idx++], "Aussen");
-    if (idx < values.size()) publish_temp(temperature_brauchwasser_, values[idx++], "Brauchwasser");
-    if (idx < values.size()) publish_temp(temperature_brauchwasser_soll_, values[idx++], "Brauchwasser Soll");
-    if (idx < values.size()) publish_temp(temperature_waermequelle_eingang_, values[idx++], "Wärmequelle Eingang");
-    if (idx < values.size()) publish_temp(temperature_kaeltekreis_, values[idx++], "Kältekreis");
-    if (idx < values.size()) publish_temp(temperature_mischkreis1_vorlauf_, values[idx++], "Mischkreis1 Vorlauf");
-    if (idx < values.size()) publish_temp(temperature_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
-    if (idx < values.size()) publish_temp(temperature_raumstation_, values[idx++], "Raumstation");
+    if (idx < values.size()) publish_temp(temperatur_vorlauf_, values[idx++], "Vorlauf");
+    if (idx < values.size()) publish_temp(temperatur_ruecklauf_, values[idx++], "Rücklauf");
+    if (idx < values.size()) publish_temp(temperatur_ruecklauf_soll_, values[idx++], "Rücklauf Soll");
+    if (idx < values.size()) publish_temp(temperatur_heissgas_, values[idx++], "Heissgas");
+    if (idx < values.size()) publish_temp(temperatur_aussen_, values[idx++], "Aussen");
+    if (idx < values.size()) publish_temp(temperatur_brauchwasser_, values[idx++], "Brauchwasser");
+    if (idx < values.size()) publish_temp(temperatur_brauchwasser_soll_, values[idx++], "Brauchwasser Soll");
+    if (idx < values.size()) publish_temp(temperatur_waermequelle_eingang_, values[idx++], "Wärmequelle Eingang");
+    if (idx < values.size()) publish_temp(temperatur_kaeltekreis_, values[idx++], "Kältekreis");
+    if (idx < values.size()) publish_temp(temperatur_mischkreis1_vorlauf_, values[idx++], "Mischkreis1 Vorlauf");
+    if (idx < values.size()) publish_temp(temperatur_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
+    if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
     // Request input values after temperature values are parsed
     this->parent_->write_str("1200\r\n");
@@ -200,18 +200,18 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Vorlauf: %s", this->temperature_vorlauf_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Rücklauf: %s", this->temperature_ruecklauf_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Rücklauf Soll: %s", this->temperature_ruecklauf_soll_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Heissgas: %s", this->temperature_heissgas_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Aussen: %s", this->temperature_aussen_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser: %s", this->temperature_brauchwasser_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Brauchwasser Soll: %s", this->temperature_brauchwasser_soll_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Wärmequelle Eingang: %s", this->temperature_waermequelle_eingang_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Kältekreis: %s", this->temperature_kaeltekreis_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Mischkreis1 Vorlauf: %s", this->temperature_mischkreis1_vorlauf_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Mischkreis1 Vorlauf Soll: %s", this->temperature_mischkreis1_vorlauf_soll_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Temperature Raumstation: %s", this->temperature_raumstation_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Vorlauf: %s", this->temperatur_vorlauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Rücklauf: %s", this->temperatur_ruecklauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Rücklauf Soll: %s", this->temperatur_ruecklauf_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Heissgas: %s", this->temperatur_heissgas_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Aussen: %s", this->temperatur_aussen_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Brauchwasser: %s", this->temperatur_brauchwasser_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Brauchwasser Soll: %s", this->temperatur_brauchwasser_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Wärmequelle Eingang: %s", this->temperatur_waermequelle_eingang_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Kältekreis: %s", this->temperatur_kaeltekreis_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Mischkreis1 Vorlauf: %s", this->temperatur_mischkreis1_vorlauf_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Mischkreis1 Vorlauf Soll: %s", this->temperatur_mischkreis1_vorlauf_soll_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Temperatur Raumstation: %s", this->temperatur_raumstation_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Abtau Soledruck Durchfluss: %s", this->eingang_abtau_soledruck_durchfluss_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Sperrzeit EVU: %s", this->eingang_sperrzeit_evu_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Hochdruckpressostat: %s", this->eingang_hochdruckpressostat_ ? "Set" : "Not Set");

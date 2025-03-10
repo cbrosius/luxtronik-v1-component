@@ -9,18 +9,18 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-CONF_TEMPERATURE_VORLAUF = "temperature_vorlauf"
-CONF_TEMPERATURE_RUECKLAUF = "temperature_ruecklauf"
-CONF_TEMPERATURE_RUECKLAUF_SOLL = "temperature_ruecklauf_soll"
-CONF_TEMPERATURE_HEISSGAS = "temperature_heissgas"
-CONF_TEMPERATURE_AUSSEN = "temperature_aussen"
-CONF_TEMPERATURE_BRAUCHWASSER = "temperature_brauchwasser"
-CONF_TEMPERATURE_BRAUCHWASSER_SOLL = "temperature_brauchwasser_soll"
-CONF_TEMPERATURE_WAERMEQUELLE_EINGANG = "temperature_waermequelle_eingang"
-CONF_TEMPERATURE_KAELTEKREIS = "temperature_kaeltekreis"
-CONF_TEMPERATURE_MISCHKREIS1_VORLAUF = "temperature_mischkreis1_vorlauf"
-CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL = "temperature_mischkreis1_vorlauf_soll"
-CONF_TEMPERATURE_RAUMSTATION = "temperature_raumstation"
+CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
+CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
+CONF_TEMPERATUR_RUECKLAUF_SOLL = "temperatur_ruecklauf_soll"
+CONF_TEMPERATUR_HEISSGAS = "temperatur_heissgas"
+CONF_TEMPERATUR_AUSSEN = "temperatur_aussen"
+CONF_TEMPERATUR_BRAUCHWASSER = "temperatur_brauchwasser"
+CONF_TEMPERATUR_BRAUCHWASSER_SOLL = "temperatur_brauchwasser_soll"
+CONF_TEMPERATUR_WAERMEQUELLE_EINGANG = "temperatur_waermequelle_eingang"
+CONF_TEMPERATUR_KAELTEKREIS = "temperatur_kaeltekreis"
+CONF_TEMPERATUR_MISCHKREIS1_VORLAUF = "temperatur_mischkreis1_vorlauf"
+CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL = "temperatur_mischkreis1_vorlauf_soll"
+CONF_TEMPERATUR_RAUMSTATION = "temperatur_raumstation"
 CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS = "eingang_abtau_soledruck_durchfluss"
 CONF_EINGANG_SPERRZEIT_EVU = "eingang_sperrzeit_evu"
 CONF_EINGANG_HOCHDRUCKPRESSOSTAT = "eingang_hochdruckpressostat"
@@ -62,18 +62,18 @@ INPUT_OUTPUT_SCHEMA = sensor.sensor_schema(
 CONFIG_SCHEMA = (
     cv.Schema({
         cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
-        cv.Optional(CONF_TEMPERATURE_VORLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_RUECKLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_RUECKLAUF_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_HEISSGAS): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_AUSSEN): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_BRAUCHWASSER): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_BRAUCHWASSER_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_WAERMEQUELLE_EINGANG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_KAELTEKREIS): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_MISCHKREIS1_VORLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATURE_RAUMSTATION): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_VORLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_RUECKLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_RUECKLAUF_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_HEISSGAS): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_AUSSEN): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_WAERMEQUELLE_EINGANG): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_KAELTEKREIS): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_TEMPERATUR_RAUMSTATION): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_EINGANG_SPERRZEIT_EVU): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_EINGANG_HOCHDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
@@ -103,53 +103,53 @@ async def to_code(config):
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
     
-    if CONF_TEMPERATURE_VORLAUF in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_VORLAUF])
-        cg.add(var.set_temperature_vorlauf_sensor(sens))
+    if CONF_TEMPERATUR_VORLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_VORLAUF])
+        cg.add(var.set_temperatur_vorlauf_sensor(sens))
     
-    if CONF_TEMPERATURE_RUECKLAUF in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RUECKLAUF])
-        cg.add(var.set_temperature_ruecklauf_sensor(sens))
+    if CONF_TEMPERATUR_RUECKLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_RUECKLAUF])
+        cg.add(var.set_temperatur_ruecklauf_sensor(sens))
 
-    if CONF_TEMPERATURE_RUECKLAUF_SOLL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RUECKLAUF_SOLL])
-        cg.add(var.set_temperature_ruecklauf_soll_sensor(sens))
+    if CONF_TEMPERATUR_RUECKLAUF_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_RUECKLAUF_SOLL])
+        cg.add(var.set_temperatur_ruecklauf_soll_sensor(sens))
 
-    if CONF_TEMPERATURE_HEISSGAS in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_HEISSGAS])
-        cg.add(var.set_temperature_heissgas_sensor(sens))
+    if CONF_TEMPERATUR_HEISSGAS in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_HEISSGAS])
+        cg.add(var.set_temperatur_heissgas_sensor(sens))
 
-    if CONF_TEMPERATURE_AUSSEN in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_AUSSEN])
-        cg.add(var.set_temperature_aussen_sensor(sens))
+    if CONF_TEMPERATUR_AUSSEN in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_AUSSEN])
+        cg.add(var.set_temperatur_aussen_sensor(sens))
 
-    if CONF_TEMPERATURE_BRAUCHWASSER in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_BRAUCHWASSER])
-        cg.add(var.set_temperature_brauchwasser_sensor(sens))
+    if CONF_TEMPERATUR_BRAUCHWASSER in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_BRAUCHWASSER])
+        cg.add(var.set_temperatur_brauchwasser_sensor(sens))
 
-    if CONF_TEMPERATURE_BRAUCHWASSER_SOLL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_BRAUCHWASSER_SOLL])
-        cg.add(var.set_temperature_brauchwasser_soll_sensor(sens))
+    if CONF_TEMPERATUR_BRAUCHWASSER_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_BRAUCHWASSER_SOLL])
+        cg.add(var.set_temperatur_brauchwasser_soll_sensor(sens))
 
-    if CONF_TEMPERATURE_WAERMEQUELLE_EINGANG in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_WAERMEQUELLE_EINGANG])
-        cg.add(var.set_temperature_waermequelle_eingang_sensor(sens))
+    if CONF_TEMPERATUR_WAERMEQUELLE_EINGANG in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_WAERMEQUELLE_EINGANG])
+        cg.add(var.set_temperatur_waermequelle_eingang_sensor(sens))
 
-    if CONF_TEMPERATURE_KAELTEKREIS in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_KAELTEKREIS])
-        cg.add(var.set_temperature_kaeltekreis_sensor(sens))
+    if CONF_TEMPERATUR_KAELTEKREIS in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_KAELTEKREIS])
+        cg.add(var.set_temperatur_kaeltekreis_sensor(sens))
 
-    if CONF_TEMPERATURE_MISCHKREIS1_VORLAUF in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_MISCHKREIS1_VORLAUF])
-        cg.add(var.set_temperature_mischkreis1_vorlauf_sensor(sens))
+    if CONF_TEMPERATUR_MISCHKREIS1_VORLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_MISCHKREIS1_VORLAUF])
+        cg.add(var.set_temperatur_mischkreis1_vorlauf_sensor(sens))
 
-    if CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_MISCHKREIS1_VORLAUF_SOLL])
-        cg.add(var.set_temperature_mischkreis1_vorlauf_soll_sensor(sens))
+    if CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL])
+        cg.add(var.set_temperatur_mischkreis1_vorlauf_soll_sensor(sens))
 
-    if CONF_TEMPERATURE_RAUMSTATION in config:
-        sens = await sensor.new_sensor(config[CONF_TEMPERATURE_RAUMSTATION])
-        cg.add(var.set_temperature_raumstation_sensor(sens))
+    if CONF_TEMPERATUR_RAUMSTATION in config:
+        sens = await sensor.new_sensor(config[CONF_TEMPERATUR_RAUMSTATION])
+        cg.add(var.set_temperatur_raumstation_sensor(sens))
 
     if CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS in config:
         sens = await sensor.new_sensor(config[CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS])

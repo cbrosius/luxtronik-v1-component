@@ -50,42 +50,42 @@ external_components:
 
 luxtronik_v1_component:
   id: luxtronik_v1_component_1
-  temperature_vorlauf:
+  temperatur_vorlauf:
     name: "Temperatur Vorlauf"
-    id: temperature_vorlauf
-  temperature_ruecklauf:
+    id: temperatur_vorlauf
+  temperatur_ruecklauf:
     name: "Temperatur Rücklauf"
-    id: temperature_ruecklauf
-  temperature_ruecklauf_soll:
+    id: temperatur_ruecklauf
+  temperatur_ruecklauf_soll:
     name: "Temperatur Rücklauf Soll"
-    id: temperature_ruecklauf_soll
-  temperature_heissgas:
+    id: temperatur_ruecklauf_soll
+  temperatur_heissgas:
     name: "Temperatur Heissgas"
-    id: temperature_heissgas
-  temperature_aussen:
+    id: temperatur_heissgas
+  temperatur_aussen:
     name: "Temperatur Aussen"
-    id: temperature_aussen
-  temperature_brauchwasser:
+    id: temperatur_aussen
+  temperatur_brauchwasser:
     name: "Temperatur Brauchwasser"
-    id: temperature_brauchwasser
-  temperature_brauchwasser_soll:
+    id: temperatur_brauchwasser
+  temperatur_brauchwasser_soll:
     name: "Temperatur Brauchwasser Soll"
-    id: temperature_brauchwasser_soll
-  temperature_waermequelle_ein:
+    id: temperatur_brauchwasser_soll
+  temperatur_waermequelle_ein:
     name: "Temperatur Wärmequelle Eingang"
-    id: temperature_waermequelle_eingang
-  temperature_kaeltekreis:
+    id: temperatur_waermequelle_eingang
+  temperatur_kaeltekreis:
     name: "Temperatur Kältekreis"
-    id: temperature_kaeltekreis
-  temperature_mischkreis1_vorlauf:
+    id: temperatur_kaeltekreis
+  temperatur_mischkreis1_vorlauf:
     name: "Temperatur Mischkreis1 Vorlauf"
-    id: temperature_mischkreis1_vorlauf
-  temperature_mischkreis1_vorlauf_soll:
+    id: temperatur_mischkreis1_vorlauf
+  temperatur_mischkreis1_vorlauf_soll:
     name: "Temperatur Mischkreis1 Vorlauf Soll"
-    id: temperature_mischkreis1_vorlauf_soll
-  temperature_raumstation:
+    id: temperatur_mischkreis1_vorlauf_soll
+  temperatur_raumstation:
     name: "Temperatur Raumstation"
-    id: temperature_raumstation
+    id: temperatur_raumstation
   eingang_abtau_soledruck_durchfluss:
     name: "Eingang Abtau Soledruck Durchfluss"
     id: eingang_abtau_soledruck_durchfluss

@@ -25,18 +25,18 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   }
 
   // Add temperature sensor setters
-  void set_temperature_vorlauf_sensor(sensor::Sensor *sens) { temperature_vorlauf_ = sens; }
-  void set_temperature_ruecklauf_sensor(sensor::Sensor *sens) { temperature_ruecklauf_ = sens; }
-  void set_temperature_ruecklauf_soll_sensor(sensor::Sensor *sens) { temperature_ruecklauf_soll_ = sens; }
-  void set_temperature_heissgas_sensor(sensor::Sensor *sens) { temperature_heissgas_ = sens; }
-  void set_temperature_aussen_sensor(sensor::Sensor *sens) { temperature_aussen_ = sens; }
-  void set_temperature_brauchwasser_sensor(sensor::Sensor *sens) { temperature_brauchwasser_ = sens; }
-  void set_temperature_brauchwasser_soll_sensor(sensor::Sensor *sens) { temperature_brauchwasser_soll_ = sens; }
-  void set_temperature_waermequelle_eingang_sensor(sensor::Sensor *sens) { temperature_waermequelle_eingang_ = sens; }
-  void set_temperature_kaeltekreis_sensor(sensor::Sensor *sens) { temperature_kaeltekreis_ = sens; }
-  void set_temperature_mischkreis1_vorlauf_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_ = sens; }
-  void set_temperature_mischkreis1_vorlauf_soll_sensor(sensor::Sensor *sens) { temperature_mischkreis1_vorlauf_soll_ = sens; }
-  void set_temperature_raumstation_sensor(sensor::Sensor *sens) { temperature_raumstation_ = sens; }
+  void set_temperatur_vorlauf_sensor(sensor::Sensor *sens) { temperatur_vorlauf_ = sens; }
+  void set_temperatur_ruecklauf_sensor(sensor::Sensor *sens) { temperatur_ruecklauf_ = sens; }
+  void set_temperatur_ruecklauf_soll_sensor(sensor::Sensor *sens) { temperatur_ruecklauf_soll_ = sens; }
+  void set_temperatur_heissgas_sensor(sensor::Sensor *sens) { temperatur_heissgas_ = sens; }
+  void set_temperatur_aussen_sensor(sensor::Sensor *sens) { temperatur_aussen_ = sens; }
+  void set_temperatur_brauchwasser_sensor(sensor::Sensor *sens) { temperatur_brauchwasser_ = sens; }
+  void set_temperatur_brauchwasser_soll_sensor(sensor::Sensor *sens) { temperatur_brauchwasser_soll_ = sens; }
+  void set_temperatur_waermequelle_eingang_sensor(sensor::Sensor *sens) { temperatur_waermequelle_eingang_ = sens; }
+  void set_temperatur_kaeltekreis_sensor(sensor::Sensor *sens) { temperatur_kaeltekreis_ = sens; }
+  void set_temperatur_mischkreis1_vorlauf_sensor(sensor::Sensor *sens) { temperatur_mischkreis1_vorlauf_ = sens; }
+  void set_temperatur_mischkreis1_vorlauf_soll_sensor(sensor::Sensor *sens) { temperatur_mischkreis1_vorlauf_soll_ = sens; }
+  void set_temperatur_raumstation_sensor(sensor::Sensor *sens) { temperatur_raumstation_ = sens; }
   // Add input sensor setters
   void set_eingang_abtau_soledruck_durchfluss_sensor(sensor::Sensor *sens) { eingang_abtau_soledruck_durchfluss_ = sens; }
   void set_eingang_sperrzeit_evu_sensor(sensor::Sensor *sens) { eingang_sperrzeit_evu_ = sens; }
@@ -62,7 +62,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
-  void parse_temperature_message_(const char* message);
+  void parse_temperatur_message_(const char* message);
   void parse_input_message_(const char* message);
   void parse_output_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
@@ -71,19 +71,19 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
 
-  // Temperature sensor pointers
-  sensor::Sensor *temperature_vorlauf_{nullptr};  // Vorlauf Temperatur
-  sensor::Sensor *temperature_ruecklauf_{nullptr};  // Rücklauf Temperatur
-  sensor::Sensor *temperature_ruecklauf_soll_{nullptr};
-  sensor::Sensor *temperature_heissgas_{nullptr};
-  sensor::Sensor *temperature_aussen_{nullptr};
-  sensor::Sensor *temperature_brauchwasser_{nullptr};
-  sensor::Sensor *temperature_brauchwasser_soll_{nullptr};
-  sensor::Sensor *temperature_waermequelle_eingang_{nullptr};
-  sensor::Sensor *temperature_kaeltekreis_{nullptr};
-  sensor::Sensor *temperature_mischkreis1_vorlauf_{nullptr};
-  sensor::Sensor *temperature_mischkreis1_vorlauf_soll_{nullptr};
-  sensor::Sensor *temperature_raumstation_{nullptr};
+  // Temperatur sensor pointers
+  sensor::Sensor *temperatur_vorlauf_{nullptr};  // Vorlauf Temperatur
+  sensor::Sensor *temperatur_ruecklauf_{nullptr};  // Rücklauf Temperatur
+  sensor::Sensor *temperatur_ruecklauf_soll_{nullptr};
+  sensor::Sensor *temperatur_heissgas_{nullptr};
+  sensor::Sensor *temperatur_aussen_{nullptr};
+  sensor::Sensor *temperatur_brauchwasser_{nullptr};
+  sensor::Sensor *temperatur_brauchwasser_soll_{nullptr};
+  sensor::Sensor *temperatur_waermequelle_eingang_{nullptr};
+  sensor::Sensor *temperatur_kaeltekreis_{nullptr};
+  sensor::Sensor *temperatur_mischkreis1_vorlauf_{nullptr};
+  sensor::Sensor *temperatur_mischkreis1_vorlauf_soll_{nullptr};
+  sensor::Sensor *temperatur_raumstation_{nullptr};
   sensor::Sensor *eingang_abtau_soledruck_durchfluss_{nullptr};
   // Input sensor pointers
   sensor::Sensor *eingang_sperrzeit_evu_{nullptr};
