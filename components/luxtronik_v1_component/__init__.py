@@ -40,6 +40,8 @@ CONF_AUSGANG_VERDICHTER_2 = "ausgang_verdichter_2"
 CONF_AUSGANG_ZIRKULATIONSPUMPE = "ausgang_zirkulationspumpe"
 CONF_AUSGANG_ZWEITER_WAERMEERZEUGER = "ausgang_zweiter_waermeerzeuger"
 CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG = "ausgang_zweiter_waermeerzeuger_stoerung"
+CONF_MODUS_HEIZUNG = "modus_heizung"
+CONF_MODUS_WARMWASSER = "modus_warmwasser"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -93,6 +95,8 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_AUSGANG_ZIRKULATIONSPUMPE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_MODUS_HEIZUNG): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_MODUS_WARMWASSER): INPUT_OUTPUT_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -225,3 +229,11 @@ async def to_code(config):
     if CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG])
         cg.add(var.set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sens))
+    
+    if CONF_MODUS_HEIZUNG in config:
+        sens = await sensor.new_sensor(config[CONF_MODUS_HEIZUNG])
+        cg.add(var.set_modus_heizung_sensor(sens))
+    
+    if CONF_MODUS_WARMWASSER in config:
+        sens = await sensor.new_sensor(config[CONF_MODUS_WARMWASSER])
+        cg.add(var.set_modus_warmwasser_sensor(sens))

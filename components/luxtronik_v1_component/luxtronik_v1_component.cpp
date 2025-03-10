@@ -83,6 +83,14 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             parse_output_message_(msg.c_str());
         });
+    } else if (prefix == "3405") {
+        this->defer([this, msg]() {
+            parse_modus_heizung_message_(msg.c_str());
+        });
+    } else if (prefix == "3505") {
+        this->defer([this, msg]() {
+            parse_modus_warmwasser_message_(msg.c_str());
+        });
     }
 }
 
@@ -198,6 +206,51 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
     if (idx < values.size()) publish_output(ausgang_zirkulationspumpe_, values[idx++], "ZPumpe");
     if (idx < values.size()) publish_output(ausgang_zweiter_waermeerzeuger_, values[idx++], "ZWE");
     if (idx < values.size()) publish_output(ausgang_zweiter_waermeerzeuger_stoerung_, values[idx++], "ZWE Störung");
+
+    // Request heizungs-modus after input values are parsed
+    this->parent_->write_str("3405\r\n");
+
+}
+
+void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 5;  // Skip "3405;"
+    size_t end = 0;
+    
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+    
+    if (values.size() >= 2) {  // At least count and mode value
+        if (modus_heizung_ != nullptr) {
+            float val = std::atof(values[1].c_str());
+            publish_state_deferred_(modus_heizung_, val, "Mode", "Heizung");
+        }
+    }
+    
+    // Request hot water mode after heating mode
+    this->parent_->write_str("3505\r\n");
+}
+
+void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 5;  // Skip "3505;"
+    size_t end = 0;
+    
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+    
+    if (values.size() >= 2) {  // At least count and mode value
+        if (modus_warmwasser_ != nullptr) {
+            float val = std::atof(values[1].c_str());
+            publish_state_deferred_(modus_warmwasser_, val, "Mode", "Warmwasser");
+        }
+    }
 }
 
 void LuxtronikV1Component::dump_config() {
@@ -234,6 +287,8 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zirkulationspumpe: %s", this->ausgang_zirkulationspumpe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger: %s", this->ausgang_zweiter_waermeerzeuger_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung: %s", this->modus_heizung_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser: %s", this->modus_warmwasser_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

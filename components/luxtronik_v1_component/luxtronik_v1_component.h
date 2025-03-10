@@ -59,6 +59,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_ausgang_zweiter_waermeerzeuger_sensor(sensor::Sensor *sens) { ausgang_zweiter_waermeerzeuger_ = sens; }
   void set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sensor::Sensor *sens) { ausgang_zweiter_waermeerzeuger_stoerung_ = sens; }
 
+  // Mode sensor setters
+  void set_modus_heizung_sensor(sensor::Sensor *sens) { modus_heizung_ = sens; }
+  void set_modus_warmwasser_sensor(sensor::Sensor *sens) { modus_warmwasser_ = sens; }
+
   protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
@@ -105,6 +109,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *ausgang_zirkulationspumpe_{nullptr};          // 1300/12
   sensor::Sensor *ausgang_zweiter_waermeerzeuger_{nullptr};     // 1300/13
   sensor::Sensor *ausgang_zweiter_waermeerzeuger_stoerung_{nullptr}; // 1300/14
+  
+  // Mode sensor pointers
+  sensor::Sensor *modus_heizung_{nullptr};                      // 3405/2
+  sensor::Sensor *modus_warmwasser_{nullptr};                   // 3505/2
 };
 
 }  // namespace luxtronik_v1_component
