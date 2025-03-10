@@ -28,18 +28,18 @@ CONF_EINGANG_MOTORSCHUTZ = "eingang_motorschutz"
 CONF_EINGANG_NIEDERDRUCKPRESSOSTAT = "eingang_niederdruckpressostat"
 CONF_EINGANG_FREMDSTROMANODE = "eingang_fremdstromanode"
 CONF_AUSGANG_ABTAUVENTIL = "ausgang_abtauventil"
-CONF_AUSGANG_BWP = "ausgang_bwp"
-CONF_AUSGANG_FBHP = "ausgang_fbhp"
-CONF_AUSGANG_HZP = "ausgang_hzp"
+CONF_AUSGANG_BRAUCHWASSERPUMPE = "ausgang_brauchwasserpumpe"
+CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE = "ausgang_fussbodenheizungspumpe"
+CONF_AUSGANG_HEIZUNGSPUMPE = "ausgang_heizungspumpe"
 CONF_AUSGANG_MISCHER_1_AUF = "ausgang_mischer_1_auf"
 CONF_AUSGANG_MISCHER_1_ZU = "ausgang_mischer_1_zu"
-CONF_AUSGANG_VENT_WP = "ausgang_vent_wp"
-CONF_AUSGANG_VENT_BRUNNEN = "ausgang_vent_brunnen"
+CONF_AUSGANG_VENTILATOR_WAERMEPUMPE = "ausgang_ventilator_waermepumpe"
+CONF_AUSGANG_VENTILATOR_BRUNNEN = "ausgang_ventilator_brunnen"
 CONF_AUSGANG_VERDICHTER_1 = "ausgang_verdichter_1"
 CONF_AUSGANG_VERDICHTER_2 = "ausgang_verdichter_2"
-CONF_AUSGANG_ZPUMPE = "ausgang_zpumpe"
-CONF_AUSGANG_ZWE = "ausgang_zwe"
-CONF_AUSGANG_ZWE_STOERUNG = "ausgang_zwe_stoerung"
+CONF_AUSGANG_ZIRKULATIONSPUMPE = "ausgang_zirkulationspumpe"
+CONF_AUSGANG_ZWEITER_WAERMEERZEUGER = "ausgang_zweiter_waermeerzeuger"
+CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG = "ausgang_zweiter_waermeerzeuger_stoerung"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -81,18 +81,18 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_EINGANG_NIEDERDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_EINGANG_FREMDSTROMANODE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ABTAUVENTIL): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_BWP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_FBHP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_HZP): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_BRAUCHWASSERPUMPE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_HEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_MISCHER_1_AUF): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_MISCHER_1_ZU): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VENT_WP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VENT_BRUNNEN): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_VENTILATOR_WAERMEPUMPE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_VENTILATOR_BRUNNEN): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_VERDICHTER_1): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_VERDICHTER_2): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZWE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZWE_STOERUNG): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_ZIRKULATIONSPUMPE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -178,17 +178,17 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ABTAUVENTIL])
         cg.add(var.set_ausgang_abtauventil_sensor(sens))
     
-    if CONF_AUSGANG_BWP in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_BWP])
-        cg.add(var.set_ausgang_bwp_sensor(sens))
+    if CONF_AUSGANG_BRAUCHWASSERPUMPE in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_BRAUCHWASSERPUMPE])
+        cg.add(var.set_ausgang_brauchwasserpumpe_sensor(sens))
         
-    if CONF_AUSGANG_FBHP in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_FBHP])
-        cg.add(var.set_ausgang_fbhp_sensor(sens))
+    if CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE])
+        cg.add(var.set_ausgang_fussbodenheizungspumpe_sensor(sens))
         
-    if CONF_AUSGANG_HZP in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_HZP])
-        cg.add(var.set_ausgang_hzp_sensor(sens))
+    if CONF_AUSGANG_HEIZUNGSPUMPE in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_HEIZUNGSPUMPE])
+        cg.add(var.set_ausgang_heizungspumpe_sensor(sens))
         
     if CONF_AUSGANG_MISCHER_1_AUF in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_MISCHER_1_AUF])
@@ -198,13 +198,13 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_AUSGANG_MISCHER_1_ZU])
         cg.add(var.set_ausgang_mischer_1_zu_sensor(sens))
         
-    if CONF_AUSGANG_VENT_WP in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_VENT_WP])
-        cg.add(var.set_ausgang_vent_wp_sensor(sens))
+    if CONF_AUSGANG_VENTILATOR_WAERMEPUMPE in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_VENTILATOR_WAERMEPUMPE])
+        cg.add(var.set_ausgang_ventilator_waermepumpe_sensor(sens))
         
-    if CONF_AUSGANG_VENT_BRUNNEN in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_VENT_BRUNNEN])
-        cg.add(var.set_ausgang_vent_brunnen_sensor(sens))
+    if CONF_AUSGANG_VENTILATOR_BRUNNEN in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_VENTILATOR_BRUNNEN])
+        cg.add(var.set_ausgang_ventilator_brunnen_sensor(sens))
         
     if CONF_AUSGANG_VERDICHTER_1 in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VERDICHTER_1])
@@ -214,14 +214,14 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VERDICHTER_2])
         cg.add(var.set_ausgang_verdichter_2_sensor(sens))
         
-    if CONF_AUSGANG_ZPUMPE in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZPUMPE])
-        cg.add(var.set_ausgang_zpumpe_sensor(sens))
+    if CONF_AUSGANG_ZIRKULATIONSPUMPE in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZIRKULATIONSPUMPE])
+        cg.add(var.set_ausgang_zirkulationspumpe_sensor(sens))
         
-    if CONF_AUSGANG_ZWE in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWE])
-        cg.add(var.set_ausgang_zwe_sensor(sens))
+    if CONF_AUSGANG_ZWEITER_WAERMEERZEUGER in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER])
+        cg.add(var.set_ausgang_zweiter_waermeerzeuger_sensor(sens))
         
-    if CONF_AUSGANG_ZWE_STOERUNG in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWE_STOERUNG])
-        cg.add(var.set_ausgang_zwe_stoerung_sensor(sens))
+    if CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG in config:
+        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG])
+        cg.add(var.set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sens))

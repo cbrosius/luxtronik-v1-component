@@ -108,42 +108,42 @@ luxtronik_v1_component:
   ausgang_abtauventil:
     name: "Ausgang Abtauventil"
     id: ausgang_abtauventil
-  ausgang_bwp:
+  ausgang_brauchwasserpumpe:
     name: "Ausgang Brauchwasserpumpe"
-    id: ausgang_bwp
-  ausgang_fbhp:
+    id: ausgang_brauchwasserpumpe
+  ausgang_fussbodenheizungspumpe:
     name: "Ausgang Fußbodenheizungspumpe"
-    id: ausgang_fbhp
-  ausgang_hzp:
+    id: ausgang_fussbodenheizungspumpe
+  ausgang_heizungspumpe:
     name: "Ausgang Heizungspumpe"
-    id: ausgang_hzp
+    id: ausgang_heizungspumpe
   ausgang_mischer_1_auf:
     name: "Ausgang Mischer 1 Auf"
     id: ausgang_mischer_1_auf
   ausgang_mischer_1_zu:
     name: "Ausgang Mischer 1 Zu"
     id: ausgang_mischer_1_zu
-  ausgang_vent_wp:
+  ausgang_ventilator_waermepumpe:
     name: "Ausgang Ventilator Wärmepumpe"
-    id: ausgang_vent_wp
-  ausgang_vent_brunnen:
+    id: ausgang_ventilator_waermepumpe
+  ausgang_ventilator_brunnen:
     name: "Ausgang Ventilator Brunnen"
-    id: ausgang_vent_brunnen
+    id: ausgang_ventilator_brunnen
   ausgang_verdichter_1:
     name: "Ausgang Verdichter 1"
     id: ausgang_verdichter_1
   ausgang_verdichter_2:
     name: "Ausgang Verdichter 2"
     id: ausgang_verdichter_2
-  ausgang_zpumpe:
+  ausgang_zirkulationspumpe:
     name: "Ausgang Zirkulationspumpe"
-    id: ausgang_zpumpe
-  ausgang_zwe:
+    id: ausgang_zirkulationspumpe
+  ausgang_zweiter_waermeerzeuger:
     name: "Ausgang Zweiter Wärmeerzeuger"
-    id: ausgang_zwe
-  ausgang_zwe_stoerung:
-    name: "Ausgang ZWE Störung"
-    id: ausgang_zwe_stoerung
+    id: ausgang_zweiter_waermeerzeuger
+  ausgang_zweiter_waermeerzeuger_stoerung:
+    name: "Ausgang Zweiter Wärmeerzeuger Störung"
+    id: ausgang_zweiter_waermeerzeuger_stoerung
     
 sensor:
   - platform: uptime

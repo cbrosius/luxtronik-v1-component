@@ -50,6 +50,14 @@ void LuxtronikV1Component::update() {
     }
 }
 
+// Helper function for deferred publishing
+void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
+    this->defer([this, sensor, value, type, name]() {
+        sensor->publish_state(value);
+        ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
+    });
+}
+
 void LuxtronikV1Component::parse_message_(const char* message) {
     std::string msg(message);
     
@@ -175,18 +183,18 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 
     // Process all output sensors
     if (idx < values.size()) publish_output(ausgang_abtauventil_, values[idx++], "Abtauventil");
-    if (idx < values.size()) publish_output(ausgang_bwp_, values[idx++], "BWP");
-    if (idx < values.size()) publish_output(ausgang_fbhp_, values[idx++], "FBHP");
-    if (idx < values.size()) publish_output(ausgang_hzp_, values[idx++], "HZP");
+    if (idx < values.size()) publish_output(ausgang_brauchwasserpumpe_, values[idx++], "BWP");
+    if (idx < values.size()) publish_output(ausgang_fussbodenheizungspumpe_, values[idx++], "FBHP");
+    if (idx < values.size()) publish_output(ausgang_heizungspumpe_, values[idx++], "HZP");
     if (idx < values.size()) publish_output(ausgang_mischer_1_auf_, values[idx++], "Mischer 1 Auf");
     if (idx < values.size()) publish_output(ausgang_mischer_1_zu_, values[idx++], "Mischer 1 Zu");
-    if (idx < values.size()) publish_output(ausgang_vent_wp_, values[idx++], "Vent WP");
-    if (idx < values.size()) publish_output(ausgang_vent_brunnen_, values[idx++], "Vent Brunnen");
+    if (idx < values.size()) publish_output(ausgang_ventilator_waermepumpe_, values[idx++], "Vent WP");
+    if (idx < values.size()) publish_output(ausgang_ventilator_brunnen_, values[idx++], "Vent Brunnen");
     if (idx < values.size()) publish_output(ausgang_verdichter_1_, values[idx++], "Verdichter 1");
     if (idx < values.size()) publish_output(ausgang_verdichter_2_, values[idx++], "Verdichter 2");
-    if (idx < values.size()) publish_output(ausgang_zpumpe_, values[idx++], "ZPumpe");
-    if (idx < values.size()) publish_output(ausgang_zwe_, values[idx++], "ZWE");
-    if (idx < values.size()) publish_output(ausgang_zwe_stoerung_, values[idx++], "ZWE Störung");
+    if (idx < values.size()) publish_output(ausgang_zirkulationspumpe_, values[idx++], "ZPumpe");
+    if (idx < values.size()) publish_output(ausgang_zweiter_waermeerzeuger_, values[idx++], "ZWE");
+    if (idx < values.size()) publish_output(ausgang_zweiter_waermeerzeuger_stoerung_, values[idx++], "ZWE Störung");
 }
 
 void LuxtronikV1Component::dump_config() {
@@ -211,26 +219,18 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Niederdruckpressostat: %s", this->eingang_niederdruckpressostat_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Eingang Fremdstromanode: %s", this->eingang_fremdstromanode_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Abtauventil: %s", this->ausgang_abtauventil_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang BWP: %s", this->ausgang_bwp_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang FBHP: %s", this->ausgang_fbhp_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang HZP: %s", this->ausgang_hzp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Brauchwasserpumpe: %s", this->ausgang_brauchwasserpumpe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Fussbodenheizungspumpe: %s", this->ausgang_fussbodenheizungspumpe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Heizungspumpe: %s", this->ausgang_heizungspumpe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Mischer 1 Auf: %s", this->ausgang_mischer_1_auf_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Mischer 1 Zu: %s", this->ausgang_mischer_1_zu_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Vent WP: %s", this->ausgang_vent_wp_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Vent Brunnen: %s", this->ausgang_vent_brunnen_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Ventilator Waermepumpe: %s", this->ausgang_ventilator_waermepumpe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Ventilator Brunnen: %s", this->ausgang_ventilator_brunnen_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Verdichter 1: %s", this->ausgang_verdichter_1_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Verdichter 2: %s", this->ausgang_verdichter_2_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZPumpe: %s", this->ausgang_zpumpe_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE: %s", this->ausgang_zwe_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE Störung: %s", this->ausgang_zwe_stoerung_ ? "Set" : "Not Set");
-}
-
-// Helper function for deferred publishing
-void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
-    this->defer([this, sensor, value, type, name]() {
-        sensor->publish_state(value);
-        ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
-    });
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zirkulationspumpe: %s", this->ausgang_zirkulationspumpe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger: %s", this->ausgang_zweiter_waermeerzeuger_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component
