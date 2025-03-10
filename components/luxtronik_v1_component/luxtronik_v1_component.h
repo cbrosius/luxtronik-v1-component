@@ -69,6 +69,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_temperatur_message_(const char* message);
   void parse_input_message_(const char* message);
   void parse_output_message_(const char* message);
+  void parse_modus_heizung_message_(const char* message);      // Add this line
+  void parse_modus_warmwasser_message_(const char* message);   // Add this line
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
 
   uart::UARTComponent *parent_{nullptr};
