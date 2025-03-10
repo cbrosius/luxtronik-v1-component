@@ -93,8 +93,7 @@ void LuxtronikV1Component::parse_temperature_message_(const char* message) {
     auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
-            sensor->publish_state(temp);
-            ESP_LOGD(TAG, "Temperature %s: %.1f", name, temp);
+            publish_state_deferred_(sensor, temp, "Temperature", name);
         }
     };
 
@@ -135,8 +134,7 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
     auto publish_input = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
-            sensor->publish_state(val);
-            ESP_LOGD(TAG, "Input %s: %.0f", name, val);
+            publish_state_deferred_(sensor, val, "Input", name);
         }
     };
 
@@ -171,8 +169,7 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
     auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
-            sensor->publish_state(val);
-            ESP_LOGD(TAG, "Output %s: %.0f", name, val);
+            publish_state_deferred_(sensor, val, "Output", name);
         }
     };
 
@@ -226,6 +223,16 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZPumpe: %s", this->ausgang_zpumpe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE: %s", this->ausgang_zwe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang ZWE Störung: %s", this->ausgang_zwe_stoerung_ ? "Set" : "Not Set");
+}
+
+// Helper function for deferred publishing
+void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
+    if (sensor != nullptr) {
+        this->defer([this, sensor, value, type, name]() {
+            sensor->publish_state(value);
+            ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
+        });
+    }
 }
 
 }  // namespace luxtronik_v1_component
