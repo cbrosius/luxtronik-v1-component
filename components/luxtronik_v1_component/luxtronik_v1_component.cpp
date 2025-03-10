@@ -227,12 +227,10 @@ void LuxtronikV1Component::dump_config() {
 
 // Helper function for deferred publishing
 void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
-    if (sensor != nullptr) {
-        this->defer([this, sensor, value, type, name]() {
-            sensor->publish_state(value);
-            ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
-        });
-    }
+    this->defer([this, sensor, value, type, name]() {
+        sensor->publish_state(value);
+        ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
+    });
 }
 
 }  // namespace luxtronik_v1_component
