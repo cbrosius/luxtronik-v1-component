@@ -91,6 +91,10 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             parse_modus_warmwasser_message_(msg.c_str());
         });
+    } else if (prefix == "1700") {
+        this->defer([this, msg]() {
+            parse_status_message_(msg.c_str());
+        });
     }
 }
 
@@ -273,6 +277,49 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
             publish_state_deferred_(modus_warmwasser_, val, "Mode", "Warmwasser");
         }
     }
+    
+    // Request status values after warmwater mode
+    this->parent_->write_str("1700\r\n");
+}
+
+void LuxtronikV1Component::parse_status_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    values.reserve(13);  // Pre-allocate for all status values
+    size_t start = 5;  // Skip "1700;"
+    size_t end = 0;
+    
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+    
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 1;  // Skip count
+    auto publish_status = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            publish_state_deferred_(sensor, val, "Status", name);
+        }
+    };
+
+    // Process all status sensors
+    if (idx < values.size()) publish_status(status_anlagentyp_, values[idx++], "Anlagentyp");
+    if (idx < values.size()) publish_status(status_softwareversion_, values[idx++], "Softwareversion");
+    if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
+    if (idx < values.size()) publish_status(status_betriebszustand_, values[idx++], "Betriebszustand");
+    if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
+    if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
+    if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
+    if (idx < values.size()) publish_status(status_startuhrzeit_std_, values[idx++], "Startuhrzeit Std");
+    if (idx < values.size()) publish_status(status_startuhrzeit_min_, values[idx++], "Startuhrzeit Min");
+    if (idx < values.size()) publish_status(status_startuhrzeit_sek_, values[idx++], "Startuhrzeit Sek");
+    if (idx < values.size()) publish_status(status_compact_, values[idx++], "Compact");
+    if (idx < values.size()) publish_status(status_comfort_, values[idx++], "Comfort");
 }
 
 void LuxtronikV1Component::dump_config() {
@@ -311,6 +358,18 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung: %s", this->modus_heizung_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser: %s", this->modus_warmwasser_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Anlagentyp: %s", this->status_anlagentyp_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Softwareversion: %s", this->status_softwareversion_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Bivalenzstufe: %s", this->status_bivalenzstufe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand: %s", this->status_betriebszustand_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Tag: %s", this->status_startdatum_tag_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Monat: %s", this->status_startdatum_monat_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Jahr: %s", this->status_startdatum_jahr_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Std: %s", this->status_startuhrzeit_std_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Min: %s", this->status_startuhrzeit_min_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Sek: %s", this->status_startuhrzeit_sek_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Compact: %s", this->status_compact_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Comfort: %s", this->status_comfort_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

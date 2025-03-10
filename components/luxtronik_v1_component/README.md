@@ -149,6 +149,43 @@ luxtronik_v1_component:
   modus_warmwasser:
     name: "Modus Warmwasser"
     id: modus_warmwasser
+  # Status sensors
+  status_anlagentyp:
+    name: "Status Anlagentyp"
+    id: status_anlagentyp
+  status_softwareversion:
+    name: "Status Softwareversion"
+    id: status_softwareversion
+  status_bivalenzstufe:
+    name: "Status Bivalenzstufe"
+    id: status_bivalenzstufe
+  status_betriebszustand:
+    name: "Status Betriebszustand"
+    id: status_betriebszustand
+  status_startdatum_tag:
+    name: "Status Startdatum Tag"
+    id: status_startdatum_tag
+  status_startdatum_monat:
+    name: "Status Startdatum Monat"
+    id: status_startdatum_monat
+  status_startdatum_jahr:
+    name: "Status Startdatum Jahr"
+    id: status_startdatum_jahr
+  status_startuhrzeit_std:
+    name: "Status Startuhrzeit Stunde"
+    id: status_startuhrzeit_std
+  status_startuhrzeit_min:
+    name: "Status Startuhrzeit Minute"
+    id: status_startuhrzeit_min
+  status_startuhrzeit_sek:
+    name: "Status Startuhrzeit Sekunde"
+    id: status_startuhrzeit_sek
+  status_compact:
+    name: "Status Compact"
+    id: status_compact
+  status_comfort:
+    name: "Status Comfort"
+    id: status_comfort
     
 sensor:
   - platform: uptime
