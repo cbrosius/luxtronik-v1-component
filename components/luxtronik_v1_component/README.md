@@ -17,7 +17,6 @@ wifi:
 
 # Enable logging
 logger:
-  level: VERBOSE
   # disable serial loggin
   baud_rate: 0
 
@@ -36,9 +35,9 @@ uart:
   data_bits: 8
   parity: NONE
   stop_bits: 1
-  debug:
-    direction: BOTH
-    dummy_receiver: false
+#  debug:
+#    direction: BOTH
+#    dummy_receiver: false
 
 external_components:
   - source:
@@ -71,7 +70,7 @@ luxtronik_v1_component:
   temperatur_brauchwasser_soll:
     name: "Temperatur Brauchwasser Soll"
     id: temperatur_brauchwasser_soll
-  temperatur_waermequelle_ein:
+  temperatur_waermequelle_eingang:
     name: "Temperatur Wärmequelle Eingang"
     id: temperatur_waermequelle_eingang
   temperatur_kaeltekreis:
@@ -151,14 +150,14 @@ sensor:
 
 button:
   - platform: template
-    name: CTRL_CheckUART
+    name: _CheckUART
     id: check_uart
     on_press:
       then:
         - uart.write:
             data: "\r\n"
   - platform: template
-    name: CTRL_Ask for Values
+    name: _Ask for Values
     id: ask_for_values
     on_press:
       then:

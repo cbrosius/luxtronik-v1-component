@@ -13,7 +13,7 @@ static const uint8_t READ_BUFFER_LENGTH = 255;
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
-  LuxtronikV1Component() : PollingComponent(30000) {}  // Default to 30 seconds
+  LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
 
   void setup() override;
   void loop() override;
@@ -71,40 +71,40 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
 
-  // Temperatur sensor pointers
-  sensor::Sensor *temperatur_vorlauf_{nullptr};  // Vorlauf Temperatur
-  sensor::Sensor *temperatur_ruecklauf_{nullptr};  // Rücklauf Temperatur
-  sensor::Sensor *temperatur_ruecklauf_soll_{nullptr};
-  sensor::Sensor *temperatur_heissgas_{nullptr};
-  sensor::Sensor *temperatur_aussen_{nullptr};
-  sensor::Sensor *temperatur_brauchwasser_{nullptr};
-  sensor::Sensor *temperatur_brauchwasser_soll_{nullptr};
-  sensor::Sensor *temperatur_waermequelle_eingang_{nullptr};
-  sensor::Sensor *temperatur_kaeltekreis_{nullptr};
-  sensor::Sensor *temperatur_mischkreis1_vorlauf_{nullptr};
-  sensor::Sensor *temperatur_mischkreis1_vorlauf_soll_{nullptr};
-  sensor::Sensor *temperatur_raumstation_{nullptr};
-  sensor::Sensor *eingang_abtau_soledruck_durchfluss_{nullptr};
+  // Temperature sensor pointers
+  sensor::Sensor *temperatur_vorlauf_{nullptr};                 // 1100/2
+  sensor::Sensor *temperatur_ruecklauf_{nullptr};               // 1100/3
+  sensor::Sensor *temperatur_ruecklauf_soll_{nullptr};          // 1100/4
+  sensor::Sensor *temperatur_heissgas_{nullptr};                // 1100/5
+  sensor::Sensor *temperatur_aussen_{nullptr};                  // 1100/6
+  sensor::Sensor *temperatur_brauchwasser_{nullptr};            // 1100/7
+  sensor::Sensor *temperatur_brauchwasser_soll_{nullptr};       // 1100/8
+  sensor::Sensor *temperatur_waermequelle_eingang_{nullptr};    // 1100/9
+  sensor::Sensor *temperatur_kaeltekreis_{nullptr};             // 1100/10
+  sensor::Sensor *temperatur_mischkreis1_vorlauf_{nullptr};     // 1100/11
+  sensor::Sensor *temperatur_mischkreis1_vorlauf_soll_{nullptr};// 1100/12
+  sensor::Sensor *temperatur_raumstation_{nullptr};             // 1100/13
   // Input sensor pointers
-  sensor::Sensor *eingang_sperrzeit_evu_{nullptr};
-  sensor::Sensor *eingang_hochdruckpressostat_{nullptr};
-  sensor::Sensor *eingang_motorschutz_{nullptr};
-  sensor::Sensor *eingang_niederdruckpressostat_{nullptr};
-  sensor::Sensor *eingang_fremdstromanode_{nullptr};
+  sensor::Sensor *eingang_abtau_soledruck_durchfluss_{nullptr}; // 1200/2
+  sensor::Sensor *eingang_sperrzeit_evu_{nullptr};              // 1200/3
+  sensor::Sensor *eingang_hochdruckpressostat_{nullptr};        // 1200/4
+  sensor::Sensor *eingang_motorschutz_{nullptr};                // 1200/5
+  sensor::Sensor *eingang_niederdruckpressostat_{nullptr};      // 1200/6
+  sensor::Sensor *eingang_fremdstromanode_{nullptr};            // 1200/7
   // Output sensor pointers
-  sensor::Sensor *ausgang_abtauventil_{nullptr};
-  sensor::Sensor *ausgang_brauchwasserpumpe_{nullptr};
-  sensor::Sensor *ausgang_fussbodenheizungspumpe_{nullptr};
-  sensor::Sensor *ausgang_heizungspumpe_{nullptr};
-  sensor::Sensor *ausgang_mischer_1_auf_{nullptr};
-  sensor::Sensor *ausgang_mischer_1_zu_{nullptr};
-  sensor::Sensor *ausgang_ventilator_waermepumpe_{nullptr};
-  sensor::Sensor *ausgang_ventilator_brunnen_{nullptr};
-  sensor::Sensor *ausgang_verdichter_1_{nullptr};
-  sensor::Sensor *ausgang_verdichter_2_{nullptr};
-  sensor::Sensor *ausgang_zirkulationspumpe_{nullptr};
-  sensor::Sensor *ausgang_zweiter_waermeerzeuger_{nullptr};
-  sensor::Sensor *ausgang_zweiter_waermeerzeuger_stoerung_{nullptr};
+  sensor::Sensor *ausgang_abtauventil_{nullptr};                // 1300/2
+  sensor::Sensor *ausgang_brauchwasserpumpe_{nullptr};          // 1300/3
+  sensor::Sensor *ausgang_fussbodenheizungspumpe_{nullptr};     // 1300/4
+  sensor::Sensor *ausgang_heizungspumpe_{nullptr};              // 1300/5
+  sensor::Sensor *ausgang_mischer_1_auf_{nullptr};              // 1300/6
+  sensor::Sensor *ausgang_mischer_1_zu_{nullptr};               // 1300/7
+  sensor::Sensor *ausgang_ventilator_waermepumpe_{nullptr};     // 1300/8
+  sensor::Sensor *ausgang_ventilator_brunnen_{nullptr};         // 1300/9
+  sensor::Sensor *ausgang_verdichter_1_{nullptr};               // 1300/10
+  sensor::Sensor *ausgang_verdichter_2_{nullptr};               // 1300/11
+  sensor::Sensor *ausgang_zirkulationspumpe_{nullptr};          // 1300/12
+  sensor::Sensor *ausgang_zweiter_waermeerzeuger_{nullptr};     // 1300/13
+  sensor::Sensor *ausgang_zweiter_waermeerzeuger_stoerung_{nullptr}; // 1300/14
 };
 
 }  // namespace luxtronik_v1_component
