@@ -106,6 +106,10 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
         start = end + 1;
     }
     
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+    
     if (values.size() < 2) return;  // At least count and one value needed
     
     size_t idx = 1;  // Skip count
@@ -147,6 +151,10 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
         start = end + 1;
     }
     
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+    
     if (values.size() < 2) return;  // At least count and one value needed
     
     size_t idx = 1;  // Skip count
@@ -182,6 +190,10 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
         start = end + 1;
     }
     
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+    
     if (values.size() < 2) return;  // At least count and one value needed
     
     size_t idx = 1;  // Skip count
@@ -215,12 +227,17 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
+    values.reserve(3);  // Pre-allocate for typical message size
     size_t start = 5;  // Skip "3405;"
     size_t end = 0;
     
     while ((end = msg.find(';', start)) != std::string::npos) {
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
+    }
+    // Add final value if exists
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
     }
     
     if (values.size() >= 2) {  // At least count and mode value
@@ -237,12 +254,17 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
 void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
+    values.reserve(3);  // Pre-allocate for typical message size
     size_t start = 5;  // Skip "3505;"
     size_t end = 0;
     
     while ((end = msg.find(';', start)) != std::string::npos) {
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
+    }
+    // Add final value if exists
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
     }
     
     if (values.size() >= 2) {  // At least count and mode value
