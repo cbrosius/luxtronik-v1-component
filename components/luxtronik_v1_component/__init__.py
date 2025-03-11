@@ -75,6 +75,12 @@ INPUT_OUTPUT_SCHEMA = sensor.sensor_schema(
     accuracy_decimals=0,    # no decimals
 )
 
+STRING_SENSOR_SCHEMA = sensor.sensor_schema(
+    state_class=STATE_CLASS_MEASUREMENT,
+    unit_of_measurement="", # no unit
+    accuracy_decimals=0,    # no decimals
+)
+
 CONFIG_SCHEMA = (
     cv.Schema({
         cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
@@ -113,7 +119,7 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_WARMWASSER): INPUT_OUTPUT_SCHEMA,
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_SOFTWAREVERSION): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_STATUS_SOFTWAREVERSION): STRING_SENSOR_SCHEMA,
         cv.Optional(CONF_STATUS_BIVALENZSTUFE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_STARTDATUM_TAG): INPUT_OUTPUT_SCHEMA,

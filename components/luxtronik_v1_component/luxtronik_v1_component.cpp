@@ -309,7 +309,16 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
 
     // Process all status sensors
     if (idx < values.size()) publish_status(status_anlagentyp_, values[idx++], "Anlagentyp");
-    if (idx < values.size()) publish_status(status_softwareversion_, values[idx++], "Softwareversion");
+    // special handling because Softwareversion is a string
+    if (idx < values.size()) {
+        if (status_softwareversion_ != nullptr) {
+            this->defer([this, value = values[idx]]() {
+                status_softwareversion_->publish_state(value);
+                ESP_LOGV(TAG, "Status Softwareversion: %s", value.c_str());
+            });
+        }
+        idx++;
+    }
     if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
     if (idx < values.size()) publish_status(status_betriebszustand_, values[idx++], "Betriebszustand");
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
