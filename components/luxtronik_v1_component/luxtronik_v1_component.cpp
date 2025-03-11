@@ -364,7 +364,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         int sekunde = std::atoi(values[idx++].c_str());
         
         char buffer[32];
-        snprintf(buffer, sizeof(buffer), "%02d.%02d.%04d %02d:%02d:%02d", 
+        snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d:%02d", 
                  tag, monat, jahr, stunde, minute, sekunde);
         
         this->defer([this, text = std::string(buffer)]() {
