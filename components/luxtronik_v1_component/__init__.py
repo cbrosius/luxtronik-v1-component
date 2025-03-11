@@ -9,6 +9,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
+AUTO_LOAD = ["sensor","text_sensor"]
 
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
