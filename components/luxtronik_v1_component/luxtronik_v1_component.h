@@ -160,19 +160,19 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   text_sensor::TextSensor *status_letzter_start_{nullptr};      // 1700/6-11
 
   // Error sensor pointers
-  sensor::Sensor *error0_fehlercode_numerisch_{nullptr};
+  sensor::Sensor *error0_fehlercode_{nullptr};
   text_sensor::TextSensor *error0_fehlerbeschreibung_{nullptr};
   text_sensor::TextSensor *error0_zeitpunkt_{nullptr};
-  sensor::Sensor *error1_fehlercode_numerisch_{nullptr};
+  sensor::Sensor *error1_fehlercode_{nullptr};
   text_sensor::TextSensor *error1_fehlerbeschreibung_{nullptr};
   text_sensor::TextSensor *error1_zeitpunkt_{nullptr};
-  sensor::Sensor *error2_fehlercode_numerisch_{nullptr};
+  sensor::Sensor *error2_fehlercode_{nullptr};
   text_sensor::TextSensor *error2_fehlerbeschreibung_{nullptr};
   text_sensor::TextSensor *error2_zeitpunkt_{nullptr};
-  sensor::Sensor *error3_fehlercode_numerisch_{nullptr};
+  sensor::Sensor *error3_fehlercode_{nullptr};
   text_sensor::TextSensor *error3_fehlerbeschreibung_{nullptr};
   text_sensor::TextSensor *error3_zeitpunkt_{nullptr};
-  sensor::Sensor *error4_fehlercode_numerisch_{nullptr};
+  sensor::Sensor *error4_fehlercode_{nullptr};
   text_sensor::TextSensor *error4_fehlerbeschreibung_{nullptr};
   text_sensor::TextSensor *error4_zeitpunkt_{nullptr};
 
