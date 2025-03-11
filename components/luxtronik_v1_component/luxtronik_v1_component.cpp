@@ -422,7 +422,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         values.push_back(msg.substr(start));
     }
 
-    if (values.size() < 2) return;  // At least count and one value needed
+    if (values.size() < 3) return;  // At least count and one value needed
     
     auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
