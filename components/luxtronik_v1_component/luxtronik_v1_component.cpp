@@ -47,7 +47,7 @@ void LuxtronikV1Component::loop() {
 }
 
 void LuxtronikV1Component::update() {
-    ESP_LOGD(TAG, "Polling Luxtronik V1 Component...");
+    ESP_LOGI(TAG, "Polling Luxtronik V1 Component...");
     if (this->parent_ != nullptr) {
         this->parent_->write_str("1100\r\n");
     }
@@ -143,7 +143,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
-    ESP_LOGD(TAG, "Input message received: %s", message);
+    ESP_LOGI(TAG, "Input message received: %s", message);
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 5;  // Skip "1200;"
@@ -182,7 +182,7 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
 }
 
 void LuxtronikV1Component::parse_output_message_(const char* message) {
-    ESP_LOGD(TAG, "Output message received: %s", message);
+    ESP_LOGI(TAG, "Output message received: %s", message);
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 5;  // Skip "1300;"
@@ -309,7 +309,17 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
 
     // Process all status sensors
     if (idx < values.size()) publish_status(status_anlagentyp_, values[idx++], "Anlagentyp");
-    if (idx < values.size()) publish_status(status_softwareversion_, values[idx++], "Softwareversion");
+
+    // Special handling for software version as text
+    if (idx < values.size() && status_softwareversion_ != nullptr) {
+        this->defer([this, value = values[idx]]() {
+            status_softwareversion_->publish_state(value);
+            ESP_LOGV(TAG, "Status Softwareversion: %s", value.c_str());
+        });
+        idx++;
+    }
+
+    // Process remaining status sensors
     if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
     if (idx < values.size()) publish_status(status_betriebszustand_, values[idx++], "Betriebszustand");
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
