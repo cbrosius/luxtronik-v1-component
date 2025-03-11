@@ -232,6 +232,47 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 
 }
 
+void LuxtronikV1Component::parse_error_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 5;  // Skip "1500;"  
+    size_t end = 0;
+
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 0;  // get error index
+
+    auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            publish_state_deferred_(sensor, val, "Output", name);
+        }
+    };
+
+    // Process all output sensors
+    if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
+    if (idx < values.size()) publish_output(error0_fehlerbeschreibung_, values[idx++], "error0_fehlerbeschreibung");
+    if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
+    if (idx < values.size()) publish_output(error1_fehlerbeschreibung_, values[idx++], "error1_fehlerbeschreibung");
+    if (idx < values.size()) publish_output(error2_fehlercode_, values[idx++], "error2_fehlercode");
+    if (idx < values.size()) publish_output(error2_fehlerbeschreibung_, values[idx++], "error2_fehlerbeschreibung");
+    if (idx < values.size()) publish_output(error3_fehlercode_, values[idx++], "error3_fehlercode");
+    if (idx < values.size()) publish_output(error3_fehlerbeschreibung_, values[idx++], "error3_fehlerbeschreibung");
+    if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
+    if (idx < values.size()) publish_output(error4_fehlerbeschreibung_, values[idx++], "error4_fehlerbeschreibung");
+    
+}
+
 // Add helper function implementation
 std::string LuxtronikV1Component::get_modus_text_(int state) {
     switch (state) {
@@ -450,9 +491,6 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand Numerisch: %s", this->status_betriebszustand_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand: %s", this->status_betriebszustand_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Letzter Start: %s", this->status_letzter_start_ ? "Set" : "Not Set");
-}
-
-void LuxtronikV1Component::parse_error_message_(const char* message) {
 }
 
 std::string LuxtronikV1Component::get_error_description_(int error_code) {
