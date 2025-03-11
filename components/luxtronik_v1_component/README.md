@@ -17,7 +17,6 @@ wifi:
 
 # Enable logging
 logger:
-  level: INFO
   # disable serial loggin
   baud_rate: 0
 
