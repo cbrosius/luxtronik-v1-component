@@ -309,6 +309,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
 
     // Process all status sensors
     if (idx < values.size()) publish_status(status_anlagentyp_, values[idx++], "Anlagentyp");
+
     // special handling because Softwareversion is a string
     if (idx < values.size()) {
         if (status_softwareversion_ != nullptr) {
@@ -319,8 +320,30 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         }
         idx++;
     }
+
     if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
-    if (idx < values.size()) publish_status(status_betriebszustand_numerisch_, values[idx++], "Betriebszustand Numerisch");
+
+    // special handling because Betriebszustand has a numeric and a string value
+    if (idx < values.size()) {
+        float val = std::atof(values[idx].c_str());
+        if (status_betriebszustand_numerisch_ != nullptr) {
+            publish_state_deferred_(status_betriebszustand_numerisch_, val, "Status", "Betriebszustand Numerisch");
+            if (status_betriebszustand_ != nullptr) {
+                switch (status_betriebszustand_numerisch_) {
+                    case 0: std::string state_text = "Heizen";
+                    case 1: std::string state_text = "Warmwasser";
+                    case 3: std::string state_text = "EVU Sperre";
+                    case 5: std::string state_text = "Bereitschaft";
+                    default: return "Unbekannt";
+                }
+                this->defer([this, state_text]() {
+                    status_betriebszustand_->publish_state(state_text);
+                    ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
+                });
+            }
+        }
+        idx++;
+    }
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
     if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
     if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
