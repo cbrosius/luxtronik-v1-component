@@ -437,6 +437,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
     switch (std::atoi(values[idx].c_str()))
     {
     case 1500:
+        // skip Fehlerindex
+        idx++;
         // skip Count
         idx++;
         // Process Fehlercode
@@ -452,6 +454,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1501:
+        // skip Fehlerindex
+        idx++;
         // skip Count
         idx++;
         // Process Fehlercode
@@ -467,6 +471,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1502:
+        // skip Fehlerindex
+        idx++;
         // skip Count
         idx++;
         // Process Fehlercode
@@ -482,6 +488,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1503:
+        // skip Fehlerindex
+        idx++;
         // skip Count
         idx++;
         // Process Fehlercode
@@ -497,6 +505,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1504:
+        // skip Fehlerindex
+        idx++;
         // skip Count
         idx++;
         // Process Fehlercode
