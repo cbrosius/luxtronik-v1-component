@@ -8,7 +8,8 @@ from esphome.const import (
     UNIT_CELSIUS,
 )
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = ["uart", "text_sensor"]
+
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
 CONF_TEMPERATUR_RUECKLAUF_SOLL = "temperatur_ruecklauf_soll"
