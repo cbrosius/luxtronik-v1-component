@@ -433,7 +433,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     // Process Fehlerindex
     size_t idx = 0;  // get error index
-    // ESP_LOGD(TAG,"Error index: %s", values[idx].c_str());
+    ESP_LOGD(TAG,"Error index: %s", values[idx].c_str());
     switch (std::atoi(values[idx].c_str()))
     {
         case 1500:{
@@ -448,7 +448,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
                 this->defer([this, error_text]() {
                     error0_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGV(TAG, "Error0 Fehlerbeschreibung: %s", error_text.c_str());
+                    ESP_LOGD(TAG, "Error0 Fehlerbeschreibung: %s", error_text.c_str());
                 });
                 idx++;
             }
@@ -466,7 +466,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 
                 this->defer([this, text = std::string(buffer)]() {
                     error0_zeitpunkt_->publish_state(text);
-                    ESP_LOGV(TAG, "Error0 Zeitpunkt: %s", text.c_str());
+                    ESP_LOGD(TAG, "Error0 Zeitpunkt: %s", text.c_str());
                 });
             }
             break;
@@ -483,7 +483,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
                 this->defer([this, error_text]() {
                     error1_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGV(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
+                    ESP_LOGD(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
                 });
                 idx++;
             }
@@ -501,7 +501,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 
                 this->defer([this, text = std::string(buffer)]() {
                     error1_zeitpunkt_->publish_state(text);
-                    ESP_LOGV(TAG, "Error1 Zeitpunkt: %s", text.c_str());
+                    ESP_LOGD(TAG, "Error1 Zeitpunkt: %s", text.c_str());
                 });
             }
             break;
@@ -553,7 +553,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
                 this->defer([this, error_text]() {
                     error3_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGV(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
+                    ESP_LOGD(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
                 });
                 idx++;
             }
@@ -571,7 +571,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 
                 this->defer([this, text = std::string(buffer)]() {
                     error3_zeitpunkt_->publish_state(text);
-                    ESP_LOGV(TAG, "Error3 Zeitpunkt: %s", text.c_str());
+                    ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
                 });
             }
             break;
