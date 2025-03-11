@@ -95,6 +95,10 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             parse_status_message_(msg.c_str());
         });
+    } else if (prefix == "1500") {
+        this->defer([this, msg]() {
+            parse_error_message_(msg.c_str());
+        });
     }
 }
 
@@ -446,6 +450,77 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand Numerisch: %s", this->status_betriebszustand_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand: %s", this->status_betriebszustand_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Letzter Start: %s", this->status_letzter_start_ ? "Set" : "Not Set");
+}
+
+std::string LuxtronikV1Component::get_error_description_(int error_code) {
+    switch (error_code) {
+        case 701: return "Niederdruckstörung - Niederdruckpressostat oder -sensor hat mehrfach ausgelöst.";
+        case 702: return "Niederdrucksperre (Reset auto.) - Niederdruck hat angesprochen, automatischer Neustart.";
+        case 703: return "Frostschutz - Vorlauftemperatur < 5°C erkannt.";
+        case 704: return "Heißgasstörung - Max. Temperatur im Heißgaskreis überschritten.";
+        case 705: return "Motorschutz VEN - Motorschutz des Ventilators hat ausgelöst.";
+        case 706: return "Motorschutz BSUP - Motorschutz der Sole-/Brunnenwasserpumpe oder Verdichter.";
+        case 707: return "Kodierungsfehler WP - Kodierungswiderstand oder Verbindung fehlerhaft.";
+        case 708: return "Fühler Rücklauf - Bruch/Kurzschluss des Rücklauffühlers.";
+        case 709: return "Fühler Vorlauf - Bruch/Kurzschluss des Vorlauffühlers.";
+        case 710: return "Fühler Heißgas - Bruch/Kurzschluss des Heißgasfühlers.";
+        case 711: return "Fühler Außentemperatur - Bruch/Kurzschluss des Außentemperaturfühlers.";
+        case 712: return "Fühler Trinkwarmwasser - Bruch/Kurzschluss des Trinkwarmwasserfühlers.";
+        case 713: return "Fühler WQ-Eintritt - Bruch/Kurzschluss des Wärmequellenfühlers (Eintritt).";
+        case 714: return "Heißgas WW - Temperaturgrenze Trinkwarmwasser überschritten.";
+        case 715: return "Hochdruck-Abschaltung (Reset) - Hochdruckpressostat hat angesprochen.";
+        case 716: return "Hochdruckstörung - Hochdruckpressostat mehrfach angesprochen.";
+        case 717: return "Durchfluss-WQ - Durchflussschalter hat angesprochen.";
+        case 718: return "Max. Außentemp. (Reset) - Außentemperatur überschritten.";
+        case 719: return "Min. Außentemp. (Reset) - Außentemperatur unterschritten.";
+        case 720: return "WQ-Temperatur (Reset) - Verdampferaustrittstemp. mehrfach unter Sicherheitswert.";
+        case 721: return "Niederdruckabschaltung (Reset) - Niederdruckpressostat oder -sensor hat angesprochen.";
+        case 722: return "Tempdiff Heizwasser - Temperaturspreizung im Heizbetrieb ist negativ.";
+        case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkwarmwasserbetrieb ist negativ.";
+        case 724: return "Tempdiff Abtauen - Temperaturspreizung im Heizkreis ist während des Abtauens > 15 K.";
+        case 725: return "Anlagefehler WW - Trinkwarmwasserbetrieb gestört, gewünschte Speichertemperatur ist weit unterschritten.";
+        case 726: return "Fühler Mischkreis 1 - Bruch oder Kurzschluss des Mischkreisfühlers.";
+        case 727: return "Soledruck - Soledruckpressostat hat angesprochen.";
+        case 728: return "Fühler WQ-Aus - Bruch oder Kurzschluss des Wärmequellenfühlers (Austritt).";
+        case 729: return "Drehfeldfehler - Verdichter nach dem Einschalten ohne Leistung.";
+        case 730: return "Leistung Ausheizen - Ausheizprogramm konnte eine VL-Temperaturstufe nicht erreichen.";
+        case 731: return "Zeitüberschreitung TDI - Thermische Desinfektion konnte nicht durchgeführt werden.";
+        case 732: return "Störung Kühlung - Heizwassertemperatur von 16°C mehrfach unterschritten.";
+        case 733: return "Störung Anode - Störmeldeeingang der Fremdstromanode hat angesprochen.";
+        case 734: return "Störung Anode - Fehler liegt seit mehr als zwei Wochen an, Trinkwarmwasserbereitung gesperrt.";
+        case 735: return "Fühler Ext. En - Bruch oder Kurzschluss des Fühlers 'Externe Energiequelle' (TEE).";
+        case 736: return "Fühler Solarkollektor - Bruch oder Kurzschluss des Solarkollektorfühlers.";
+        case 737: return "Fühler Solarspeicher - Bruch oder Kurzschluss des Solarspeicherfühlers.";
+        case 738: return "Fühler Mischkreis 2 - Bruch oder Kurzschluss des Mischkreisfühlers 2.";
+        case 739: return "Fühler Mischkreis 3 - Bruch oder Kurzschluss des Mischkreisfühlers 3.";
+        case 750: return "Fühler Rücklauf extern - Bruch oder Kurzschluss des externen Rücklauffühlers.";
+        case 751: return "Phasenüberwachungsfehler - Phasenfolgerelais hat angesprochen.";
+        case 752: return "Phasenüberwachungs-/Durchflussfehler - Phasenfolgerelais oder Durchflussschalter hat angesprochen.";
+        case 755: return "Verbindung zu Slave verloren - Ein Slave hat für mehr als 5 Minuten nicht geantwortet.";
+        case 756: return "Verbindung zu Master verloren - Master hat für mehr als 5 Minuten nicht geantwortet.";
+        case 757: return "ND-Störung bei W/W-Gerät - Niederdruckpressostat hat mehrfach oder länger als 20 Sekunden angesprochen.";
+        case 758: return "Störung Abtauung - Abtauung wurde 5-mal in Folge zu niedriger Vorlauftemperatur beendet.";
+        case 759: return "Meldung TDI - Thermische Desinfektion konnte nicht korrekt durchgeführt werden.";
+        case 760: return "Störung Abtauung - Abtauung wurde 5-mal in Folge über Maximalzeit beendet.";
+        case 761: return "LIN-Verbindung unterbrochen - LIN-Timeout.";
+        case 762: return "Fühler Ansaug Verdichter - Fühlerfehler Tü (Ansaug Verdichter).";
+        case 763: return "Fühler Ansaug-Verdampfer - Fühlerfehler Tü1 (Ansaug Verdampfer).";
+        case 764: return "Fühler Verdichterheizung - Fühlerfehler Verdichterheizung.";
+        case 765: return "Überhitzung - Überhitzung länger als 5 Minuten unter 2K.";
+        case 766: return "Einsatzgrenzen-VD - Betrieb 5 Minuten außerhalb des Einsatzbereichs des Verdichters.";
+        case 767: return "STB E-Stab - STB des Heizstabs wurde aktiviert.";
+        case 768: return "Durchflussüberwachung - 5-mal zu geringer Durchfluss vor Abtauung.";
+        case 769: return "Pumpenansteuerung - Kein gültiges Durchflusssignal von der Umwälzpumpe.";
+        case 770: return "Niedrige Überhitzung - Überhitzung über längere Zeit unter Grenzwert.";
+        case 771: return "Hohe Überhitzung - Überhitzung über längere Zeit über Grenzwert.";
+        case 776: return "Einsatzgrenzen-VD - Verdichter läuft außerhalb Einsatzgrenzen.";
+        case 777: return "Expansionsventil - Expansionsventil defekt.";
+        case 778: return "Fühler Niederdruck - Niederdruckfühler defekt.";
+        case 779: return "Fühler Hochdruck - Hochdruckfühler defekt.";
+        case 780: return "Fühler EVI - EVI-Fühler defekt.";
+        case 799: return "ModBus ASB - Keine ModBus-Kommunikation mit ASB-Platine.";
+        default: return "Unbekannter Fehler";
+    }
 }
 
 }  // namespace luxtronik_v1_component

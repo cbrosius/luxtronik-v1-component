@@ -54,8 +54,23 @@ CONF_STATUS_BIVALENZSTUFE = "status_bivalenzstufe"
 CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH = "status_betriebszustand_numerisch"
 CONF_STATUS_BETRIEBSZUSTAND = "status_betriebszustand"
 CONF_STATUS_LETZTER_START = "status_letzter_start"
-CONF_STATUS_COMPACT = "status_compact"
-CONF_STATUS_COMFORT = "status_comfort"
+
+# Add error sensor constants after status sensors
+CONF_ERROR0_FEHLERCODE = "error0_fehlercode"
+CONF_ERROR0_FEHLERBESCHREIBUNG = "error0_fehlerbeschreibung"
+CONF_ERROR0_ZEITPUNKT = "error0_zeitpunkt"
+CONF_ERROR1_FEHLERCODE = "error1_fehlercode"
+CONF_ERROR1_FEHLERBESCHREIBUNG = "error1_fehlerbeschreibung"
+CONF_ERROR1_ZEITPUNKT = "error1_zeitpunkt"
+CONF_ERROR2_FEHLERCODE = "error2_fehlercode"
+CONF_ERROR2_FEHLERBESCHREIBUNG = "error2_fehlerbeschreibung"
+CONF_ERROR2_ZEITPUNKT = "error2_zeitpunkt"
+CONF_ERROR3_FEHLERCODE = "error3_fehlercode"
+CONF_ERROR3_FEHLERBESCHREIBUNG = "error3_fehlerbeschreibung"
+CONF_ERROR3_ZEITPUNKT = "error3_zeitpunkt"
+CONF_ERROR4_FEHLERCODE = "error4_fehlercode"
+CONF_ERROR4_FEHLERBESCHREIBUNG = "error4_fehlerbeschreibung"
+CONF_ERROR4_ZEITPUNKT = "error4_zeitpunkt"
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -122,8 +137,22 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_STATUS_LETZTER_START): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_STATUS_COMPACT): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_COMFORT): INPUT_OUTPUT_SCHEMA,
+        # Error sensors
+        cv.Optional(CONF_ERROR0_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_ERROR0_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR0_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR1_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_ERROR1_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR1_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR2_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_ERROR2_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR2_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR3_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_ERROR3_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR3_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR4_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_ERROR4_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_ERROR4_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -297,3 +326,62 @@ async def to_code(config):
         sens = await text_sensor.new_text_sensor(config[CONF_STATUS_LETZTER_START])
         cg.add(var.set_status_letzter_start_sensor(sens))
     
+    if CONF_ERROR0_FEHLERCODE in config:
+        sens = await sensor.new_sensor(config[CONF_ERROR0_FEHLERCODE])
+        cg.add(var.set_error0_fehlercode_sensor(sens))
+    
+    if CONF_ERROR0_FEHLERBESCHREIBUNG in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR0_FEHLERBESCHREIBUNG])
+        cg.add(var.set_error0_fehlerbeschreibung_sensor(sens))
+
+    if CONF_ERROR0_ZEITPUNKT in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR0_ZEITPUNKT])
+        cg.add(var.set_error0_zeitpunkt_sensor(sens))
+    
+    if CONF_ERROR1_FEHLERCODE in config:
+        sens = await sensor.new_sensor(config[CONF_ERROR1_FEHLERCODE])
+        cg.add(var.set_error1_fehlercode_sensor(sens))
+    
+    if CONF_ERROR1_FEHLERBESCHREIBUNG in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR1_FEHLERBESCHREIBUNG])
+        cg.add(var.set_error1_fehlerbeschreibung_sensor(sens))
+    
+    if CONF_ERROR1_ZEITPUNKT in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR1_ZEITPUNKT])
+        cg.add(var.set_error1_zeitpunkt_sensor(sens))
+    
+    if CONF_ERROR2_FEHLERCODE in config:
+        sens = await sensor.new_sensor(config[CONF_ERROR2_FEHLERCODE])
+        cg.add(var.set_error2_fehlercode_sensor(sens))
+    
+    if CONF_ERROR2_FEHLERBESCHREIBUNG in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR2_FEHLERBESCHREIBUNG])
+        cg.add(var.set_error2_fehlerbeschreibung_sensor(sens))
+    
+    if CONF_ERROR2_ZEITPUNKT in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR2_ZEITPUNKT])
+        cg.add(var.set_error2_zeitpunkt_sensor(sens))
+    
+    if CONF_ERROR3_FEHLERCODE in config:
+        sens = await sensor.new_sensor(config[CONF_ERROR3_FEHLERCODE])
+        cg.add(var.set_error3_fehlercode_sensor(sens))
+    
+    if CONF_ERROR3_FEHLERBESCHREIBUNG in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR3_FEHLERBESCHREIBUNG])
+        cg.add(var.set_error3_fehlerbeschreibung_sensor(sens))
+    
+    if CONF_ERROR3_ZEITPUNKT in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR3_ZEITPUNKT])
+        cg.add(var.set_error3_zeitpunkt_sensor(sens))
+    
+    if CONF_ERROR4_FEHLERCODE in config:
+        sens = await sensor.new_sensor(config[CONF_ERROR4_FEHLERCODE])
+        cg.add(var.set_error4_fehlercode_sensor(sens))
+
+    if CONF_ERROR4_FEHLERBESCHREIBUNG in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR4_FEHLERBESCHREIBUNG])
+        cg.add(var.set_error4_fehlerbeschreibung_sensor(sens))
+    
+    if CONF_ERROR4_ZEITPUNKT in config:
+        sens = await text_sensor.new_text_sensor(config[CONF_ERROR4_ZEITPUNKT])
+        cg.add(var.set_error4_zeitpunkt_sensor(sens))

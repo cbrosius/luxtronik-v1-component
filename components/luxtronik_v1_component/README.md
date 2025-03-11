@@ -174,7 +174,53 @@ luxtronik_v1_component:
   status_letzter_start:
     name: "Status Letzter Start"
     id: status_letzter_start
-    
+  # Fehler sensors
+  error0_zeitpunkt:
+    name: "Error0 Zeitpunkt"
+    id: error0_zeitpunkt
+  error0_fehlercode:
+    name: "Error0 Fehlercode"
+    id: error0_fehlercode
+  error0_fehlerbeschreibung:
+    name: "Error0 Fehlerbeschreibung"
+    id: error0_fehlerbeschreibung
+  error1_zeitpunkt:
+    name: "Error1 Zeitpunkt"
+    id: error1_zeitpunkt
+  error1_fehlercode:
+    name: "Error1 Fehlercode"
+    id: error1_fehlercode
+  error1_fehlerbeschreibung:
+    name: "Error1 Fehlerbeschreibung"
+    id: error1_fehlerbeschreibung
+  error2_zeitpunkt:
+    name: "Error2 Zeitpunkt"
+    id: error2_zeitpunkt
+  error2_fehlercode:
+    name: "Error2 Fehlercode"
+    id: error2_fehlercode
+  error2_fehlerbeschreibung:
+    name: "Error2 Fehlerbeschreibung"
+    id: error2_fehlerbeschreibung
+  error3_zeitpunkt:
+    name: "Error3 Zeitpunkt"
+    id: error3_zeitpunkt
+  error3_fehlercode:
+    name: "Error3 Fehlercode"
+    id: error3_fehlercode
+  error3_fehlerbeschreibung:
+    name: "Error3 Fehlerbeschreibung"
+    id: error3_fehlerbeschreibung
+  error4_zeitpunkt:
+    name: "Error4 Zeitpunkt"
+    id: error4_zeitpunkt
+  error4_fehlercode:
+    name: "Error4 Fehlercode"
+    id: error4_fehlercode
+  error4_fehlerbeschreibung:
+    name: "Error4 Fehlerbeschreibung"
+    id: error4_fehlerbeschreibung
+
 button:
   - platform: template
     name: " UART prüfen"
