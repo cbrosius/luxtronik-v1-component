@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor
+from esphome.components import uart, sensor, text_sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_TEMPERATURE,
@@ -75,11 +75,7 @@ INPUT_OUTPUT_SCHEMA = sensor.sensor_schema(
     accuracy_decimals=0,    # no decimals
 )
 
-STRING_SENSOR_SCHEMA = sensor.sensor_schema(
-    state_class=STATE_CLASS_MEASUREMENT,
-    unit_of_measurement="", # no unit
-    accuracy_decimals=0,    # no decimals
-)
+TEXT_SENSOR_SCHEMA = text_sensor.text_sensor_schema()
 
 CONFIG_SCHEMA = (
     cv.Schema({
@@ -119,7 +115,7 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_WARMWASSER): INPUT_OUTPUT_SCHEMA,
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_SOFTWAREVERSION): STRING_SENSOR_SCHEMA,
+        cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_STATUS_BIVALENZSTUFE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_STARTDATUM_TAG): INPUT_OUTPUT_SCHEMA,
@@ -276,7 +272,7 @@ async def to_code(config):
         cg.add(var.set_status_anlagentyp_sensor(sens))
     
     if CONF_STATUS_SOFTWAREVERSION in config:
-        sens = await sensor.new_sensor(config[CONF_STATUS_SOFTWAREVERSION])
+        sens = await text_sensor.new_text_sensor(config[CONF_STATUS_SOFTWAREVERSION])
         cg.add(var.set_status_softwareversion_sensor(sens))
     
     if CONF_STATUS_BIVALENZSTUFE in config:

@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 
 namespace esphome {
 namespace luxtronik_v1_component {
@@ -133,7 +134,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
 
   // Status sensor pointers
   sensor::Sensor *status_anlagentyp_{nullptr};          // 1700/2
-  sensor::Sensor *status_softwareversion_{nullptr};     // 1700/3
+  text_sensor::TextSensor *status_softwareversion_{nullptr};     // 1700/3
   sensor::Sensor *status_bivalenzstufe_{nullptr};       // 1700/4
   sensor::Sensor *status_betriebszustand_{nullptr};     // 1700/5
   sensor::Sensor *status_startdatum_tag_{nullptr};      // 1700/6
