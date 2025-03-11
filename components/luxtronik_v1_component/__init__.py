@@ -42,7 +42,9 @@ CONF_AUSGANG_VERDICHTER_2 = "ausgang_verdichter_2"
 CONF_AUSGANG_ZIRKULATIONSPUMPE = "ausgang_zirkulationspumpe"
 CONF_AUSGANG_ZWEITER_WAERMEERZEUGER = "ausgang_zweiter_waermeerzeuger"
 CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG = "ausgang_zweiter_waermeerzeuger_stoerung"
+CONF_MODUS_HEIZUNG_NUMERISCH = "modus_heizung_numerisch"
 CONF_MODUS_HEIZUNG = "modus_heizung"
+CONF_MODUS_WARMWASSER_NUMERISCH = "modus_warmwasser_numerisch"
 CONF_MODUS_WARMWASSER = "modus_warmwasser"
 
 # Add status sensor constants after mode sensors
@@ -109,8 +111,10 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_AUSGANG_ZIRKULATIONSPUMPE): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_HEIZUNG): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_WARMWASSER): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional(CONF_MODUS_WARMWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
@@ -253,12 +257,20 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG])
         cg.add(var.set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sens))
     
+    if CONF_MODUS_HEIZUNG_NUMERISCH in config:
+        sens = await sensor.new_sensor(config[CONF_MODUS_HEIZUNG_NUMERISCH])
+        cg.add(var.set_modus_heizung_numerisch_sensor(sens))
+    
     if CONF_MODUS_HEIZUNG in config:
-        sens = await sensor.new_sensor(config[CONF_MODUS_HEIZUNG])
+        sens = await text_sensor.new_text_sensor(config[CONF_MODUS_HEIZUNG])
         cg.add(var.set_modus_heizung_sensor(sens))
     
+    if CONF_MODUS_WARMWASSER_NUMERISCH in config:
+        sens = await sensor.new_sensor(config[CONF_MODUS_WARMWASSER_NUMERISCH])
+        cg.add(var.set_modus_warmwasser_numerisch_sensor(sens))
+    
     if CONF_MODUS_WARMWASSER in config:
-        sens = await sensor.new_sensor(config[CONF_MODUS_WARMWASSER])
+        sens = await text_sensor.new_text_sensor(config[CONF_MODUS_WARMWASSER])
         cg.add(var.set_modus_warmwasser_sensor(sens))
     
     if CONF_STATUS_ANLAGENTYP in config:
@@ -285,10 +297,3 @@ async def to_code(config):
         sens = await text_sensor.new_text_sensor(config[CONF_STATUS_LETZTER_START])
         cg.add(var.set_status_letzter_start_sensor(sens))
     
-    if CONF_STATUS_COMPACT in config:
-        sens = await sensor.new_sensor(config[CONF_STATUS_COMPACT])
-        cg.add(var.set_status_compact_sensor(sens))
-    
-    if CONF_STATUS_COMFORT in config:
-        sens = await sensor.new_sensor(config[CONF_STATUS_COMFORT])
-        cg.add(var.set_status_comfort_sensor(sens))

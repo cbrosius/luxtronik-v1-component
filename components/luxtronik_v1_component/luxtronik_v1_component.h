@@ -61,8 +61,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sensor::Sensor *sens) { ausgang_zweiter_waermeerzeuger_stoerung_ = sens; }
 
   // Mode sensor setters
-  void set_modus_heizung_sensor(sensor::Sensor *sens) { modus_heizung_ = sens; }
-  void set_modus_warmwasser_sensor(sensor::Sensor *sens) { modus_warmwasser_ = sens; }
+  void set_modus_heizung_numerisch_sensor(sensor::Sensor *sens) { modus_heizung_numerisch_ = sens; }
+  void set_modus_heizung_sensor(text_sensor::TextSensor *sens) { modus_heizung_ = sens; }
+  void set_modus_warmwasser_numerisch_sensor(sensor::Sensor *sens) { modus_warmwasser_numerisch_ = sens; }
+  void set_modus_warmwasser_sensor(text_sensor::TextSensor *sens) { modus_warmwasser_ = sens; }
 
   // Status sensor setters
   void set_status_anlagentyp_sensor(sensor::Sensor *sens) { status_anlagentyp_ = sens; }
@@ -83,6 +85,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_status_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
   std::string get_betriebszustand_text_(int state);
+  std::string get_modus_text_(int state);
 
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];
@@ -123,9 +126,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *ausgang_zweiter_waermeerzeuger_{nullptr};     // 1300/13
   sensor::Sensor *ausgang_zweiter_waermeerzeuger_stoerung_{nullptr}; // 1300/14
   
-  // Mode sensor pointers
-  sensor::Sensor *modus_heizung_{nullptr};                      // 3405/2
-  sensor::Sensor *modus_warmwasser_{nullptr};                   // 3505/2
+  // Modus sensor pointers
+  sensor::Sensor *modus_heizung_numerisch_{nullptr};                // 3405/2
+  text_sensor::TextSensor *modus_heizung_{nullptr};                // 3405/2
+  sensor::Sensor *modus_warmwasser_numerisch_{nullptr};            // 3505/2
+  text_sensor::TextSensor *modus_warmwasser_{nullptr};             // 3505/2
 
   // Status sensor pointers
   sensor::Sensor *status_anlagentyp_{nullptr};                  // 1700/2

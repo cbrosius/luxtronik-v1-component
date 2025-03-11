@@ -228,6 +228,19 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 
 }
 
+// Add helper function implementation
+std::string LuxtronikV1Component::get_modus_text_(int state) {
+    switch (state) {
+        case 0: return "Automatik";
+        case 1: return "Zweiter Waermeerzeuger";
+        case 2: return "Party";
+        case 3: return "Ferien";
+        case 4: return "Aus";
+        default: return "Unbekannt";
+    }
+}
+
+// Update parse_modus_heizung_message_
 void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
@@ -245,9 +258,16 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     }
     
     if (values.size() >= 2) {  // At least count and mode value
+        float val = std::atof(values[1].c_str());
+        if (modus_heizung_numerisch_ != nullptr) {
+            publish_state_deferred_(modus_heizung_numerisch_, val, "Mode", "Heizung Numerisch");
+        }
         if (modus_heizung_ != nullptr) {
-            float val = std::atof(values[1].c_str());
-            publish_state_deferred_(modus_heizung_, val, "Mode", "Heizung");
+            std::string mode_text = get_modus_text_(static_cast<int>(val));
+            this->defer([this, mode_text]() {
+                modus_heizung_->publish_state(mode_text);
+                ESP_LOGV(TAG, "Mode Heizung: %s", mode_text.c_str());
+            });
         }
     }
     
@@ -255,6 +275,7 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     this->parent_->write_str("3505\r\n");
 }
 
+// Update parse_modus_warmwasser_message_
 void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
@@ -272,9 +293,16 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
     }
     
     if (values.size() >= 2) {  // At least count and mode value
+        float val = std::atof(values[1].c_str());
+        if (modus_warmwasser_numerisch_ != nullptr) {
+            publish_state_deferred_(modus_warmwasser_numerisch_, val, "Mode", "Warmwasser Numerisch");
+        }
         if (modus_warmwasser_ != nullptr) {
-            float val = std::atof(values[1].c_str());
-            publish_state_deferred_(modus_warmwasser_, val, "Mode", "Warmwasser");
+            std::string mode_text = get_modus_text_(static_cast<int>(val));
+            this->defer([this, mode_text]() {
+                modus_warmwasser_->publish_state(mode_text);
+                ESP_LOGV(TAG, "Mode Warmwasser: %s", mode_text.c_str());
+            });
         }
     }
     
@@ -408,7 +436,10 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zirkulationspumpe: %s", this->ausgang_zirkulationspumpe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger: %s", this->ausgang_zweiter_waermeerzeuger_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung Numerisch: %s", this->modus_heizung_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung: %s", this->modus_heizung_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser Numerisch: %s", this->modus_warmwasser_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser: %s", this->modus_warmwasser_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Anlagentyp: %s", this->status_anlagentyp_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Softwareversion: %s", this->status_softwareversion_ ? "Set" : "Not Set");
