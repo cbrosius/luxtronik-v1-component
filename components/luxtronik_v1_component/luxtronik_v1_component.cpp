@@ -538,7 +538,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     }
-    default:
+    default:{
         break;
     }   
 }
