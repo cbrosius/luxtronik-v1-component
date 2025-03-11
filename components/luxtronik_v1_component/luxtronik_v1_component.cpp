@@ -452,6 +452,9 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Status Letzter Start: %s", this->status_letzter_start_ ? "Set" : "Not Set");
 }
 
+void LuxtronikV1Component::parse_error_message_(const char* message) {
+}
+
 std::string LuxtronikV1Component::get_error_description_(int error_code) {
     switch (error_code) {
         case 701: return "Niederdruckstörung - Niederdruckpressostat oder -sensor hat mehrfach ausgelöst.";
