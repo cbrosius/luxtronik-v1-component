@@ -436,7 +436,6 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zirkulationspumpe: %s", this->ausgang_zirkulationspumpe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger: %s", this->ausgang_zweiter_waermeerzeuger_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung Numerisch: %s", this->modus_heizung_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung: %s", this->modus_heizung_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser Numerisch: %s", this->modus_warmwasser_numerisch_ ? "Set" : "Not Set");

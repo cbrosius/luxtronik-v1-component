@@ -146,9 +146,15 @@ luxtronik_v1_component:
   modus_heizung:
     name: "Modus Heizung"
     id: modus_heizung
+  modus_heizung_numerisch:
+    name: "Modus Heizung Numerisch"
+    id: modus_heizung_numerisch
   modus_warmwasser:
     name: "Modus Warmwasser"
     id: modus_warmwasser
+  modus_warmwasser_numerisch:
+    name: "Modus Warmwasser Numerisch"
+    id: modus_warmwasser_numerisch
   # Status sensors
   status_anlagentyp:
     name: "Status Anlagentyp"
@@ -162,31 +168,13 @@ luxtronik_v1_component:
   status_betriebszustand:
     name: "Status Betriebszustand"
     id: status_betriebszustand
-  status_startdatum_tag:
-    name: "Status Startdatum Tag"
-    id: status_startdatum_tag
-  status_startdatum_monat:
-    name: "Status Startdatum Monat"
-    id: status_startdatum_monat
-  status_startdatum_jahr:
-    name: "Status Startdatum Jahr"
-    id: status_startdatum_jahr
-  status_startuhrzeit_std:
-    name: "Status Startuhrzeit Stunde"
-    id: status_startuhrzeit_std
-  status_startuhrzeit_min:
-    name: "Status Startuhrzeit Minute"
-    id: status_startuhrzeit_min
-  status_startuhrzeit_sek:
-    name: "Status Startuhrzeit Sekunde"
-    id: status_startuhrzeit_sek
-  status_compact:
-    name: "Status Compact"
-    id: status_compact
-  status_comfort:
-    name: "Status Comfort"
-    id: status_comfort
-
+  status_betriebszustand_numerisch:
+    name: "Status Betriebszustand Numerisch"
+    id: status_betriebszustand_numerisch
+  status_letzter_start:
+    name: "Status Letzter Start"
+    id: status_letzter_start
+    
 button:
   - platform: template
     name: " UART prüfen"
