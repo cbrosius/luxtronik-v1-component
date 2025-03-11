@@ -232,42 +232,6 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
 
 }
 
-void LuxtronikV1Component::parse_error_message_(const char* message) {
-    std::string msg(message);
-    std::vector<std::string> values;
-    size_t start = 5;  // Skip "1500;"  
-    size_t end = 0;
-
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
-    }
-
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
-    }
-
-    if (values.size() < 2) return;  // At least count and one value needed
-    
-    size_t idx = 0;  // get error index
-
-    auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
-        if (sensor != nullptr) {
-            float val = std::atof(value.c_str());
-            publish_state_deferred_(sensor, val, "Output", name);
-        }
-    };
-
-    // Process all output sensors
-    if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
-    if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
-    if (idx < values.size()) publish_output(error2_fehlercode_, values[idx++], "error2_fehlercode");
-    if (idx < values.size()) publish_output(error3_fehlercode_, values[idx++], "error3_fehlercode");
-    if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
-    
-}
-
 // Add helper function implementation
 std::string LuxtronikV1Component::get_modus_text_(int state) {
     switch (state) {
@@ -378,6 +342,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
     if (values.size() < 2) return;  // At least count and one value needed
     
     size_t idx = 1;  // Skip count
+
     auto publish_status = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
@@ -385,7 +350,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         }
     };
 
-    // Process all status sensors
+    // Process Anlagentyp
     if (idx < values.size()) publish_status(status_anlagentyp_, values[idx++], "Anlagentyp");
 
     // special handling because Softwareversion is a string
@@ -399,6 +364,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         idx++;
     }
 
+    // Process Bivalenzstufe
     if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
 
     // special handling because Betriebszustand has a numeric and a string value
@@ -417,12 +383,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         idx++;
     }
 
-    // if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
-    // if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
-    // if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
-    // if (idx < values.size()) publish_status(status_startuhrzeit_std_, values[idx++], "Startuhrzeit Std");
-    // if (idx < values.size()) publish_status(status_startuhrzeit_min_, values[idx++], "Startuhrzeit Min");
-    // if (idx < values.size()) publish_status(status_startuhrzeit_sek_, values[idx++], "Startuhrzeit Sek");
+    // Process Letzter Start
     if (idx < values.size() && status_letzter_start_ != nullptr) {
         int tag = std::atoi(values[idx++].c_str());
         int monat = std::atoi(values[idx++].c_str());
@@ -440,6 +401,71 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
             ESP_LOGV(TAG, "Status Letzter Start: %s", text.c_str());
         });
     }
+
+    // Request error values after status values are parsed
+    this->parent_->write_str("1500\r\n");
+}
+
+void LuxtronikV1Component::parse_error_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 5;  // Skip "1500;"  
+    size_t end = 0;
+
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+
+    if (values.size() < 2) return;  // At least count and one value needed
+    
+    size_t idx = 0;  // get error index
+
+    auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            publish_state_deferred_(sensor, val, "Output", name);
+        }
+    };
+
+    // Process Fehlerindex
+    if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
+    // skip Count
+    idx++;
+    // Process Fehlercode
+    if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
+    // Process Fehlerbeschreibung
+    if (idx < values.size() && error0_fehlerbeschreibung_ != nullptr) {
+        std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+        this->defer([this, error_text]() {
+            error0_fehlerbeschreibung_->publish_state(error_text);
+            ESP_LOGV(TAG, "Error0 Fehlerbeschreibung: %s", error_text.c_str());
+        });
+        idx++;
+    }
+    // Process Fehlerzeitpunkt
+    if (idx < values.size() && error0_zeitpunkt_ != nullptr) {
+        int tag = std::atoi(values[idx++].c_str()); 
+        int monat = std::atoi(values[idx++].c_str());
+        int jahr = std::atoi(values[idx++].c_str());
+        int stunde = std::atoi(values[idx++].c_str());
+        int minute = std::atoi(values[idx++].c_str());
+        
+        char buffer[32];
+        snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
+                 tag, monat, jahr, stunde, minute);
+        
+        this->defer([this, text = std::string(buffer)]() {
+            error0_zeitpunkt_->publish_state(text);
+            ESP_LOGV(TAG, "Error0 Zeitpunkt: %s", text.c_str());
+        });
+    }
+    
 }
 
 void LuxtronikV1Component::dump_config() {
