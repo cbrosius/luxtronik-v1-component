@@ -558,22 +558,22 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 idx++;
             }
             // Process Fehlerzeitpunkt
-            // if (idx < values.size() && error3_zeitpunkt_ != nullptr) {
-            //     int tag = std::atoi(values[idx++].c_str()); 
-            //     int monat = std::atoi(values[idx++].c_str());
-            //     int jahr = std::atoi(values[idx++].c_str());
-            //     int stunde = std::atoi(values[idx++].c_str());
-            //     int minute = std::atoi(values[idx].c_str());
+            if (idx < values.size() && error3_zeitpunkt_ != nullptr) {
+                int tag = std::atoi(values[idx++].c_str()); 
+                int monat = std::atoi(values[idx++].c_str());
+                int jahr = std::atoi(values[idx++].c_str());
+                int stunde = std::atoi(values[idx++].c_str());
+                int minute = std::atoi(values[idx].c_str());
                 
-            //     char buffer[32];
-            //     snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
-            //                 tag, monat, jahr, stunde, minute);
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
+                            tag, monat, jahr, stunde, minute);
                 
-            //     this->defer([this, text = std::string(buffer)]() {
-            //         error3_zeitpunkt_->publish_state(text);
-            //         ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
-            //     });
-            // }
+                this->defer([this, text = std::string(buffer)]() {
+                    error3_zeitpunkt_->publish_state(text);
+                    ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
+                });
+            }
             break;
         }
         case 1504:{
