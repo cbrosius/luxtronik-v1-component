@@ -261,15 +261,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     // Process all output sensors
     if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
-    if (idx < values.size()) publish_output(error0_fehlerbeschreibung_, values[idx++], "error0_fehlerbeschreibung");
     if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
-    if (idx < values.size()) publish_output(error1_fehlerbeschreibung_, values[idx++], "error1_fehlerbeschreibung");
     if (idx < values.size()) publish_output(error2_fehlercode_, values[idx++], "error2_fehlercode");
-    if (idx < values.size()) publish_output(error2_fehlerbeschreibung_, values[idx++], "error2_fehlerbeschreibung");
     if (idx < values.size()) publish_output(error3_fehlercode_, values[idx++], "error3_fehlercode");
-    if (idx < values.size()) publish_output(error3_fehlerbeschreibung_, values[idx++], "error3_fehlerbeschreibung");
     if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
-    if (idx < values.size()) publish_output(error4_fehlerbeschreibung_, values[idx++], "error4_fehlerbeschreibung");
     
 }
 
