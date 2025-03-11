@@ -349,14 +349,29 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         idx++;
     }
 
-    if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
-    if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
-    if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
-    if (idx < values.size()) publish_status(status_startuhrzeit_std_, values[idx++], "Startuhrzeit Std");
-    if (idx < values.size()) publish_status(status_startuhrzeit_min_, values[idx++], "Startuhrzeit Min");
-    if (idx < values.size()) publish_status(status_startuhrzeit_sek_, values[idx++], "Startuhrzeit Sek");
-    if (idx < values.size()) publish_status(status_compact_, values[idx++], "Compact");
-    if (idx < values.size()) publish_status(status_comfort_, values[idx++], "Comfort");
+    // if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
+    // if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
+    // if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
+    // if (idx < values.size()) publish_status(status_startuhrzeit_std_, values[idx++], "Startuhrzeit Std");
+    // if (idx < values.size()) publish_status(status_startuhrzeit_min_, values[idx++], "Startuhrzeit Min");
+    // if (idx < values.size()) publish_status(status_startuhrzeit_sek_, values[idx++], "Startuhrzeit Sek");
+    if (idx < values.size() && status_letzter_start_ != nullptr) {
+        int tag = std::atoi(values[idx++].c_str());
+        int monat = std::atoi(values[idx++].c_str());
+        int jahr = std::atoi(values[idx++].c_str());
+        int stunde = std::atoi(values[idx++].c_str());
+        int minute = std::atoi(values[idx++].c_str());
+        int sekunde = std::atoi(values[idx++].c_str());
+        
+        char buffer[32];
+        snprintf(buffer, sizeof(buffer), "%02d.%02d.%04d %02d:%02d:%02d", 
+                 tag, monat, jahr, stunde, minute, sekunde);
+        
+        this->defer([this, text = std::string(buffer)]() {
+            status_letzter_start_->publish_state(text);
+            ESP_LOGV(TAG, "Status Letzter Start: %s", text.c_str());
+        });
+    }
 }
 
 void LuxtronikV1Component::dump_config() {
@@ -400,14 +415,7 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Status Bivalenzstufe: %s", this->status_bivalenzstufe_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand Numerisch: %s", this->status_betriebszustand_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand: %s", this->status_betriebszustand_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Tag: %s", this->status_startdatum_tag_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Monat: %s", this->status_startdatum_monat_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Jahr: %s", this->status_startdatum_jahr_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Std: %s", this->status_startuhrzeit_std_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Min: %s", this->status_startuhrzeit_min_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Startuhrzeit Sek: %s", this->status_startuhrzeit_sek_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Compact: %s", this->status_compact_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Status Comfort: %s", this->status_comfort_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Letzter Start: %s", this->status_letzter_start_ ? "Set" : "Not Set");
 }
 
 }  // namespace luxtronik_v1_component

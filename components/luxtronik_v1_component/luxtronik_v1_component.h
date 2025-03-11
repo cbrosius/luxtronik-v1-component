@@ -70,14 +70,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_status_bivalenzstufe_sensor(sensor::Sensor *sens) { status_bivalenzstufe_ = sens; }
   void set_status_betriebszustand_numerisch_sensor(sensor::Sensor *sens) { status_betriebszustand_numerisch_ = sens; }
   void set_status_betriebszustand_sensor(text_sensor::TextSensor *sens) { status_betriebszustand_ = sens; }
-  void set_status_startdatum_tag_sensor(sensor::Sensor *sens) { status_startdatum_tag_ = sens; }
-  void set_status_startdatum_monat_sensor(sensor::Sensor *sens) { status_startdatum_monat_ = sens; }
-  void set_status_startdatum_jahr_sensor(sensor::Sensor *sens) { status_startdatum_jahr_ = sens; }
-  void set_status_startuhrzeit_std_sensor(sensor::Sensor *sens) { status_startuhrzeit_std_ = sens; }
-  void set_status_startuhrzeit_min_sensor(sensor::Sensor *sens) { status_startuhrzeit_min_ = sens; }
-  void set_status_startuhrzeit_sek_sensor(sensor::Sensor *sens) { status_startuhrzeit_sek_ = sens; }
-  void set_status_compact_sensor(sensor::Sensor *sens) { status_compact_ = sens; }
-  void set_status_comfort_sensor(sensor::Sensor *sens) { status_comfort_ = sens; }
+  void set_status_letzter_start_sensor(text_sensor::TextSensor *sens) { status_letzter_start_ = sens; }
 
   protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
@@ -140,14 +133,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *status_bivalenzstufe_{nullptr};               // 1700/4
   sensor::Sensor *status_betriebszustand_numerisch_{nullptr};   // 1700/5
   text_sensor::TextSensor *status_betriebszustand_{nullptr};    // 1700/5
-  sensor::Sensor *status_startdatum_tag_{nullptr};              // 1700/6
-  sensor::Sensor *status_startdatum_monat_{nullptr};            // 1700/7
-  sensor::Sensor *status_startdatum_jahr_{nullptr};             // 1700/8
-  sensor::Sensor *status_startuhrzeit_std_{nullptr};            // 1700/9
-  sensor::Sensor *status_startuhrzeit_min_{nullptr};            // 1700/10
-  sensor::Sensor *status_startuhrzeit_sek_{nullptr};            // 1700/11
-  sensor::Sensor *status_compact_{nullptr};                     // 1700/12
-  sensor::Sensor *status_comfort_{nullptr};                     // 1700/13
+  text_sensor::TextSensor *status_letzter_start_{nullptr};      // 1700/6-11
 };
 
 }  // namespace luxtronik_v1_component
