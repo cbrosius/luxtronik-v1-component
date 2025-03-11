@@ -66,7 +66,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
 
   // Status sensor setters
   void set_status_anlagentyp_sensor(sensor::Sensor *sens) { status_anlagentyp_ = sens; }
-  void set_status_softwareversion_sensor(sensor::Sensor *sens) { status_softwareversion_ = sens; }
+  void set_status_softwareversion_sensor(text_sensor::TextSensor *sens) { status_softwareversion_ = sens; }
   void set_status_bivalenzstufe_sensor(sensor::Sensor *sens) { status_bivalenzstufe_ = sens; }
   void set_status_betriebszustand_sensor(sensor::Sensor *sens) { status_betriebszustand_ = sens; }
   void set_status_startdatum_tag_sensor(sensor::Sensor *sens) { status_startdatum_tag_ = sens; }

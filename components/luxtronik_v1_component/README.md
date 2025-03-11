@@ -191,6 +191,11 @@ sensor:
   - platform: uptime
     name: "Uptime Sensor"
 
+text_sensor:
+  - platform: template
+    name: "Beispiel Textsensor"
+    id: beispiel_textsensor
+
 button:
   - platform: template
     name: " UART prüfen"
