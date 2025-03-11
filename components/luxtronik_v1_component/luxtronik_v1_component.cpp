@@ -509,8 +509,6 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         idx++;
         // skip Count
         idx++;
-        // Process Fehlercode
-        if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error4_fehlerbeschreibung_ != nullptr) {
             std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
@@ -520,6 +518,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             });
             idx++;
         }
+        // Process Fehlercode
+        if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
         break;
     default:
         break;
