@@ -424,8 +424,6 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     if (values.size() < 2) return;  // At least count and one value needed
     
-    size_t idx = 0;  // get error index
-
     auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
@@ -434,7 +432,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
     };
 
     // Process Fehlerindex
-    if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
+    size_t idx = 1;  // get error index
     switch (std::atoi(values[idx].c_str()))
     {
     case 1500:
