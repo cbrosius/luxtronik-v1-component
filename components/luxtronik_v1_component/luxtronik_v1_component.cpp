@@ -320,7 +320,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         idx++;
     }
     if (idx < values.size()) publish_status(status_bivalenzstufe_, values[idx++], "Bivalenzstufe");
-    if (idx < values.size()) publish_status(status_betriebszustand_, values[idx++], "Betriebszustand");
+    if (idx < values.size()) publish_status(status_betriebszustand_numerisch_, values[idx++], "Betriebszustand Numerisch");
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
     if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
     if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
@@ -370,6 +370,7 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Status Anlagentyp: %s", this->status_anlagentyp_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Softwareversion: %s", this->status_softwareversion_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Bivalenzstufe: %s", this->status_bivalenzstufe_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand Numerisch: %s", this->status_betriebszustand_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Betriebszustand: %s", this->status_betriebszustand_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Tag: %s", this->status_startdatum_tag_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Startdatum Monat: %s", this->status_startdatum_monat_ ? "Set" : "Not Set");

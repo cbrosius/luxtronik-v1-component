@@ -49,6 +49,7 @@ CONF_MODUS_WARMWASSER = "modus_warmwasser"
 CONF_STATUS_ANLAGENTYP = "status_anlagentyp"
 CONF_STATUS_SOFTWAREVERSION = "status_softwareversion"
 CONF_STATUS_BIVALENZSTUFE = "status_bivalenzstufe"
+CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH = "status_betriebszustand_numerisch"
 CONF_STATUS_BETRIEBSZUSTAND = "status_betriebszustand"
 CONF_STATUS_STARTDATUM_TAG = "status_startdatum_tag"
 CONF_STATUS_STARTDATUM_MONAT = "status_startdatum_monat"
@@ -119,7 +120,8 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_STATUS_BIVALENZSTUFE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+        cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_STATUS_STARTDATUM_TAG): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_STARTDATUM_MONAT): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_STARTDATUM_JAHR): INPUT_OUTPUT_SCHEMA,
@@ -281,10 +283,14 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_STATUS_BIVALENZSTUFE])
         cg.add(var.set_status_bivalenzstufe_sensor(sens))
     
-    if CONF_STATUS_BETRIEBSZUSTAND in config:
-        sens = await sensor.new_sensor(config[CONF_STATUS_BETRIEBSZUSTAND])
-        cg.add(var.set_status_betriebszustand_sensor(sens))
+    if CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH in config:
+        sens = await sensor.new_sensor(config[CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH])
+        cg.add(var.set_status_betriebszustand_numerisch_sensor(sens))
     
+    if CONF_STATUS_BETRIEBSZUSTAND in config:
+        sens = await  text_sensor.new_text_sensor(config[CONF_STATUS_BETRIEBSZUSTAND])
+        cg.add(var.set_status_betriebszustand_sensor(sens))
+
     if CONF_STATUS_STARTDATUM_TAG in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_STARTDATUM_TAG])
         cg.add(var.set_status_startdatum_tag_sensor(sens))

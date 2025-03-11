@@ -153,6 +153,9 @@ luxtronik_v1_component:
   status_anlagentyp:
     name: "Status Anlagentyp"
     id: status_anlagentyp
+  status_softwareversion:
+    name: "Status Softwareversion"
+    id: status_softwareversion
   status_bivalenzstufe:
     name: "Status Bivalenzstufe"
     id: status_bivalenzstufe
@@ -183,13 +186,6 @@ luxtronik_v1_component:
   status_comfort:
     name: "Status Comfort"
     id: status_comfort
-  status_softwareversion:
-    name: "Status Softwareversion"
-    id: status_softwareversion
-
-sensor:
-  - platform: uptime
-    name: "Uptime Sensor"
 
 button:
   - platform: template
