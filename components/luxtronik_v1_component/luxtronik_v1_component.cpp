@@ -435,11 +435,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     // Process Fehlerindex
     if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
-    // skip Count
-    idx++;
     switch (std::atoi(values[idx].c_str()))
     {
     case 1500:
+        // skip Count
+        idx++;
         // Process Fehlercode
         if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
         // Process Fehlerbeschreibung
@@ -453,6 +453,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1501:
+        // skip Count
+        idx++;
         // Process Fehlercode
         if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
         // Process Fehlerbeschreibung
@@ -466,6 +468,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1502:
+        // skip Count
+        idx++;
         // Process Fehlercode
         if (idx < values.size()) publish_output(error2_fehlercode_, values[idx++], "error2_fehlercode");
         // Process Fehlerbeschreibung
@@ -479,6 +483,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1503:
+        // skip Count
+        idx++;
         // Process Fehlercode
         if (idx < values.size()) publish_output(error3_fehlercode_, values[idx++], "error3_fehlercode");
         // Process Fehlerbeschreibung
@@ -492,6 +498,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         }
         break;
     case 1504:
+        // skip Count
+        idx++;
         // Process Fehlercode
         if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
         // Process Fehlerbeschreibung
