@@ -458,7 +458,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             //     int monat = std::atoi(values[idx++].c_str());
             //     int jahr = std::atoi(values[idx++].c_str());
             //     int stunde = std::atoi(values[idx++].c_str());
-            //     int minute = std::atoi(values[idx].c_str());
+            //     int minute = std::atoi(values[idx++].c_str());
                 
             //     char buffer[32];
             //     snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
@@ -493,7 +493,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             //     int monat = std::atoi(values[idx++].c_str());
             //     int jahr = std::atoi(values[idx++].c_str());
             //     int stunde = std::atoi(values[idx++].c_str());
-            //     int minute = std::atoi(values[idx].c_str());
+            //     int minute = std::atoi(values[idx++].c_str());
                 
             //     char buffer[32];
             //     snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
@@ -528,7 +528,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             //     int monat = std::atoi(values[idx++].c_str());
             //     int jahr = std::atoi(values[idx++].c_str());
             //     int stunde = std::atoi(values[idx++].c_str());
-            //     int minute = std::atoi(values[idx].c_str());
+            //     int minute = std::atoi(values[idx++].c_str());
                 
             //     char buffer[32];
             //     snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
@@ -563,7 +563,12 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 int monat = std::atoi(values[idx++].c_str());
                 int jahr = std::atoi(values[idx++].c_str());
                 int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx].c_str());
+                int minute = std::atoi(values[idx++].c_str());
+                ESP_LOGD(TAG, "Error3 tag: %s", tag.c_str());
+                ESP_LOGD(TAG, "Error3 monat: %s", monat.c_str());
+                ESP_LOGD(TAG, "Error3 jahr: %s", jahr.c_str());
+                ESP_LOGD(TAG, "Error3 stunde: %s", stunde.c_str());
+                ESP_LOGD(TAG, "Error3 minute: %s", minute.c_str());
                 
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
@@ -597,7 +602,12 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 int monat = std::atoi(values[idx++].c_str());
                 int jahr = std::atoi(values[idx++].c_str());
                 int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx].c_str());
+                int minute = std::atoi(values[idx++].c_str());
+                ESP_LOGD(TAG, "Error4 tag: %s", tag.c_str());
+                ESP_LOGD(TAG, "Error4 monat: %s", monat.c_str());
+                ESP_LOGD(TAG, "Error4 jahr: %s", jahr.c_str());
+                ESP_LOGD(TAG, "Error4 stunde: %s", stunde.c_str());
+                ESP_LOGD(TAG, "Error4 minute: %s", minute.c_str());
                 
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d", 
