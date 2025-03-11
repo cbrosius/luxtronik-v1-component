@@ -516,7 +516,6 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 error4_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
             });
-            idx++;
         }
         // Process Fehlercode
         if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
