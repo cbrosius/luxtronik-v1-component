@@ -289,6 +289,16 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
     size_t start = 5;  // Skip "1700;"
     size_t end = 0;
     
+    std::string get_betriebszustand_text_(int state) {
+        switch (state) {
+            case 0: return "Heizen";
+            case 1: return "Warmwasser";
+            case 3: return "EVU Sperre";
+            case 5: return "Bereitschaft";
+            default: return "Unbekannt";
+        }
+    }
+
     while ((end = msg.find(';', start)) != std::string::npos) {
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
@@ -328,22 +338,17 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         float val = std::atof(values[idx].c_str());
         if (status_betriebszustand_numerisch_ != nullptr) {
             publish_state_deferred_(status_betriebszustand_numerisch_, val, "Status", "Betriebszustand Numerisch");
-            if (status_betriebszustand_ != nullptr) {
-                switch (status_betriebszustand_numerisch_) {
-                    case 0: std::string state_text = "Heizen";
-                    case 1: std::string state_text = "Warmwasser";
-                    case 3: std::string state_text = "EVU Sperre";
-                    case 5: std::string state_text = "Bereitschaft";
-                    default: return "Unbekannt";
-                }
-                this->defer([this, state_text]() {
-                    status_betriebszustand_->publish_state(state_text);
-                    ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
-                });
-            }
+        }
+        if (status_betriebszustand_ != nullptr) {
+            std::string state_text = get_betriebszustand_text_(static_cast<int>(val));
+            this->defer([this, state_text]() {
+                status_betriebszustand_->publish_state(state_text);
+                ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
+            });
         }
         idx++;
     }
+    
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
     if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
     if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
