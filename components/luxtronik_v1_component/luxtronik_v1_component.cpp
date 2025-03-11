@@ -433,7 +433,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     // Process Fehlerindex
     size_t idx = 0;  // get error index
-    ESP_LOGD(TAG,"Error index: %s", values[idx].c_str());
+    // ESP_LOGD(TAG,"Error index: %s", values[idx].c_str());
     switch (std::atoi(values[idx].c_str()))
     {
     case 1500:
@@ -442,10 +442,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         // skip Count
         idx++;
         // Process Fehlercode
-        if (idx < values.size()) publish_output(error0_fehlercode_, values[idx++], "error0_fehlercode");
+        if (idx < values.size()) publish_output(error0_fehlercode_, values[idx], "error0_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error0_fehlerbeschreibung_ != nullptr) {
-            std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+            std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
             this->defer([this, error_text]() {
                 error0_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error0 Fehlerbeschreibung: %s", error_text.c_str());
@@ -459,10 +459,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         // skip Count
         idx++;
         // Process Fehlercode
-        if (idx < values.size()) publish_output(error1_fehlercode_, values[idx++], "error1_fehlercode");
+        if (idx < values.size()) publish_output(error1_fehlercode_, values[idx], "error1_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error1_fehlerbeschreibung_ != nullptr) {
-            std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+            std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
             this->defer([this, error_text]() {
                 error1_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
@@ -476,10 +476,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         // skip Count
         idx++;
         // Process Fehlercode
-        if (idx < values.size()) publish_output(error2_fehlercode_, values[idx++], "error2_fehlercode");
+        if (idx < values.size()) publish_output(error2_fehlercode_, values[idx], "error2_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error2_fehlerbeschreibung_ != nullptr) {
-            std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+            std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
             this->defer([this, error_text]() {
                 error2_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error2 Fehlerbeschreibung: %s", error_text.c_str());
@@ -493,10 +493,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         // skip Count
         idx++;
         // Process Fehlercode
-        if (idx < values.size()) publish_output(error3_fehlercode_, values[idx++], "error3_fehlercode");
+        if (idx < values.size()) publish_output(error3_fehlercode_, values[idx], "error3_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error3_fehlerbeschreibung_ != nullptr) {
-            std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+            std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
             this->defer([this, error_text]() {
                 error3_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
@@ -509,16 +509,16 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         idx++;
         // skip Count
         idx++;
+        // Process Fehlercode
+        if (idx < values.size()) publish_output(error4_fehlercode_, values[idx], "error4_fehlercode");
         // Process Fehlerbeschreibung
         if (idx < values.size() && error4_fehlerbeschreibung_ != nullptr) {
-            std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
+            std::string error_text = get_error_description_(std::atoi(values[idx++].c_str()));
             this->defer([this, error_text]() {
                 error4_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
             });
         }
-        // Process Fehlercode
-        if (idx < values.size()) publish_output(error4_fehlercode_, values[idx++], "error4_fehlercode");
         break;
     default:
         break;
