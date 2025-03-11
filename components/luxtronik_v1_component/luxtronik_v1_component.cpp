@@ -436,7 +436,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
     // ESP_LOGD(TAG,"Error index: %s", values[idx].c_str());
     switch (std::atoi(values[idx].c_str()))
     {
-    case 1500:
+    case 1500:{
         // skip Fehlerindex
         idx++;
         // skip Count
@@ -453,7 +453,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             idx++;
         }
         break;
-    case 1501:
+    }
+    case 1501:{
         // skip Fehlerindex
         idx++;
         // skip Count
@@ -470,7 +471,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             idx++;
         }
         break;
-    case 1502:
+    }
+    case 1502:{
         // skip Fehlerindex
         idx++;
         // skip Count
@@ -487,6 +489,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             idx++;
         }
         break;
+    }
     case 1503:{
         // skip Fehlerindex
         idx++;
@@ -519,6 +522,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 error4_fehlerbeschreibung_->publish_state(error_text);
                 ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
             });
+        }
         // Process Fehlerzeitpunkt
         if (idx < values.size() && error4_zeitpunkt_ != nullptr) {
             int tag = std::atoi(values[idx++].c_str()); 
@@ -541,6 +545,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
     default:{
         break;
     }   
+    }
 }
 
 void LuxtronikV1Component::dump_config() {
