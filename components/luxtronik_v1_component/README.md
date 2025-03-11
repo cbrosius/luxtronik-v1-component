@@ -183,12 +183,9 @@ luxtronik_v1_component:
   status_comfort:
     name: "Status Comfort"
     id: status_comfort
-
-text_sensor:
-  - platform: luxtronik_v1_component
-    status_softwareversion:
-      name: "Status Softwareversion"
-      id: status_softwareversion
+  status_softwareversion:
+    name: "Status Softwareversion"
+    id: status_softwareversion
 
 sensor:
   - platform: uptime
