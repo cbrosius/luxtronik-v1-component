@@ -487,7 +487,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             idx++;
         }
         break;
-    case 1503:
+    case 1503:{
         // skip Fehlerindex
         idx++;
         // skip Count
@@ -504,7 +504,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             idx++;
         }
         break;
-    case 1504:
+    }
+    case 1504:{
         // skip Fehlerindex
         idx++;
         // skip Count
@@ -534,7 +535,9 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 error4_zeitpunkt_->publish_state(text);
                 ESP_LOGV(TAG, "Error4 Zeitpunkt: %s", text.c_str());
             });
+        }
         break;
+    }
     default:
         break;
     }   
