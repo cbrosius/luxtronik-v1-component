@@ -89,6 +89,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_modus_warmwasser_message_(const char* message);   // Add this line
   void parse_status_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
+  std::string get_betriebszustand_text_(int state);
 
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];

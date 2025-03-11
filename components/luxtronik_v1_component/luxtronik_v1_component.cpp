@@ -282,6 +282,16 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
     this->parent_->write_str("1700\r\n");
 }
 
+std::string LuxtronikV1Component::get_betriebszustand_text_(int state) {
+    switch (state) {
+        case 0: return "Heizen";
+        case 1: return "Warmwasser";
+        case 3: return "EVU Sperre";
+        case 5: return "Bereitschaft";
+        default: return "Unbekannt";
+    }
+}
+
 void LuxtronikV1Component::parse_status_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
@@ -289,16 +299,6 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
     size_t start = 5;  // Skip "1700;"
     size_t end = 0;
     
-    std::string get_betriebszustand_text_(int state) {
-        switch (state) {
-            case 0: return "Heizen";
-            case 1: return "Warmwasser";
-            case 3: return "EVU Sperre";
-            case 5: return "Bereitschaft";
-            default: return "Unbekannt";
-        }
-    }
-
     while ((end = msg.find(';', start)) != std::string::npos) {
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
@@ -348,7 +348,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         }
         idx++;
     }
-    
+
     if (idx < values.size()) publish_status(status_startdatum_tag_, values[idx++], "Startdatum Tag");
     if (idx < values.size()) publish_status(status_startdatum_monat_, values[idx++], "Startdatum Monat");
     if (idx < values.size()) publish_status(status_startdatum_jahr_, values[idx++], "Startdatum Jahr");
