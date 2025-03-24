@@ -171,9 +171,16 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
-        cv.Optional("warmwasser_modus_select"): select.select_schema(
-            options=list(WARMWASSER_MODUS_OPTIONS.keys())
-        ),
+        cv.Optional("warmwasser_modus_select"): select.SELECT_SCHEMA.extend({
+            cv.Required("options"): cv.All(
+                cv.ensure_list(cv.string_strict), 
+                cv.Length(min=1)
+            ),
+        }).extend({
+            "options": cv.ensure_list(cv.string_strict),
+        }).extend({
+            "options": list(WARMWASSER_MODUS_OPTIONS.keys()),
+        }),
 
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
@@ -369,10 +376,12 @@ async def to_code(config):
         cg.add(var.set_modus_warmwasser_sensor(sens))
 
     if "warmwasser_modus_select" in config:
-        sel = await select.new_select(config["warmwasser_modus_select"], 
-                                    options=list(WARMWASSER_MODUS_OPTIONS.keys()))
+        sel = await select.new_select(
+            config["warmwasser_modus_select"],
+            options=list(WARMWASSER_MODUS_OPTIONS.keys())
+        )
         cg.add(var.set_warmwasser_modus_select(sel))
-            
+
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
         cg.add(var.set_status_anlagentyp_sensor(sens))
