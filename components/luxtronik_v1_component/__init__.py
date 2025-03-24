@@ -172,15 +172,13 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_WARMWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
         cv.Optional("warmwasser_modus_select"): select.SELECT_SCHEMA.extend({
+            cv.Optional("name"): cv.string,
+            cv.Optional("id"): cv.declare_id(select.Select),
             cv.Required("options"): cv.All(
-                cv.ensure_list(cv.string_strict), 
+                cv.ensure_list(cv.string_strict),
                 cv.Length(min=1)
-            ),
-        }).extend({
-            "options": cv.ensure_list(cv.string_strict),
-        }).extend({
-            "options": list(WARMWASSER_MODUS_OPTIONS.keys()),
-        }),
+            )
+        }).extend(cv.COMPONENT_SCHEMA),
 
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
@@ -380,6 +378,7 @@ async def to_code(config):
             config["warmwasser_modus_select"],
             options=list(WARMWASSER_MODUS_OPTIONS.keys())
         )
+        await cg.register_component(sel, config["warmwasser_modus_select"])
         cg.add(var.set_warmwasser_modus_select(sel))
 
     if CONF_STATUS_ANLAGENTYP in config:
