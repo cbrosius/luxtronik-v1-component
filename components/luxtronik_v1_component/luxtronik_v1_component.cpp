@@ -103,6 +103,10 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             parse_operatinghours_message_(msg.c_str());
         });
+    } else if (prefix == "3400") {
+        this->defer([this, msg]() {
+            parse_heatingcurve_message_(msg.c_str());
+        });
     }
 }
 
