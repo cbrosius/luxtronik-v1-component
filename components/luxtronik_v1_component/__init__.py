@@ -377,7 +377,11 @@ async def to_code(config):
         conf = config["warmwasser_modus_select"]
         var_select = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(var_select, conf)
-        await select.register_select(var_select, conf)
+        await select.register_select(
+            var_select, 
+            conf,
+            options=list(WARMWASSER_MODUS_OPTIONS.keys())
+        )
         cg.add(var.set_warmwasser_modus_select(var_select))
 
     if CONF_STATUS_ANLAGENTYP in config:
