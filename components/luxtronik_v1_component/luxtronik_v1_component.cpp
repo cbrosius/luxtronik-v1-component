@@ -673,10 +673,10 @@ void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
     // Process Betriebsstunden
     if (idx < values.size()) publish_hours(betriebsstunden_verdichter_1_, values[idx++], "Betriebsstunden Verdichter 1");
     if (idx < values.size()) publish_impulses(impulse_verdichter_1_, values[idx++], "Impulse Verdichter 1");
-    if (idx < values.size()) publish_impulses(durchschnittliche_einschaltdauer_verdichter_1_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 1");
+    if (idx < values.size()) publish_hours(durchschnittliche_einschaltdauer_verdichter_1_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 1");
     if (idx < values.size()) publish_hours(betriebsstunden_verdichter_2_, values[idx++], "Betriebsstunden Verdichter 2");
     if (idx < values.size()) publish_impulses(impulse_verdichter_2_, values[idx++], "Impulse Verdichter 2");
-    if (idx < values.size()) publish_impulses(durchschnittliche_einschaltdauer_verdichter_2_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 2");
+    if (idx < values.size()) publish_hours(durchschnittliche_einschaltdauer_verdichter_2_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 2");
     if (idx < values.size()) publish_hours(betriebsstunden_zweiter_waermeerzeuger_1_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 1");
     if (idx < values.size()) publish_hours(betriebsstunden_zweiter_waermeerzeuger_2_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 2");
     if (idx < values.size()) publish_hours(betriebsstunden_waermepumpe_, values[idx++], "Betriebsstunden Waermepumpe");
