@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import uart, sensor, text_sensor, select
 from esphome.const import (
     CONF_ID,
+    CONF_NAME,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
