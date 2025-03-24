@@ -425,9 +425,9 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_IMPULSE_VERDICHTER_1])
         cg.add(var.set_impulse_verdichter_1_sensor(sens))
 
-    if CONF_DURCHSCHNITTLICHE_VERDICHTER_EINSCHALTDAUER_1 in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_EINSCHALTDAUER_1])
-        cg.add(var.set_durchschnittliche_verdichter_einschaltdauer_1_sensor(sens))
+    if CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER in config:
+        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER])
+        cg.add(var.set_durchschnittliche_verdichter_1_einschaltdauer_sensor(sens))
                 
     if CONF_BETRIEBSSTUNDEN_VERDICHTER_2 in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_VERDICHTER_2])
@@ -437,9 +437,9 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_IMPULSE_VERDICHTER_2])
         cg.add(var.set_impulse_verdichter_2_sensor(sens))
         
-    if CONF_DURCHSCHNITTLICHE_VERDICHTER_EINSCHALTDAUER_2 in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_EINSCHALTDAUER_2])
-        cg.add(var.set_durchschnittliche_verdichter_einschaltdauer_2_sensor(sens))
+    if CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER in config:
+        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER])
+        cg.add(var.set_durchschnittliche_verdichter_2_einschaltdauer_sensor(sens))
         
     if CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1])
