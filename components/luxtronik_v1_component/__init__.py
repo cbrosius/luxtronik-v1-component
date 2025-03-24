@@ -75,10 +75,10 @@ CONF_ERROR4_ZEITPUNKT = "error4_zeitpunkt"
 # Add operatinghours sensor constants after error sensors
 CONF_BETRIEBSSTUNDEN_VERDICHTER_1 = "betriebsstunden_verdichter_1"
 CONF_IMPULSE_VERDICHTER_1 = "impulse_verdichter_1"
-CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER = "durchschnittliche_verdichter_1_einschaltdauer"
+CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1 = "durchschnittliche_einschaltdauer_verdichter_1"
 CONF_BETRIEBSSTUNDEN_VERDICHTER_2 = "betriebsstunden_verdichter_2" 
 CONF_IMPULSE_VERDICHTER_2 = "impulse_verdichter_2"
-CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER = "durchschnittliche_verdichter_2_einschaltdauer"
+CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2 = "durchschnittliche_einschaltdauer_verdichter_2"
 CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 = "betriebsstunden_zweiter_waermeerzeuger_1"
 CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2 = "betriebsstunden_zweiter_waermeerzeuger_2"
 CONF_BETRIEBSSTUNDEN_WAERMEPUMPE = "betriebsstunden_waermepumpe"
@@ -177,10 +177,10 @@ CONFIG_SCHEMA = (
         # Workinghours sensors
         cv.Optional(CONF_BETRIEBSSTUNDEN_VERDICHTER_1): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_IMPULSE_VERDICHTER_1): IMPULS_SENSOR_SCHEMA,
-        cv.Optional(CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER): OPERATINGHOURS_SENSOR_SCHEMA,
+        cv.Optional(CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_VERDICHTER_2): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_IMPULSE_VERDICHTER_2): IMPULS_SENSOR_SCHEMA,
-        cv.Optional(CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER): OPERATINGHOURS_SENSOR_SCHEMA,
+        cv.Optional(CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_WAERMEPUMPE): OPERATINGHOURS_SENSOR_SCHEMA,
@@ -425,9 +425,9 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_IMPULSE_VERDICHTER_1])
         cg.add(var.set_impulse_verdichter_1_sensor(sens))
 
-    if CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_1_EINSCHALTDAUER])
-        cg.add(var.set_durchschnittliche_verdichter_1_einschaltdauer_sensor(sens))
+    if CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1 in config:
+        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1])
+        cg.add(var.set_durchschnittliche_einschaltdauer_verdichter_1_sensor(sens))
                 
     if CONF_BETRIEBSSTUNDEN_VERDICHTER_2 in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_VERDICHTER_2])
@@ -437,9 +437,9 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_IMPULSE_VERDICHTER_2])
         cg.add(var.set_impulse_verdichter_2_sensor(sens))
         
-    if CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_VERDICHTER_2_EINSCHALTDAUER])
-        cg.add(var.set_durchschnittliche_verdichter_2_einschaltdauer_sensor(sens))
+    if CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2 in config:
+        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2])
+        cg.add(var.set_durchschnittliche_einschaltdauer_verdichter_2_sensor(sens))
         
     if CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1])
