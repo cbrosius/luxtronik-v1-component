@@ -26,7 +26,7 @@ void LuxtronikV1Component::setup() {
             else if (value == "Aus") mode = 4;
             
             char command[32];
-            snprintf(command, sizeof(command), "3505;1;%d\r\n", mode);
+            snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
             this->parent_->write_str(command);
         });
     }
