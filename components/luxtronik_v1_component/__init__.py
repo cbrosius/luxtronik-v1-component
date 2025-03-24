@@ -173,11 +173,7 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
         cv.Optional("warmwasser_modus_select"): select.SELECT_SCHEMA.extend({
             cv.Optional("name"): cv.string,
-            cv.Optional("id"): cv.declare_id(select.Select),
-            cv.Required("options"): cv.All(
-                cv.ensure_list(cv.string_strict),
-                cv.Length(min=1)
-            )
+            cv.Required("id"): cv.declare_id(select.Select),
         }).extend(cv.COMPONENT_SCHEMA),
 
         # Status sensors
