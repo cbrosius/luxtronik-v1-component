@@ -102,7 +102,18 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_betriebsstunden_zweiter_waermeerzeuger_2_sensor(sensor::Sensor *sens) { betriebsstunden_zweiter_waermeerzeuger_2_ = sens; }
   void set_betriebsstunden_waermepumpe_sensor(sensor::Sensor *sens) { betriebsstunden_waermepumpe_ = sens; }
 
-  protected:
+  // Add heating curve sensor setters
+  void set_heizkurve_temperaturdelta_sensor(sensor::Sensor *sens) { heizkurve_temperaturdelta_ = sens; }
+  void set_heizkurve_endpunkt_sensor(sensor::Sensor *sens) { heizkurve_endpunkt_ = sens; }
+  void set_heizkurve_parallelverschiebung_sensor(sensor::Sensor *sens) { heizkurve_parallelverschiebung_ = sens; }
+  void set_heizkurve_absenkung_sensor(sensor::Sensor *sens) { heizkurve_absenkung_ = sens; }
+  void set_heizkurve_festwert_ruecklauf_sensor(sensor::Sensor *sens) { heizkurve_festwert_ruecklauf_ = sens; }
+  void set_mischkreis1_heizkurvenendpunkt_sensor(sensor::Sensor *sens) { mischkreis1_heizkurvenendpunkt_ = sens; }
+  void set_mischkreis1_parallelverschiebung_sensor(sensor::Sensor *sens) { mischkreis1_parallelverschiebung_ = sens; }
+  void set_mischkreis1_absenkung_sensor(sensor::Sensor *sens) { mischkreis1_absenkung_ = sens; }
+  void set_mischkreis1_festwert_vorlauf_sensor(sensor::Sensor *sens) { mischkreis1_festwert_vorlauf_ = sens; } 
+
+ protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
   void parse_temperatur_message_(const char* message);
@@ -113,6 +124,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_status_message_(const char* message);
   void parse_error_message_(const char* message);
   void parse_operatinghours_message_(const char* message);
+  void parse_heating_curve_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
@@ -189,15 +201,26 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   text_sensor::TextSensor *error4_zeitpunkt_{nullptr};
 
   // operatinghours sensor pointers
-  sensor::Sensor *betriebsstunden_verdichter_1_{nullptr};                 // 1450/1
-  sensor::Sensor *impulse_verdichter_1_{nullptr};                         // 1450/2
-  sensor::Sensor *durchschnittliche_einschaltdauer_verdichter_1_{nullptr}; // 1450/3
-  sensor::Sensor *betriebsstunden_verdichter_2_{nullptr};                 // 1450/4
-  sensor::Sensor *impulse_verdichter_2_{nullptr};                         // 1450/5
-  sensor::Sensor *durchschnittliche_einschaltdauer_verdichter_2_{nullptr}; // 1450/6
-  sensor::Sensor *betriebsstunden_zweiter_waermeerzeuger_1_{nullptr};     // 1450/7
-  sensor::Sensor *betriebsstunden_zweiter_waermeerzeuger_2_{nullptr};     // 1450/8
-  sensor::Sensor *betriebsstunden_waermepumpe_{nullptr};                  // 1450/9
+  sensor::Sensor *betriebsstunden_verdichter_1_{nullptr};                   // 1450/1
+  sensor::Sensor *impulse_verdichter_1_{nullptr};                           // 1450/2
+  sensor::Sensor *durchschnittliche_einschaltdauer_verdichter_1_{nullptr};  // 1450/3
+  sensor::Sensor *betriebsstunden_verdichter_2_{nullptr};                   // 1450/4
+  sensor::Sensor *impulse_verdichter_2_{nullptr};                           // 1450/5
+  sensor::Sensor *durchschnittliche_einschaltdauer_verdichter_2_{nullptr};  // 1450/6
+  sensor::Sensor *betriebsstunden_zweiter_waermeerzeuger_1_{nullptr};       // 1450/7
+  sensor::Sensor *betriebsstunden_zweiter_waermeerzeuger_2_{nullptr};       // 1450/8
+  sensor::Sensor *betriebsstunden_waermepumpe_{nullptr};                    // 1450/9
+
+  // heating curve
+  sensor::Sensor *heizkurve_temperaturdelta_{nullptr};        // 3400/1
+  sensor::Sensor *heizkuve_endpunkt_{nullptr};                // 3400/2
+  sensor::Sensor *heizkurve_parallelverschiebung_{nullptr};   // 3400/3
+  sensor::Sensor *heizkurve_absenkung_{nullptr};              // 3400/4
+  sensor::Sensor *heizkurve_festwert_ruecklauf_{nullptr};     // 3400/5
+  sensor::Sensor *mischkreis1_heizkurvenendpunkt_{nullptr};   // 3400/6
+  sensor::Sensor *mischkreis1_parallelverschiebung_{nullptr}; // 3400/7
+  sensor::Sensor *mischkreis1_absenkung_{nullptr};            // 3400/8
+  sensor::Sensor *mischkreis1_festwert_vorlauf_{nullptr};     // 3400/9
 };
 
 }  // namespace luxtronik_v1_component

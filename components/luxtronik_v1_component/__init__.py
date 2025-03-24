@@ -83,6 +83,17 @@ CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 = "betriebsstunden_zweiter_waermee
 CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2 = "betriebsstunden_zweiter_waermeerzeuger_2"
 CONF_BETRIEBSSTUNDEN_WAERMEPUMPE = "betriebsstunden_waermepumpe"
 
+# Add heating curve constants after operatinghours sensors
+CONF_HEIZKURVE_TEMPERATURDELTA = "heizkurve_temperaturdelta"
+CONF_HEIZKURVE_ENDPUNKT = "heizkurve_endpunkt"
+CONF_HEIZKURVE_PARALLELVERSCHIEBUNG = "heizkurve_parallelverschiebung"
+CONF_HEIZKURVE_ABSENKUNG = "heizkurve_abschaltung"
+CONF_HEIZKURVE_FESTWERT_RUECKLAUF = "heizkurve_festwert_ruecklauf"
+CONF_MISCHKREIS1_HEIZKURVENENDPUNKT = "mischkreis1_heizkurvenendpunkt"
+CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG = "mischkreis1_parallelverschiebung"
+CONF_MISCHKREIS1_ABSENKUNG = "mischkreis1_absenkung"
+CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
+
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
     "LuxtronikV1Component", cg.Component, uart.UARTDevice
@@ -184,6 +195,17 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2): OPERATINGHOURS_SENSOR_SCHEMA,
         cv.Optional(CONF_BETRIEBSSTUNDEN_WAERMEPUMPE): OPERATINGHOURS_SENSOR_SCHEMA,
+        # heating curve
+        cv.Optional(CONF_HEIZKURVE_TEMPERATURDELTA): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_HEIZKURVE_ENDPUNKT): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_HEIZKURVE_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_HEIZKURVE_ABSENKUNG): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_HEIZKURVE_FESTWERT_RUECKLAUF): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_MISCHKREIS1_HEIZKURVENENDPUNKT): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
+        cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
+
     })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -452,3 +474,39 @@ async def to_code(config):
     if CONF_BETRIEBSSTUNDEN_WAERMEPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_WAERMEPUMPE])
         cg.add(var.set_betriebsstunden_waermepumpe_sensor(sens))
+
+    if CONF_HEIZKURVE_TEMPERATURDELTA in config:
+        sens = await sensor.new_sensor(config[CONF_HEIZKURVE_TEMPERATURDELTA])
+        cg.add(var.set_heizkurve_temperaturdelta_sensor(sens))
+    
+    if CONF_HEIZKURVE_ENDPUNKT in config:
+        sens = await sensor.new_sensor(config[CONF_HEIZKURVE_ENDPUNKT])
+        cg.add(var.set_heizkurve_endpunkt_sensor(sens))
+    
+    if CONF_HEIZKURVE_PARALLELVERSCHIEBUNG in config:
+        sens = await sensor.new_sensor(config[CONF_HEIZKURVE_PARALLELVERSCHIEBUNG])
+        cg.add(var.set_heizkurve_parallelverschiebung_sensor(sens))
+
+    if CONF_HEIZKURVE_ABSENKUNG in config:
+        sens = await sensor.new_sensor(config[CONF_HEIZKURVE_ABSENKUNG])
+        cg.add(var.set_heizkurve_abschaltung_sensor(sens))
+
+    if CONF_HEIZKURVE_FESTWERT_RUECKLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_HEIZKURVE_FESTWERT_RUECKLAUF])
+        cg.add(var.set_heizkurve_festwert_ruecklauf_sensor(sens))
+    
+    if CONF_MISCHKREIS1_HEIZKURVENENDPUNKT in config:
+        sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_HEIZKURVENENDPUNKT])
+        cg.add(var.set_mischkreis1_heizkurvenendpunkt_sensor(sens))
+    
+    if CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG in config:
+        sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG])
+        cg.add(var.set_mischkreis1_parallelverschiebung_sensor(sens))
+
+    if CONF_MISCHKREIS1_ABSENKUNG in config:
+        sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_ABSENKUNG])
+        cg.add(var.set_mischkreis1_absenkung_sensor(sens))
+
+    if CONF_MISCHKREIS1_FESTWERT_VORLAUF in config:
+        sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_FESTWERT_VORLAUF])
+        cg.add(var.set_mischkreis1_festwert_vorlauf_sensor(sens))

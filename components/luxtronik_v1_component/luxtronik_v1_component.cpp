@@ -629,7 +629,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             break;
         }
     }
-    // Request working hours after error values are parsed
+    // Request operating hours after error values are parsed
     this->parent_->write_str("1450\r\n");
 }
 
@@ -681,7 +681,49 @@ void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
     if (idx < values.size()) publish_hours(betriebsstunden_zweiter_waermeerzeuger_2_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 2");
     if (idx < values.size()) publish_hours(betriebsstunden_waermepumpe_, values[idx++], "Betriebsstunden Waermepumpe");
 
+    // Request heating curve after operating hour values are parsed
+    this->parent_->write_str("3400\r\n");
 }
+
+void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 5;  // Skip "3400;"
+    size_t end = 0;
+
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+
+    if (values.size() < 2) return;  // At least count and one value needed
+
+    size_t idx = 1;  // Skip count
+
+    auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float temp = get_float_temp_(value);
+            publish_state_deferred_(sensor, temp, "Temperatur", name);
+        }
+    };
+
+    // Process Heizkurve
+    if (idx < values.size()) publish_temp(heizkurve_temperaturdelta_, values[idx++], "Heizkurve Temperaturdelta");
+    if (idx < values.size()) publish_temp(heizkuve_endpunkt_, values[idx++], "Heizkurve Endpunkt");
+    if (idx < values.size()) publish_temp(heizkurve_parallelverschiebung_, values[idx++], "Heizkurve Parallelverschiebung");
+    if (idx < values.size()) publish_temp(heizkurve_absenkung_, values[idx++], "Heizkurve Absenkung");
+    if (idx < values.size()) publish_temp(heizkurve_festwert_ruecklauf_, values[idx++], "Heizkurve Festwert Rücklauf");
+    if (idx < values.size()) publish_temp(mischkreis1_heizkurvenendpunkt_, values[idx++], "Mischkreis1 Heizkurvenendpunkt");
+    if (idx < values.size()) publish_temp(mischkreis1_parallelverschiebung_, values[idx++], "Mischkreis1 Parallelverschiebung");
+    if (idx < values.size()) publish_temp(mischkreis1_absenkung_, values[idx++], "Mischkreis1 Absenkung");
+    if (idx < values.size()) publish_temp(mischkreis1_festwert_vorlauf_, values[idx++], "Mischkreis1 Festwert Vorlauf");
+}  
+
 
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");

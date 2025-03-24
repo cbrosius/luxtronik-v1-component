@@ -248,6 +248,36 @@ luxtronik_v1_component:
   betriebsstunden_waermepumpe:
     name: "Betriebsstunden Wärmepumpe"
     id: betriebsstunden_waermepumpe
+  #Heizkurve
+  heizkurve_temperaturdelta:
+    name: "Heizkurve Temperaturdelta"
+    id: heizkurve_temperaturdelta
+  heizkuve_endpunkt:
+    name: "Heizkurve Endpunkt"
+    id: heizkuve_endpunkt
+  heizkurve_parallelverschiebung:
+    name: "Heizkurve Parallelverschiebung"
+    id: heizkurve_parallelverschiebung
+  heizkurve_absenkung:
+    name: "Heizkurve Absenkung"
+    id: heizkurve_absenkung
+  heizkurve_festwert_ruecklauf:
+    name: "Heizkurve Festwert Rücklauf"
+    id: heizkurve_festwert_ruecklauf
+  mischkreis1_heizkurvenendpunkt:
+    name: "Mischkreis1 Heizkurve Endpunkt"
+    id: mischkreis1_heizkurvenendpunkt
+  mischkreis1_parallelverschiebung:
+    name: "Mischkreis1 Parallelverschiebung"
+    id: mischkreis1_parallelverschiebung
+  mischkreis1_absenkung:
+    name: "Mischkreis1 Absenkung"
+    id: mischkreis1_absenkung
+  mischkreis1_festwert_vorlauf:
+    name: "Mischkreis1 Festwert Vorlauf"
+    id: mischkreis1_festwert_vorlauf
+
+
 
 button:
   - platform: template
