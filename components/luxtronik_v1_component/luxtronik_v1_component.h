@@ -12,6 +12,18 @@ static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
 
+class WarmwasserModusSelect : public select::Select, public Component {
+  public:
+   void setup() override {
+     // Set initial values and options
+     traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+   }
+ 
+   void control(const std::string &value) override {
+     this->publish_state(value);
+   }
+ };
+
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds

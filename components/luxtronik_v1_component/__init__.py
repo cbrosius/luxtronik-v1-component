@@ -109,6 +109,9 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
     "LuxtronikV1Component", cg.Component, uart.UARTDevice
 )
 
+# Add after namespace definition
+WarmwasserModusSelect = luxtronik_v1_component_ns.class_("WarmwasserModusSelect", select.Select, cg.Component)
+
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
     state_class=STATE_CLASS_MEASUREMENT,
@@ -173,7 +176,7 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_WARMWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
         cv.Optional("warmwasser_modus_select"): select.SELECT_SCHEMA.extend({
-            cv.Required(CONF_ID): cv.declare_id(select.Select),
+            cv.Required(CONF_ID): cv.declare_id(WarmwasserModusSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
 
@@ -372,10 +375,10 @@ async def to_code(config):
 
     if "warmwasser_modus_select" in config:
         conf = config["warmwasser_modus_select"]
-        sel = cg.new_Pvariable(conf[CONF_ID])
-        await cg.register_component(sel, conf)
-        await select.register_select(sel, conf, options=list(WARMWASSER_MODUS_OPTIONS.keys()))
-        cg.add(var.set_warmwasser_modus_select(sel))
+        var_select = cg.new_Pvariable(conf[CONF_ID])
+        await cg.register_component(var_select, conf)
+        await select.register_select(var_select, conf)
+        cg.add(var.set_warmwasser_modus_select(var_select))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
