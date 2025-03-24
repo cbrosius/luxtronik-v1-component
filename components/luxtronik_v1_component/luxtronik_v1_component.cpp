@@ -121,7 +121,12 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             parse_heatingcurve_message_(msg.c_str());
         });
-    }
+    } else if (prefix == "779") { // programming error
+        ESP_LOGE(TAG, "Programming error: %s", msg.c_str());
+        this->defer([this, msg]() {
+            // exit programming mode
+            
+        });
 }
 
 void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
