@@ -155,6 +155,9 @@ luxtronik_v1_component:
   modus_warmwasser_numerisch:
     name: "Modus Warmwasser Numerisch"
     id: modus_warmwasser_numerisch
+  warmwasser_modus_select:
+    name: "Warmwasser Modus"
+    id: warmwasser_modus_select
   # Status sensors
   status_anlagentyp:
     name: "Status Anlagentyp"

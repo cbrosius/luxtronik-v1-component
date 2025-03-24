@@ -16,6 +16,20 @@ void LuxtronikV1Component::setup() {
 
     // Request initial values immediately after setup
     this->parent_->write_str("1100\r\n");
+
+    if (warmwasser_modus_select_ != nullptr) {
+        warmwasser_modus_select_->add_on_state_callback([this](std::string value) {
+            int mode = 0;  // Default to Automatik
+            if (value == "Zweiter Waermeerzeuger") mode = 1;
+            else if (value == "Party") mode = 2;
+            else if (value == "Ferien") mode = 3;
+            else if (value == "Aus") mode = 4;
+            
+            char command[32];
+            snprintf(command, sizeof(command), "3505;1;%d\r\n", mode);
+            this->parent_->write_str(command);
+        });
+    }
 }
 
 void LuxtronikV1Component::loop() {
@@ -314,6 +328,11 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
             this->defer([this, mode_text]() {
                 modus_warmwasser_->publish_state(mode_text);
                 ESP_LOGV(TAG, "Mode Warmwasser: %s", mode_text.c_str());
+                
+                // Update select component
+                if (warmwasser_modus_select_ != nullptr) {
+                    warmwasser_modus_select_->publish_state(mode_text);
+                }
             });
         }
     }

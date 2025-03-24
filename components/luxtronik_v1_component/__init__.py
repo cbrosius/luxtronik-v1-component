@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, text_sensor
+from esphome.components import uart, sensor, text_sensor, select
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_TEMPERATURE,
@@ -9,7 +9,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor","text_sensor"]
+AUTO_LOAD = ["sensor","text_sensor","select"]
 
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
@@ -94,6 +94,15 @@ CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG = "mischkreis1_parallelverschiebung"
 CONF_MISCHKREIS1_ABSENKUNG = "mischkreis1_absenkung"
 CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
 
+WARMWASSER_MODUS_OPTIONS = {
+    "Automatik": 0,
+    "Zweiter Waermeerzeuger": 1, 
+    "Party": 2,
+    "Ferien": 3,
+    "Aus": 4
+}
+
+
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
     "LuxtronikV1Component", cg.Component, uart.UARTDevice
@@ -162,6 +171,10 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_WARMWASSER): TEXT_SENSOR_SCHEMA,
+        cv.Optional("warmwasser_modus_select"): select.select_schema(
+            options=list(WARMWASSER_MODUS_OPTIONS.keys())
+        ),
+
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
@@ -354,7 +367,12 @@ async def to_code(config):
     if CONF_MODUS_WARMWASSER in config:
         sens = await text_sensor.new_text_sensor(config[CONF_MODUS_WARMWASSER])
         cg.add(var.set_modus_warmwasser_sensor(sens))
-    
+
+    if "warmwasser_modus_select" in config:
+        sel = await select.new_select(config["warmwasser_modus_select"], 
+                                    options=list(WARMWASSER_MODUS_OPTIONS.keys()))
+        cg.add(var.set_warmwasser_modus_select(sel))
+            
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
         cg.add(var.set_status_anlagentyp_sensor(sens))
