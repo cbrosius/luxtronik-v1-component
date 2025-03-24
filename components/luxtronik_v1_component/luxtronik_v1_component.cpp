@@ -628,9 +628,9 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
         default: {
             break;
         }
-        // Request working hours after error values are parsed
-        this->parent_->write_str("1450\r\n");
     }
+    // Request working hours after error values are parsed
+    this->parent_->write_str("1450\r\n");
 }
 
 void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
