@@ -336,9 +336,9 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
                 ESP_LOGV(TAG, "Mode Warmwasser: %s", mode_text.c_str());
                 
                 // Update select component
-                if (warmwasser_modus_select_ != nullptr) {
-                    warmwasser_modus_select_->publish_state(mode_text);
-                }
+                // if (warmwasser_modus_select_ != nullptr) {
+                //     warmwasser_modus_select_->publish_state(mode_text);
+                // }
             });
         }
     }
