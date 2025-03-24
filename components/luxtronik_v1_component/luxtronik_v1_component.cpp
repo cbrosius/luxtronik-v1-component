@@ -18,7 +18,7 @@ void LuxtronikV1Component::setup() {
     this->parent_->write_str("1100\r\n");
 
     if (warmwasser_modus_select_ != nullptr) {
-        warmwasser_modus_select_->add_on_state_callback([this](std::string value) {
+        warmwasser_modus_select_->add_on_state_callback([this](std::string value, size_t index) {
             int mode = 0;  // Default to Automatik
             if (value == "Zweiter Waermeerzeuger") mode = 1;
             else if (value == "Party") mode = 2;
