@@ -127,6 +127,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
             // exit programming mode
             
         });
+    }
 }
 
 void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
