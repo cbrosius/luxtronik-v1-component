@@ -714,7 +714,7 @@ void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
 
     // Process Heizkurve
     if (idx < values.size()) publish_temp(heizkurve_temperaturdelta_, values[idx++], "Heizkurve Temperaturdelta");
-    if (idx < values.size()) publish_temp(heizkuve_endpunkt_, values[idx++], "Heizkurve Endpunkt");
+    if (idx < values.size()) publish_temp(heizkurve_endpunkt_, values[idx++], "Heizkurve Endpunkt");
     if (idx < values.size()) publish_temp(heizkurve_parallelverschiebung_, values[idx++], "Heizkurve Parallelverschiebung");
     if (idx < values.size()) publish_temp(heizkurve_absenkung_, values[idx++], "Heizkurve Absenkung");
     if (idx < values.size()) publish_temp(heizkurve_festwert_ruecklauf_, values[idx++], "Heizkurve Festwert Rücklauf");

@@ -213,7 +213,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
 
   // heating curve
   sensor::Sensor *heizkurve_temperaturdelta_{nullptr};        // 3400/1
-  sensor::Sensor *heizkuve_endpunkt_{nullptr};                // 3400/2
+  sensor::Sensor *heizkurve_endpunkt_{nullptr};                // 3400/2
   sensor::Sensor *heizkurve_parallelverschiebung_{nullptr};   // 3400/3
   sensor::Sensor *heizkurve_absenkung_{nullptr};              // 3400/4
   sensor::Sensor *heizkurve_festwert_ruecklauf_{nullptr};     // 3400/5

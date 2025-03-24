@@ -252,7 +252,7 @@ luxtronik_v1_component:
   heizkurve_temperaturdelta:
     name: "Heizkurve Temperaturdelta"
     id: heizkurve_temperaturdelta
-  heizkuve_endpunkt:
+  heizkurve_endpunkt:
     name: "Heizkurve Endpunkt"
     id: heizkurve_endpunkt
   heizkurve_parallelverschiebung:
