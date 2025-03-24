@@ -793,7 +793,7 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 718: return "Max. Außentemp. (Reset) - Außentemperatur überschritten.";
         case 719: return "Min. Außentemp. (Reset) - Außentemperatur unterschritten.";
         case 720: return "WQ-Temperatur (Reset) - Verdampferaustrittstemp. mehrfach unter Sicherheitswert.";
-        case 721: return "Niederdruckabschaltung (Reset) - Niederdruckpressostat oder -sensor hat angesprochen.";
+        case 721: return "Niederdruckabsenkung (Reset) - Niederdruckpressostat oder -sensor hat angesprochen.";
         case 722: return "Tempdiff Heizwasser - Temperaturspreizung im Heizbetrieb ist negativ.";
         case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkwarmwasserbetrieb ist negativ.";
         case 724: return "Tempdiff Abtauen - Temperaturspreizung im Heizkreis ist während des Abtauens > 15 K.";

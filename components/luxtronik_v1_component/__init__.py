@@ -87,7 +87,7 @@ CONF_BETRIEBSSTUNDEN_WAERMEPUMPE = "betriebsstunden_waermepumpe"
 CONF_HEIZKURVE_TEMPERATURDELTA = "heizkurve_temperaturdelta"
 CONF_HEIZKURVE_ENDPUNKT = "heizkurve_endpunkt"
 CONF_HEIZKURVE_PARALLELVERSCHIEBUNG = "heizkurve_parallelverschiebung"
-CONF_HEIZKURVE_ABSENKUNG = "heizkurve_abschaltung"
+CONF_HEIZKURVE_ABSENKUNG = "heizkurve_absenkung"
 CONF_HEIZKURVE_FESTWERT_RUECKLAUF = "heizkurve_festwert_ruecklauf"
 CONF_MISCHKREIS1_HEIZKURVENENDPUNKT = "mischkreis1_heizkurvenendpunkt"
 CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG = "mischkreis1_parallelverschiebung"
@@ -489,7 +489,7 @@ async def to_code(config):
 
     if CONF_HEIZKURVE_ABSENKUNG in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_ABSENKUNG])
-        cg.add(var.set_heizkurve_abschaltung_sensor(sens))
+        cg.add(var.set_heizkurve_absenkung_sensor(sens))
 
     if CONF_HEIZKURVE_FESTWERT_RUECKLAUF in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_FESTWERT_RUECKLAUF])
