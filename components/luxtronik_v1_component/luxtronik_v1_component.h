@@ -124,7 +124,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_status_message_(const char* message);
   void parse_error_message_(const char* message);
   void parse_operatinghours_message_(const char* message);
-  void parse_heating_curve_message_(const char* message);
+  void parse_heatingcurve_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
