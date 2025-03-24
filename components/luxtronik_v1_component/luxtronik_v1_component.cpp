@@ -653,23 +653,33 @@ void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
 
     size_t idx = 1;  // Skip count
     
-    auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+    auto publish_hours = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
+            // Convert seconds to hours
+            float hours = val / 3600.0f;
+            publish_state_deferred_(sensor, hours, "Output", name);
+        }
+    };
+
+    auto publish_impulses = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+        if (sensor != nullptr) {
+            float val = std::atof(value.c_str());
+            // Impulses are published 1:1
             publish_state_deferred_(sensor, val, "Output", name);
         }
     };
 
     // Process Betriebsstunden
-    if (idx < values.size()) publish_output(betriebsstunden_verdichter_1_, values[idx++], "Betriebsstunden Verdichter 1");
-    if (idx < values.size()) publish_output(impulse_verdichter_1_, values[idx++], "Impulse Verdichter 1");
-    if (idx < values.size()) publish_output(durchschnittliche_einschaltdauer_verdichter_1_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 1");
-    if (idx < values.size()) publish_output(betriebsstunden_verdichter_2_, values[idx++], "Betriebsstunden Verdichter 2");
-    if (idx < values.size()) publish_output(impulse_verdichter_2_, values[idx++], "Impulse Verdichter 2");
-    if (idx < values.size()) publish_output(durchschnittliche_einschaltdauer_verdichter_2_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 2");
-    if (idx < values.size()) publish_output(betriebsstunden_zweiter_waermeerzeuger_1_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 1");
-    if (idx < values.size()) publish_output(betriebsstunden_zweiter_waermeerzeuger_2_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 2");
-    if (idx < values.size()) publish_output(betriebsstunden_waermepumpe_, values[idx++], "Betriebsstunden Waermepumpe");
+    if (idx < values.size()) publish_hours(betriebsstunden_verdichter_1_, values[idx++], "Betriebsstunden Verdichter 1");
+    if (idx < values.size()) publish_impulses(impulse_verdichter_1_, values[idx++], "Impulse Verdichter 1");
+    if (idx < values.size()) publish_impulses(durchschnittliche_einschaltdauer_verdichter_1_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 1");
+    if (idx < values.size()) publish_hours(betriebsstunden_verdichter_2_, values[idx++], "Betriebsstunden Verdichter 2");
+    if (idx < values.size()) publish_impulses(impulse_verdichter_2_, values[idx++], "Impulse Verdichter 2");
+    if (idx < values.size()) publish_impulses(durchschnittliche_einschaltdauer_verdichter_2_, values[idx++], "Durchschnittliche Einschaltdauer Verdichter 2");
+    if (idx < values.size()) publish_hours(betriebsstunden_zweiter_waermeerzeuger_1_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 1");
+    if (idx < values.size()) publish_hours(betriebsstunden_zweiter_waermeerzeuger_2_, values[idx++], "Betriebsstunden Zweiter Waermeerzeuger 2");
+    if (idx < values.size()) publish_hours(betriebsstunden_waermepumpe_, values[idx++], "Betriebsstunden Waermepumpe");
 
 }
 

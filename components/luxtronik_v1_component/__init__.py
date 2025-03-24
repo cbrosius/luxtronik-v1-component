@@ -105,7 +105,7 @@ TEXT_SENSOR_SCHEMA = text_sensor.text_sensor_schema()
 
 OPERATINGHOURS_SENSOR_SCHEMA = sensor.sensor_schema(
     unit_of_measurement="h",
-    accuracy_decimals=1,
+    accuracy_decimals=0,
 )
 
 IMPULS_SENSOR_SCHEMA = sensor.sensor_schema(
