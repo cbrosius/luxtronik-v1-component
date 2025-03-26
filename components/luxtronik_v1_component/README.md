@@ -150,6 +150,9 @@ luxtronik_v1_component:
   modus_heizung_numerisch:
     name: "Modus Heizung Numerisch"
     id: modus_heizung_numerisch
+  modus_heizung_select:
+    name: "  Modus Heizung"
+    id: modus_heizung_select
   modus_brauchwasser:
     name: "Modus Brauchwasser"
     id: modus_brauchwasser

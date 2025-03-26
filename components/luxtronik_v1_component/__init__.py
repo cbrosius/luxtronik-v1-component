@@ -103,6 +103,13 @@ MODUS_BRAUCHWASSER_OPTIONS = {
     "Aus": 4
 }
 
+MODUS_HEIZUNG_OPTIONS = {
+    "Automatik": 0,
+    "Zweiter Waermeerzeuger": 1, 
+    "Party": 2,
+    "Ferien": 3,
+    "Aus": 4
+}
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
 LuxtronikV1Component = luxtronik_v1_component_ns.class_(
@@ -111,6 +118,7 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 
 # Add after namespace definition
 ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
+ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
@@ -173,6 +181,10 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional("modus_heizung_select"): select.SELECT_SCHEMA.extend({
+            cv.Required(CONF_ID): cv.declare_id(ModusHeizungSelect),
+            cv.Optional(CONF_NAME): cv.string,
+        }).extend(cv.COMPONENT_SCHEMA),
         cv.Optional(CONF_MODUS_BRAUCHWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_BRAUCHWASSER): TEXT_SENSOR_SCHEMA,
         cv.Optional("modus_brauchwasser_select"): select.SELECT_SCHEMA.extend({
@@ -365,6 +377,17 @@ async def to_code(config):
         sens = await text_sensor.new_text_sensor(config[CONF_MODUS_HEIZUNG])
         cg.add(var.set_modus_heizung_sensor(sens))
     
+    if "modus_heizung_select" in config:
+        conf = config["modus_heizung_select"]
+        var_select = cg.new_Pvariable(conf[CONF_ID])
+        await cg.register_component(var_select, conf)
+        await select.register_select(
+            var_select, 
+            conf,
+            options=list(MODUS_HEIZUNG_OPTIONS.keys())
+        )
+        cg.add(var.set_modus_heizung_select(var_select))
+
     if CONF_MODUS_BRAUCHWASSER_NUMERISCH in config:
         sens = await sensor.new_sensor(config[CONF_MODUS_BRAUCHWASSER_NUMERISCH])
         cg.add(var.set_modus_brauchwasser_numerisch_sensor(sens))

@@ -30,6 +30,19 @@ void LuxtronikV1Component::setup() {
             this->parent_->write_str(command);
         });
     }
+    if (modus_heizung_select_ != nullptr) {
+        modus_heizung_select_->add_on_state_callback([this](std::string value, size_t index) {
+            int mode = 0;  // Default to Automatik
+            if (value == "Zweiter Waermeerzeuger") mode = 1;
+            else if (value == "Party") mode = 2;
+            else if (value == "Ferien") mode = 3;
+            else if (value == "Aus") mode = 4;
+            
+            char command[32];
+            snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+            this->parent_->write_str(command);
+        });
+    }
 }
 
 void LuxtronikV1Component::loop() {
@@ -813,9 +826,9 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 709: return "Fühler Vorlauf - Bruch/Kurzschluss des Vorlauffühlers.";
         case 710: return "Fühler Heißgas - Bruch/Kurzschluss des Heißgasfühlers.";
         case 711: return "Fühler Außentemperatur - Bruch/Kurzschluss des Außentemperaturfühlers.";
-        case 712: return "Fühler Trinkbrauchwasser - Bruch/Kurzschluss des Trinkbrauchwasserfühlers.";
+        case 712: return "Fühler Trinkwasser - Bruch/Kurzschluss des Trinkwasserfühlers.";
         case 713: return "Fühler WQ-Eintritt - Bruch/Kurzschluss des Wärmequellenfühlers (Eintritt).";
-        case 714: return "Heißgas WW - Temperaturgrenze Trinkbrauchwasser überschritten.";
+        case 714: return "Heißgas WW - Temperaturgrenze Trinkwasser überschritten.";
         case 715: return "Hochdruck-Abschaltung (Reset) - Hochdruckpressostat hat angesprochen.";
         case 716: return "Hochdruckstörung - Hochdruckpressostat mehrfach angesprochen.";
         case 717: return "Durchfluss-WQ - Durchflussschalter hat angesprochen.";
@@ -824,9 +837,9 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 720: return "WQ-Temperatur (Reset) - Verdampferaustrittstemp. mehrfach unter Sicherheitswert.";
         case 721: return "Niederdruckabsenkung (Reset) - Niederdruckpressostat oder -sensor hat angesprochen.";
         case 722: return "Tempdiff Heizwasser - Temperaturspreizung im Heizbetrieb ist negativ.";
-        case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkbrauchwasserbetrieb ist negativ.";
+        case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkwasserbetrieb ist negativ.";
         case 724: return "Tempdiff Abtauen - Temperaturspreizung im Heizkreis ist während des Abtauens > 15 K.";
-        case 725: return "Anlagefehler WW - Trinkbrauchwasserbetrieb gestört, gewünschte Speichertemperatur ist weit unterschritten.";
+        case 725: return "Anlagefehler WW - Trinkwasserbetrieb gestört, gewünschte Speichertemperatur ist weit unterschritten.";
         case 726: return "Fühler Mischkreis 1 - Bruch oder Kurzschluss des Mischkreisfühlers.";
         case 727: return "Soledruck - Soledruckpressostat hat angesprochen.";
         case 728: return "Fühler WQ-Aus - Bruch oder Kurzschluss des Wärmequellenfühlers (Austritt).";
@@ -835,7 +848,7 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 731: return "Zeitüberschreitung TDI - Thermische Desinfektion konnte nicht durchgeführt werden.";
         case 732: return "Störung Kühlung - Heizwassertemperatur von 16°C mehrfach unterschritten.";
         case 733: return "Störung Anode - Störmeldeeingang der Fremdstromanode hat angesprochen.";
-        case 734: return "Störung Anode - Fehler liegt seit mehr als zwei Wochen an, Trinkbrauchwasserbereitung gesperrt.";
+        case 734: return "Störung Anode - Fehler liegt seit mehr als zwei Wochen an, Trinkwasserbereitung gesperrt.";
         case 735: return "Fühler Ext. En - Bruch oder Kurzschluss des Fühlers 'Externe Energiequelle' (TEE).";
         case 736: return "Fühler Solarkollektor - Bruch oder Kurzschluss des Solarkollektorfühlers.";
         case 737: return "Fühler Solarspeicher - Bruch oder Kurzschluss des Solarspeicherfühlers.";

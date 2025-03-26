@@ -87,6 +87,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   // Mode sensor setters
   void set_modus_heizung_numerisch_sensor(sensor::Sensor *sens) { modus_heizung_numerisch_ = sens; }
   void set_modus_heizung_sensor(text_sensor::TextSensor *sens) { modus_heizung_ = sens; }
+  void set_modus_heizung_select(select::Select *select) { modus_heizung_select_ = select; }
   void set_modus_brauchwasser_numerisch_sensor(sensor::Sensor *sens) { modus_brauchwasser_numerisch_ = sens; }
   void set_modus_brauchwasser_sensor(text_sensor::TextSensor *sens) { modus_brauchwasser_ = sens; }
   void set_modus_brauchwasser_select(select::Select *select) { modus_brauchwasser_select_ = select; }
@@ -151,6 +152,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_heatingcurve_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
   select::Select *modus_brauchwasser_select_{nullptr};
+  select::Select *modus_heizung_select_{nullptr};
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
   std::string get_error_description_(int error_code);
