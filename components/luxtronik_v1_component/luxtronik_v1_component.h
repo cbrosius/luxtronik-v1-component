@@ -12,7 +12,7 @@ static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
 
-class ModusWarmwasserSelect : public select::Select, public Component {
+class ModusBrauchwasserSelect : public select::Select, public Component {
   public:
    void setup() override {
      // Set initial values and options
@@ -87,9 +87,9 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   // Mode sensor setters
   void set_modus_heizung_numerisch_sensor(sensor::Sensor *sens) { modus_heizung_numerisch_ = sens; }
   void set_modus_heizung_sensor(text_sensor::TextSensor *sens) { modus_heizung_ = sens; }
-  void set_modus_warmwasser_numerisch_sensor(sensor::Sensor *sens) { modus_warmwasser_numerisch_ = sens; }
-  void set_modus_warmwasser_sensor(text_sensor::TextSensor *sens) { modus_warmwasser_ = sens; }
-  void set_modus_warmwasser_select(select::Select *select) { modus_warmwasser_select_ = select; }
+  void set_modus_brauchwasser_numerisch_sensor(sensor::Sensor *sens) { modus_brauchwasser_numerisch_ = sens; }
+  void set_modus_brauchwasser_sensor(text_sensor::TextSensor *sens) { modus_brauchwasser_ = sens; }
+  void set_modus_brauchwasser_select(select::Select *select) { modus_brauchwasser_select_ = select; }
   // Status sensor setters
   void set_status_anlagentyp_sensor(sensor::Sensor *sens) { status_anlagentyp_ = sens; }
   void set_status_softwareversion_sensor(text_sensor::TextSensor *sens) { status_softwareversion_ = sens; }
@@ -144,13 +144,13 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_input_message_(const char* message);
   void parse_output_message_(const char* message);
   void parse_modus_heizung_message_(const char* message);      
-  void parse_modus_warmwasser_message_(const char* message);   
+  void parse_modus_brauchwasser_message_(const char* message);   
   void parse_status_message_(const char* message);
   void parse_error_message_(const char* message);
   void parse_operatinghours_message_(const char* message);
   void parse_heatingcurve_message_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
-  select::Select *modus_warmwasser_select_{nullptr};
+  select::Select *modus_brauchwasser_select_{nullptr};
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
   std::string get_error_description_(int error_code);
@@ -197,8 +197,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   // Modus sensor pointers
   sensor::Sensor *modus_heizung_numerisch_{nullptr};                // 3405/2
   text_sensor::TextSensor *modus_heizung_{nullptr};                // 3405/2
-  sensor::Sensor *modus_warmwasser_numerisch_{nullptr};            // 3505/2
-  text_sensor::TextSensor *modus_warmwasser_{nullptr};             // 3505/2
+  sensor::Sensor *modus_brauchwasser_numerisch_{nullptr};            // 3505/2
+  text_sensor::TextSensor *modus_brauchwasser_{nullptr};             // 3505/2
 
   // Status sensor pointers
   sensor::Sensor *status_anlagentyp_{nullptr};                  // 1700/2

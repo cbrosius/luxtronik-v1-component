@@ -17,8 +17,8 @@ void LuxtronikV1Component::setup() {
     // Request initial values immediately after setup
     this->parent_->write_str("1100\r\n");
 
-    if (modus_warmwasser_select_ != nullptr) {
-        modus_warmwasser_select_->add_on_state_callback([this](std::string value, size_t index) {
+    if (modus_brauchwasser_select_ != nullptr) {
+        modus_brauchwasser_select_->add_on_state_callback([this](std::string value, size_t index) {
             int mode = 0;  // Default to Automatik
             if (value == "Zweiter Waermeerzeuger") mode = 1;
             else if (value == "Party") mode = 2;
@@ -103,7 +103,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         });
     } else if (prefix == "3505") {
         this->defer([this, msg]() {
-            parse_modus_warmwasser_message_(msg.c_str());
+            parse_modus_brauchwasser_message_(msg.c_str());
         });
     } else if (prefix == "1700") {
         this->defer([this, msg]() {
@@ -307,8 +307,8 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     this->parent_->write_str("3505\r\n");
 }
 
-// Update parse_modus_warmwasser_message_
-void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) {
+// Update parse_modus_brauchwasser_message_
+void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
     values.reserve(3);  // Pre-allocate for typical message size
@@ -326,31 +326,31 @@ void LuxtronikV1Component::parse_modus_warmwasser_message_(const char* message) 
     
     if (values.size() >= 2) {  // At least count and mode value
         float val = std::atof(values[1].c_str());
-        if (modus_warmwasser_numerisch_ != nullptr) {
-            publish_state_deferred_(modus_warmwasser_numerisch_, val, "Mode", "Warmwasser Numerisch");
+        if (modus_brauchwasser_numerisch_ != nullptr) {
+            publish_state_deferred_(modus_brauchwasser_numerisch_, val, "Mode", "Brauchwasser Numerisch");
         }
-        if (modus_warmwasser_ != nullptr) {
+        if (modus_brauchwasser_ != nullptr) {
             std::string mode_text = get_modus_text_(static_cast<int>(val));
             this->defer([this, mode_text]() {
-                modus_warmwasser_->publish_state(mode_text);
-                ESP_LOGV(TAG, "Modus Warmwasser: %s", mode_text.c_str());
+                modus_brauchwasser_->publish_state(mode_text);
+                ESP_LOGV(TAG, "Modus Brauchwasser: %s", mode_text.c_str());
                 
                 // Update select component
-                // if (modus_warmwasser_select_ != nullptr) {
-                //     modus_warmwasser_select_->publish_state(mode_text);
+                // if (modus_brauchwasser_select_ != nullptr) {
+                //     modus_brauchwasser_select_->publish_state(mode_text);
                 // }
             });
         }
     }
     
-    // Request status values after warmwater mode
+    // Request status values after brauchwasser mode
     this->parent_->write_str("1700\r\n");
 }
 
 std::string LuxtronikV1Component::get_betriebszustand_text_(int state) {
     switch (state) {
         case 0: return "Heizen";
-        case 1: return "Warmwasser";
+        case 1: return "Brauchwasser";
         case 3: return "EVU Sperre";
         case 5: return "Bereitschaft";
         default: return "Unbekannt";
@@ -790,8 +790,8 @@ void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "  Sensor Ausgang Zweiter Wärmeerzeuger Störung: %s", this->ausgang_zweiter_waermeerzeuger_stoerung_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung Numerisch: %s", this->modus_heizung_numerisch_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Modus Heizung: %s", this->modus_heizung_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser Numerisch: %s", this->modus_warmwasser_numerisch_ ? "Set" : "Not Set");
-    ESP_LOGCONFIG(TAG, "  Sensor Modus Warmwasser: %s", this->modus_warmwasser_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Brauchwasser Numerisch: %s", this->modus_brauchwasser_numerisch_ ? "Set" : "Not Set");
+    ESP_LOGCONFIG(TAG, "  Sensor Modus Brauchwasser: %s", this->modus_brauchwasser_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Anlagentyp: %s", this->status_anlagentyp_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Softwareversion: %s", this->status_softwareversion_ ? "Set" : "Not Set");
     ESP_LOGCONFIG(TAG, "  Sensor Status Bivalenzstufe: %s", this->status_bivalenzstufe_ ? "Set" : "Not Set");
@@ -813,9 +813,9 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 709: return "Fühler Vorlauf - Bruch/Kurzschluss des Vorlauffühlers.";
         case 710: return "Fühler Heißgas - Bruch/Kurzschluss des Heißgasfühlers.";
         case 711: return "Fühler Außentemperatur - Bruch/Kurzschluss des Außentemperaturfühlers.";
-        case 712: return "Fühler Trinkwarmwasser - Bruch/Kurzschluss des Trinkwarmwasserfühlers.";
+        case 712: return "Fühler Trinkbrauchwasser - Bruch/Kurzschluss des Trinkbrauchwasserfühlers.";
         case 713: return "Fühler WQ-Eintritt - Bruch/Kurzschluss des Wärmequellenfühlers (Eintritt).";
-        case 714: return "Heißgas WW - Temperaturgrenze Trinkwarmwasser überschritten.";
+        case 714: return "Heißgas WW - Temperaturgrenze Trinkbrauchwasser überschritten.";
         case 715: return "Hochdruck-Abschaltung (Reset) - Hochdruckpressostat hat angesprochen.";
         case 716: return "Hochdruckstörung - Hochdruckpressostat mehrfach angesprochen.";
         case 717: return "Durchfluss-WQ - Durchflussschalter hat angesprochen.";
@@ -824,9 +824,9 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 720: return "WQ-Temperatur (Reset) - Verdampferaustrittstemp. mehrfach unter Sicherheitswert.";
         case 721: return "Niederdruckabsenkung (Reset) - Niederdruckpressostat oder -sensor hat angesprochen.";
         case 722: return "Tempdiff Heizwasser - Temperaturspreizung im Heizbetrieb ist negativ.";
-        case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkwarmwasserbetrieb ist negativ.";
+        case 723: return "Tempdiff Warmw. - Temperaturspreizung im Trinkbrauchwasserbetrieb ist negativ.";
         case 724: return "Tempdiff Abtauen - Temperaturspreizung im Heizkreis ist während des Abtauens > 15 K.";
-        case 725: return "Anlagefehler WW - Trinkwarmwasserbetrieb gestört, gewünschte Speichertemperatur ist weit unterschritten.";
+        case 725: return "Anlagefehler WW - Trinkbrauchwasserbetrieb gestört, gewünschte Speichertemperatur ist weit unterschritten.";
         case 726: return "Fühler Mischkreis 1 - Bruch oder Kurzschluss des Mischkreisfühlers.";
         case 727: return "Soledruck - Soledruckpressostat hat angesprochen.";
         case 728: return "Fühler WQ-Aus - Bruch oder Kurzschluss des Wärmequellenfühlers (Austritt).";
@@ -835,7 +835,7 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 731: return "Zeitüberschreitung TDI - Thermische Desinfektion konnte nicht durchgeführt werden.";
         case 732: return "Störung Kühlung - Heizwassertemperatur von 16°C mehrfach unterschritten.";
         case 733: return "Störung Anode - Störmeldeeingang der Fremdstromanode hat angesprochen.";
-        case 734: return "Störung Anode - Fehler liegt seit mehr als zwei Wochen an, Trinkwarmwasserbereitung gesperrt.";
+        case 734: return "Störung Anode - Fehler liegt seit mehr als zwei Wochen an, Trinkbrauchwasserbereitung gesperrt.";
         case 735: return "Fühler Ext. En - Bruch oder Kurzschluss des Fühlers 'Externe Energiequelle' (TEE).";
         case 736: return "Fühler Solarkollektor - Bruch oder Kurzschluss des Solarkollektorfühlers.";
         case 737: return "Fühler Solarspeicher - Bruch oder Kurzschluss des Solarspeicherfühlers.";

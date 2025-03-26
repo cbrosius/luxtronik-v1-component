@@ -150,15 +150,15 @@ luxtronik_v1_component:
   modus_heizung_numerisch:
     name: "Modus Heizung Numerisch"
     id: modus_heizung_numerisch
-  modus_warmwasser:
-    name: "Modus Warmwasser"
-    id: modus_warmwasser
-  modus_warmwasser_numerisch:
-    name: "Modus Warmwasser Numerisch"
-    id: modus_warmwasser_numerisch
-  modus_warmwasser_select:
-    name: "  Modus Warmwasser"
-    id: modus_warmwasser_select
+  modus_brauchwasser:
+    name: "Modus Brauchwasser"
+    id: modus_brauchwasser
+  modus_brauchwasser_numerisch:
+    name: "Modus Brauchwasser Numerisch"
+    id: modus_brauchwasser_numerisch
+  modus_brauchwasser_select:
+    name: "  Modus Brauchwasser"
+    id: modus_brauchwasser_select
   # Status sensors
   status_anlagentyp:
     name: "Status Anlagentyp"
