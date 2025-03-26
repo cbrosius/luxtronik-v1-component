@@ -143,6 +143,7 @@ luxtronik_v1_component:
   ausgang_zweiter_waermeerzeuger_stoerung:
     name: "Ausgang Zweiter Wärmeerzeuger Störung"
     id: ausgang_zweiter_waermeerzeuger_stoerung
+  # Modi
   modus_heizung:
     name: "Modus Heizung"
     id: modus_heizung
@@ -155,9 +156,9 @@ luxtronik_v1_component:
   modus_warmwasser_numerisch:
     name: "Modus Warmwasser Numerisch"
     id: modus_warmwasser_numerisch
-  warmwasser_modus_select:
-    name: "Warmwasser Modus"
-    id: warmwasser_modus_select
+  modus_warmwasser_select:
+    name: "  Modus Warmwasser"
+    id: modus_warmwasser_select
   # Status sensors
   status_anlagentyp:
     name: "Status Anlagentyp"
@@ -280,7 +281,14 @@ luxtronik_v1_component:
     name: "Mischkreis1 Festwert Vorlauf"
     id: mischkreis1_festwert_vorlauf
 
-
+number:
+  - platform: template
+    name: "  Brauchwasser Solltemperatur"
+    id: Brauchwasser_Solltemperatur
+    min_value: 40
+    step: 1
+    max_value: 75
+    optimistic: true
 
 button:
   - platform: template
