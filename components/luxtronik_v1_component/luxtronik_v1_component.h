@@ -89,7 +89,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_modus_heizung_sensor(text_sensor::TextSensor *sens) { modus_heizung_ = sens; }
   void set_modus_warmwasser_numerisch_sensor(sensor::Sensor *sens) { modus_warmwasser_numerisch_ = sens; }
   void set_modus_warmwasser_sensor(text_sensor::TextSensor *sens) { modus_warmwasser_ = sens; }
-  void set_modus_warmwasser_select(select::Select *select) { warmwasser_modus_select_ = select; }
+  void set_modus_warmwasser_select(select::Select *select) { modus_warmwasser_select_ = select; }
   // Status sensor setters
   void set_status_anlagentyp_sensor(sensor::Sensor *sens) { status_anlagentyp_ = sens; }
   void set_status_softwareversion_sensor(text_sensor::TextSensor *sens) { status_softwareversion_ = sens; }
