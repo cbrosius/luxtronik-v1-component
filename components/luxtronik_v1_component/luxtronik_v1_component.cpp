@@ -140,16 +140,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         this->defer([this, msg]() {
             reset_programming_mode_(msg.c_str());
         });
-    } else if (prefix == "993"){ // SAVE successful
-        this->defer([this, msg]() {
-            ESP_LOGD(TAG, "993 found -> Values saved");
-        });        
-    } else if (prefix == "999"){ // SAVE requested
-        this->defer([this, msg]() {
-            ESP_LOGD(TAG, "999 found -> save Values");
-        });        
-    };
-
+    }
 }
 
 void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
@@ -358,9 +349,9 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
                 ESP_LOGV(TAG, "Modus Brauchwasser: %s", mode_text.c_str());
                 
                 // Update select component
-                // if (modus_brauchwasser_select_ != nullptr) {
-                //     modus_brauchwasser_select_->publish_state(mode_text);
-                // }
+                if (modus_brauchwasser_select_ != nullptr) {
+                    modus_brauchwasser_select_->publish_state(mode_text);
+                }
             });
         }
     }
