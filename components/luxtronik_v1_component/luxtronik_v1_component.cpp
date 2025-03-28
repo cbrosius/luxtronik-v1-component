@@ -95,50 +95,48 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         return;
     }
 
-    // Use substring comparison for better performance
-    // std::string prefix = msg.substr(0, 4);
     // Get prefix up to first semicolon
     size_t semicolon_pos = msg.find(';');
     if (semicolon_pos == std::string::npos) return;
     std::string prefix = msg.substr(0, semicolon_pos);
 
-    if (prefix == "1100") {
+    if (prefix == "1100") { // temperature message -> get temperature values
         this->defer([this, msg]() {
             parse_temperatur_message_(msg.c_str());
         });
-    } else if (prefix == "1200") {
+    } else if (prefix == "1200") { // input message -> get input values
         this->defer([this, msg]() {
             parse_input_message_(msg.c_str());
         });
-    } else if (prefix == "1300") {
+    } else if (prefix == "1300") { // output message -> get output values
         this->defer([this, msg]() {
             parse_output_message_(msg.c_str());
         });
-    } else if (prefix == "3405") {
+    } else if (prefix == "3405") { // modus_heizung -> get modus values
         this->defer([this, msg]() {
             parse_modus_heizung_message_(msg.c_str());
         });
-    } else if (prefix == "3505") {
+    } else if (prefix == "3505") { // modus_brauchwasser -> get modus values
         this->defer([this, msg]() {
             parse_modus_brauchwasser_message_(msg.c_str());
         });
-    } else if (prefix == "1700") {
+    } else if (prefix == "1700") { // status message -> get status values
         this->defer([this, msg]() {
             parse_status_message_(msg.c_str());
         });
-    } else if (prefix == "1500") {
+    } else if (prefix == "1500") { // error message -> get error values
         this->defer([this, msg]() {
             parse_error_message_(msg.c_str());
         });
-    } else if (prefix == "1450") {
+    } else if (prefix == "1450") { // operating hours -> get operating hours values
         this->defer([this, msg]() {
             parse_operatinghours_message_(msg.c_str());
         });
-    } else if (prefix == "3400") {
+    } else if (prefix == "3400") { // heating curve -> get heating curve values
         this->defer([this, msg]() {
             parse_heatingcurve_message_(msg.c_str());
         });
-    } else if (prefix == "779") { // programming error
+    } else if (prefix == "779") { // programming error -> reset programming mode
         this->defer([this, msg]() {
             reset_programming_mode_(msg.c_str());
         });
@@ -803,6 +801,10 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
         
         // Send reset command followed by confirmation
         this->parent_->write_str(command);
+        // Wait for a short time to ensure the command is processed
+        // This delay may need to be adjusted based on the device's response time
+        delay(500);
+        // Send confirmation command
         this->parent_->write_str("999\r\n");
         
         ESP_LOGD(TAG, "Reset programming mode: %s", command);
