@@ -342,7 +342,7 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         if (modus_brauchwasser_numerisch_ != nullptr) {
             publish_state_deferred_(modus_brauchwasser_numerisch_, val, "Mode", "Brauchwasser Numerisch");
         }
-        if (modus_brauchwasser_ != nullptr) {
+        if (modus_brauchwasser_ != nullptr && value != modus_brauchwasser_->get_state()) {
             std::string mode_text = get_modus_text_(static_cast<int>(val));
             this->defer([this, mode_text]() {
                 modus_brauchwasser_->publish_state(mode_text);
