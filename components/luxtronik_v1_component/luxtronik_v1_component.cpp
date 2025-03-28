@@ -141,9 +141,13 @@ void LuxtronikV1Component::parse_message_(const char* message) {
             reset_programming_mode_(msg.c_str());
         });
     } else if (prefix == "993"){ // SAVE successful
-        ESP_LOGD(TAG, "993 found -> Values saved");
+        this->defer([this, msg]() {
+            ESP_LOGD(TAG, "993 found -> Values saved");
+        });        
     } else if (prefix == "999"){ // SAVE requested
-        ESP_LOGD(TAG, "999 found -> save Values");
+        this->defer([this, msg]() {
+            ESP_LOGD(TAG, "999 found -> save Values");
+        });        
     };
 
 }
