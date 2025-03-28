@@ -96,8 +96,12 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     }
 
     // Use substring comparison for better performance
-    std::string prefix = msg.substr(0, 4);
-    
+    // std::string prefix = msg.substr(0, 4);
+    // Get prefix up to first semicolon
+    size_t semicolon_pos = msg.find(';');
+    if (semicolon_pos == std::string::npos) return;
+    std::string prefix = msg.substr(0, semicolon_pos);
+
     if (prefix == "1100") {
         this->defer([this, msg]() {
             parse_temperatur_message_(msg.c_str());
