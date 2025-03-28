@@ -135,8 +135,10 @@ void LuxtronikV1Component::parse_message_(const char* message) {
             parse_heatingcurve_message_(msg.c_str());
         });
     } else if (prefix == "779") { // programming error
-        ESP_LOGE(TAG, "Programming error: %s", msg.c_str());
+        this->defer([this, msg]() {
+            ESP_LOGE(TAG, "Programming error: %s", msg.c_str());
             reset_programming_mode_(msg.c_str());
+        });
     }
 }
 
