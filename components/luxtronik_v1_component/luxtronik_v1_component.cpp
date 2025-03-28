@@ -774,11 +774,14 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
     // Received: 779;3406;1
     // to reset programming mode, send "779;3406;0" to the device followed by "999\r\n"
 
+    ESP_LOGD(TAG, "Programming-Errormessage received: %s", message);
+    ESP_LOGD(TAG, "Reset programming mode...");
+
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 4;  // Skip "779;"
     size_t end = 0;
-
+  
     // Split message into vector for faster processing
     while ((end = msg.find(';', start)) != std::string::npos) {
         values.push_back(msg.substr(start, end - start));
@@ -788,8 +791,6 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
     if (start < msg.length()) {
         values.push_back(msg.substr(start));
     }
-
-    ESP_LOGV(TAG, "Reset programming mode: %s", msg.c_str());
 
     if (this->parent_ != nullptr && values.size() >= 1) {
         // Get the mode number (3406 or 3506)
@@ -806,8 +807,6 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
         delay(500);
         // Send confirmation command
         this->parent_->write_str("999\r\n");
-        
-        ESP_LOGD(TAG, "Reset programming mode: %s", command);
     }
 }
 
