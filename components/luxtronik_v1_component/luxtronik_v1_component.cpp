@@ -136,10 +136,7 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         });
     } else if (prefix == "779") { // programming error
         ESP_LOGE(TAG, "Programming error: %s", msg.c_str());
-        this->defer([this, msg]() {
-            // exit programming mode
-            
-        });
+            reset_programming_mode_(msg.c_str());
     }
 }
 
@@ -727,7 +724,8 @@ void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
     this->parent_->write_str("3400\r\n");
 }
 
-void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
+void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) { 
+    // Received: 3400;9;20;310;200;0;350;340;200;0;350
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 5;  // Skip "3400;"
@@ -766,6 +764,43 @@ void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
     if (idx < values.size()) publish_temp(mischkreis1_festwert_vorlauf_, values[idx++], "Mischkreis1 Festwert Vorlauf");
 }  
 
+void LuxtronikV1Component::reset_programming_mode_(const char* message) {
+    // Example message format:
+    // Received: 779;3506;1
+    // to reset programming mode, send "779;3506;0" to the device followed by "999\r\n"
+    // Received: 779;3406;1
+    // to reset programming mode, send "779;3406;0" to the device followed by "999\r\n"
+
+    std::string msg(message);
+    std::vector<std::string> values;
+    size_t start = 4;  // Skip "779;"
+    size_t end = 0;
+
+    // Split message into vector for faster processing
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (start < msg.length()) {
+        values.push_back(msg.substr(start));
+    }
+
+    if (this->parent_ != nullptr && values.size() >= 1) {
+        // Get the mode number (3406 or 3506)
+        std::string mode = values[0];
+        
+        // Create reset command with corresponding mode
+        char command[32];
+        snprintf(command, sizeof(command), "%s;0\r\n", mode.c_str());
+        
+        // Send reset command followed by confirmation
+        this->parent_->write_str(command);
+        this->parent_->write_str("999\r\n");
+        
+        ESP_LOGD(TAG, "Reset programming mode: %s", command);
+    }
+}
 
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
