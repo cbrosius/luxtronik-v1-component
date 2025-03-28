@@ -136,7 +136,6 @@ void LuxtronikV1Component::parse_message_(const char* message) {
         });
     } else if (prefix == "779") { // programming error
         this->defer([this, msg]() {
-            ESP_LOGE(TAG, "Programming error: %s", msg.c_str());
             reset_programming_mode_(msg.c_str());
         });
     }
@@ -787,6 +786,8 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
     if (start < msg.length()) {
         values.push_back(msg.substr(start));
     }
+
+    ESP_LOGV(TAG, "Reset programming mode: %s", msg.c_str());
 
     if (this->parent_ != nullptr && values.size() >= 1) {
         // Get the mode number (3406 or 3506)
