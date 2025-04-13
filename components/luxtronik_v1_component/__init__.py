@@ -417,7 +417,7 @@ async def to_code(config):
 
     if "brauchwasser_temperatur_number" in config:
         conf = config["brauchwasser_temperatur_number"]
-        var_number = await cg.new_Pvariable(conf[CONF_ID])  # Changed to await new_Pvariable
+        var_number = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(var_number, conf)
         await number.register_number(
             var_number,
