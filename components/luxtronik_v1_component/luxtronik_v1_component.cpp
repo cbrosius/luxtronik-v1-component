@@ -43,6 +43,12 @@ void LuxtronikV1Component::setup() {
             // this->parent_->write_str(command);
         });
     }
+
+    // Initialize BrauchwasserTemperaturNumber if it exists
+    if (brauchwasser_temperatur_number_ != nullptr) {
+        brauchwasser_temperatur_number_->set_parent(this);
+        brauchwasser_temperatur_number_->setup();
+    }
 }
 
 void LuxtronikV1Component::loop() {
@@ -50,6 +56,7 @@ void LuxtronikV1Component::loop() {
         ESP_LOGW(TAG, "Cannot loop - UART parent not set");
         return;
     }
+    
     
     while (this->parent_->available()) {
         uint8_t c;
