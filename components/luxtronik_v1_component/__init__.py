@@ -583,3 +583,12 @@ async def to_code(config):
     if CONF_MISCHKREIS1_FESTWERT_VORLAUF in config:
         sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_FESTWERT_VORLAUF])
         cg.add(var.set_mischkreis1_festwert_vorlauf_sensor(sens))
+
+    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
+        number = await number.new_number(
+            config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER],
+            min_value=30,
+            max_value=65,
+            step=0.5
+        )
+        cg.add(var.set_brauchwasser_temperatur_number(number))
