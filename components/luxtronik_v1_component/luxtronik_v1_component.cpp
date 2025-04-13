@@ -221,6 +221,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
                     ESP_LOGD(TAG, "brauchwasser_temperatur_number_ ist nullptr!");
                 }
             }
+        }
     };
 
     // Process all temperature sensors
