@@ -217,6 +217,8 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
                     } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
                         brauchwasser_temperatur_number_->publish_state(temp);
                     }
+                } else {
+                    ESP_LOGD(TAG, "Brauchwasser Temperatur Number ist nullptr!");
                 }
             }
        }
