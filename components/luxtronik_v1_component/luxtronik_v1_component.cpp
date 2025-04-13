@@ -207,18 +207,24 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             publish_state_deferred_(sensor, temp, "Temperatur", name);
+            
             // Log wenn es der Brauchwasser-Sollwert ist
             if (sensor == temperatur_brauchwasser_soll_) {
-                ESP_LOGD(TAG, "Brauchwasser Sollwert empfangen: %.1f", temp);
                 if (brauchwasser_temperatur_number_ != nullptr) {
+                    ESP_LOGD(TAG, "Brauchwasser Solltemperatur - Sensor: %.1f°C, Number: %.1f°C", 
+                        temp, brauchwasser_temperatur_number_->state);
+                    
                     if (!brauchwasser_temperatur_number_->is_initialized()) {
+                        ESP_LOGD(TAG, "Initialisiere BrauchwasserTemperaturNumber mit %.1f°C", temp);
                         brauchwasser_temperatur_number_->control(temp);
                         brauchwasser_temperatur_number_->set_initialized(true);
-                    } else {
+                    } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
+                        ESP_LOGD(TAG, "Aktualisiere BrauchwasserTemperaturNumber von %.1f°C auf %.1f°C", 
+                            brauchwasser_temperatur_number_->state, temp);
                         brauchwasser_temperatur_number_->publish_state(temp);
                     }
                 } else {
-                    ESP_LOGD(TAG, "brauchwasser_temperatur_number_ ist nullptr!");
+                    ESP_LOGW(TAG, "BrauchwasserTemperaturNumber ist nicht initialisiert (nullptr)");
                 }
             }
         }
