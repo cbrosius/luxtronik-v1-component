@@ -796,6 +796,53 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
     }
 }
 
+// Move control implementations to cpp file
+void ModusBrauchwasserSelect::control(const std::string &value) {
+    if (parent_ == nullptr) return;
+    
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+    
+    // Send new mode to heatpump
+    char command[32];
+    snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
+    parent_->write_str(command);
+    
+    delay(100);  // Brief delay for processing
+    
+    // Send save command
+    parent_->write_str("999\r\n");
+    
+    ESP_LOGD("luxtronik_v1", "Changed Brauchwasser mode to: %s (Mode: %d)", value.c_str(), mode);
+  }
+  
+  void ModusHeizungSelect::control(const std::string &value) {
+    if (parent_ == nullptr) return;
+    
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+    
+    // Send new mode to heatpump
+    char command[32];
+    snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+    parent_->write_str(command);
+    
+    delay(100);  // Brief delay for processing
+    
+    // Send save command
+    parent_->write_str("999\r\n");
+    
+    ESP_LOGD("luxtronik_v1", "Changed Heizung mode to: %s (Mode: %d)", value.c_str(), mode);
+  }
+  
+
+  
 void LuxtronikV1Component::dump_config() {
     ESP_LOGCONFIG(TAG, "Luxtronik V1 Component:");
     ESP_LOGCONFIG(TAG, "  UART Parent: %s", this->parent_ ? "Set" : "Not Set");
