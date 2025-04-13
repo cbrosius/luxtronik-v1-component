@@ -404,6 +404,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void update_number_state_(number::Number* number, float value);
   select::Select *modus_brauchwasser_select_{nullptr};
   select::Select *modus_heizung_select_{nullptr};
+  number::Number *brauchwasser_temperatur_number_{nullptr};
+  
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
   std::string get_error_description_(int error_code);
