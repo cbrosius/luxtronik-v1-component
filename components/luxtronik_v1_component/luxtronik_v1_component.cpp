@@ -649,7 +649,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
-                publish_timestamp_state_deferred_(error1_zeitpunkt_, buffer, "Error", "Zeitpunkt 1");
+                publish_timestamp_state_deferred_(error3_zeitpunkt_, buffer, "Error", "Zeitpunkt 3");
 
                 //  this->defer([this, text = std::string(buffer)]() {
                 //     error3_zeitpunkt_->publish_state(text);
