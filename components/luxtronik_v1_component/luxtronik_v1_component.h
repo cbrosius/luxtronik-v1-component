@@ -13,24 +13,28 @@ static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
 
 class ModusBrauchwasserSelect : public select::Select, public Component {
- public:
-   void setup() override;
-   void control(const std::string &value) override;
-   void set_parent(uart::UARTDevice *parent) { this->parent_ = parent; }
+  public:
+   void setup() override {
+     // Set initial values and options
+     traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+   }
+ 
+   void control(const std::string &value) override {
+     this->publish_state(value);
+   }
+ };
 
- protected:
-   uart::UARTDevice *parent_{nullptr};
-};
-
-class ModusHeizungSelect : public select::Select, public Component {
- public:
-   void setup() override;
-   void control(const std::string &value) override;
-   void set_parent(uart::UARTDevice *parent) { this->parent_ = parent; }
-
- protected:
-   uart::UARTDevice *parent_{nullptr};
-};
+ class ModusHeizungSelect : public select::Select, public Component {
+  public:
+   void setup() override {
+     // Set initial values and options
+     traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+   }
+ 
+   void control(const std::string &value) override {
+     this->publish_state(value);
+   }
+ };
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
