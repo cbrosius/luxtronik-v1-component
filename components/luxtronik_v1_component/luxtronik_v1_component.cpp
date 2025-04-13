@@ -227,7 +227,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
     if (brauchwasser_temperatur_number_ != nullptr && temperatur_brauchwasser_soll_ != nullptr) {
         if (!brauchwasser_temperatur_number_->is_initialized()) {  // Use getter method
-            brauchwasser_temperatur_number_->control(temperatur_brauchwasser_soll_);
+            brauchwasser_temperatur_number_->control(temperatur_brauchwasser_soll_->state);
             brauchwasser_temperatur_number_->set_initialized(true);
         }
     }
