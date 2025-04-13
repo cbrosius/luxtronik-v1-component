@@ -194,7 +194,7 @@ CONFIG_SCHEMA = (
         }).extend(cv.COMPONENT_SCHEMA),
         cv.Optional("brauchwasser_temperatur_number"): cv.Schema({
             cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
-            cv.Optional(CONF_NAME): cv.number,
+            cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
 
         # Status sensors
