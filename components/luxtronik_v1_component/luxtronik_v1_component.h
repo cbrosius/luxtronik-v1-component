@@ -222,6 +222,10 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
 class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
   void setup() override {
+    // Set initial values and min/max limits
+    traits.set_min_value(30); // Minimum temperature 30°C
+    traits.set_max_value(65); // Maximum temperature 65°C
+    traits.set_step(0.5f);    // Allow 0.5°C steps
     initialized_ = false;
   }
 
