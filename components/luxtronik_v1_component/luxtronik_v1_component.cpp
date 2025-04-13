@@ -217,6 +217,8 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_heissgas_, values[idx++], "Heissgas");
     if (idx < values.size()) publish_temp(temperatur_aussen_, values[idx++], "Aussen");
     if (idx < values.size()) publish_temp(temperatur_brauchwasser_, values[idx++], "Brauchwasser");
+    // Store brauchwasser_soll index for later use
+    size_t brauchwasser_soll_idx = idx;
     if (idx < values.size()) publish_temp(temperatur_brauchwasser_soll_, values[idx++], "Brauchwasser Soll");
     if (idx < values.size()) publish_temp(temperatur_waermequelle_eingang_, values[idx++], "Wärmequelle Eingang");
     if (idx < values.size()) publish_temp(temperatur_kaeltekreis_, values[idx++], "Kältekreis");
@@ -225,9 +227,11 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
-    if (brauchwasser_temperatur_number_ != nullptr && temperatur_brauchwasser_soll_ != nullptr) {
-        if (!brauchwasser_temperatur_number_->is_initialized()) {  // Use getter method
-            brauchwasser_temperatur_number_->control(temperatur_brauchwasser_soll_->state);
+    if (brauchwasser_temperatur_number_ != nullptr && brauchwasser_soll_idx < values.size()) {
+        float temp = get_float_temp_(values[brauchwasser_soll_idx]);
+        
+        if (!brauchwasser_temperatur_number_->is_initialized()) {
+            brauchwasser_temperatur_number_->control(temp);
             brauchwasser_temperatur_number_->set_initialized(true);
         }
     }
