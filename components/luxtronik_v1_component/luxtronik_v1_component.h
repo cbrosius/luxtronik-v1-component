@@ -378,21 +378,36 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   // Add setter methods in public section
   void set_heizkurve_temperaturdelta_number(HeizkurveTemperaturDeltaNumber *number) { 
     heizkurve_temperaturdelta_number_ = number; 
+    if (heizkurve_temperaturdelta_number_ != nullptr)
+      heizkurve_temperaturdelta_number_->set_parent(this);
   }
   void set_heizkurve_endpunkt_number(HeizkurveEndpunktNumber *number) { 
     heizkurve_endpunkt_number_ = number; 
+    if (heizkurve_endpunkt_number_ != nullptr)
+      heizkurve_endpunkt_number_->set_parent(this);
   }
   void set_heizkurve_parallelverschiebung_number(HeizkurveParallelverschiebungNumber *number) { 
     heizkurve_parallelverschiebung_number_ = number; 
+    if (heizkurve_parallelverschiebung_number_ != nullptr)
+      heizkurve_parallelverschiebung_number_->set_parent(this);
   }
   void set_heizkurve_absenkung_number(HeizkurveAbsenkungNumber *number) { 
     heizkurve_absenkung_number_ = number; 
+    if (heizkurve_absenkung_number_ != nullptr)
+      heizkurve_absenkung_number_->set_parent(this);
   }
   void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
     heizkurve_festwert_ruecklauf_number_ = number; 
+    if (heizkurve_festwert_ruecklauf_number_ != nullptr)
+      heizkurve_festwert_ruecklauf_number_->set_parent(this);
   }
   void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
-    brauchwasser_temperatur_number_ = number; 
+    brauchwasser_temperatur_number_ = number;
+    // Pass this component as the UART parent since we inherit from UARTDevice
+    if (brauchwasser_temperatur_number_ != nullptr) {
+      brauchwasser_temperatur_number_->set_parent(this);
+      ESP_LOGD(TAG, "Set UART parent for BrauchwasserTemperaturNumber");
+    }
   }
 
  protected:
