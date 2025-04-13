@@ -148,7 +148,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   }
 
   // Add method to send UART commands
-  void write_str(const char *str) { this->write_str(str); }
+  void write_str(const char *str) { 
+    if (this->parent_ != nullptr) {
+      this->parent_->write_str(str); 
+    }
+  }
 
  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
