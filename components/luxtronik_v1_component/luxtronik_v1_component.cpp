@@ -235,7 +235,7 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
 }
 
 void LuxtronikV1Component::parse_output_message_(const char* message) {
-    ESP_LOGD(TAG, "Output message received: %s", message);
+    // ESP_LOGD(TAG, "Output message received: %s", message);
     std::string msg(message);
     std::vector<std::string> values;
     size_t start = 5;  // Skip "1300;"
