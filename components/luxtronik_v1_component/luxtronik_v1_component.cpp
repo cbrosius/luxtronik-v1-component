@@ -1080,12 +1080,12 @@ void BrauchwasserTemperaturNumber::control(float value) {
       // Format command: 3501;1;<temp*10>
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
-      
+      this->parent_->write_str(command);
+
       delay(100);  // Wait for command to be processed
       
       // Send save command
-      parent_->write_str("999\r\n");
+      this->parent_->write_str("999\r\n");
     }
     
     // Update state after sending command
