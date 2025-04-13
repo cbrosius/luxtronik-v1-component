@@ -307,18 +307,19 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         if (modus_heizung_numerisch_ != nullptr) {
             publish_state_deferred_(modus_heizung_numerisch_, val, "Mode", "Heizung Numerisch");
         }
+
+        std::string mode_text = get_modus_text_(static_cast<int>(val));
         if (modus_heizung_ != nullptr) {
-            std::string mode_text = get_modus_text_(static_cast<int>(val));
             this->defer([this, mode_text]() {
                 modus_heizung_->publish_state(mode_text);
                 ESP_LOGV(TAG, "Mode Heizung: %s", mode_text.c_str());
             });
         }
-
+        
         // Update select component without triggering control event
         if (modus_heizung_select_ != nullptr) {
-            if (!modus_heizung_select_->state.has_value() || 
-                modus_heizung_select_->state.value() != mode_text) {
+            std::string current = modus_heizung_select_->get_state();
+            if (current != mode_text) {
                 auto select = static_cast<ModusHeizungSelect*>(modus_heizung_select_);
                 select->set_initialized(false);
                 select->publish_state(mode_text);
@@ -364,8 +365,8 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         
         // Update select component without triggering control event
         if (modus_brauchwasser_select_ != nullptr) {
-            if (!modus_brauchwasser_select_->state.has_value() || 
-                modus_brauchwasser_select_->state.value() != mode_text) {
+            std::string current = modus_brauchwasser_select_->get_state();
+            if (current != mode_text) {
                 auto select = static_cast<ModusBrauchwasserSelect*>(modus_brauchwasser_select_);
                 select->set_initialized(false);
                 select->publish_state(mode_text);

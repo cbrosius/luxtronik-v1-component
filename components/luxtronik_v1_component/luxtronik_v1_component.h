@@ -349,6 +349,26 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_mischkreis1_absenkung_sensor(sensor::Sensor *sens) { mischkreis1_absenkung_ = sens; }
   void set_mischkreis1_festwert_vorlauf_sensor(sensor::Sensor *sens) { mischkreis1_festwert_vorlauf_ = sens; } 
 
+  // Add setter methods in public section
+  void set_heizkurve_temperaturdelta_number(HeizkurveTemperaturDeltaNumber *number) { 
+    heizkurve_temperaturdelta_number_ = number; 
+  }
+  void set_heizkurve_endpunkt_number(HeizkurveEndpunktNumber *number) { 
+    heizkurve_endpunkt_number_ = number; 
+  }
+  void set_heizkurve_parallelverschiebung_number(HeizkurveParallelverschiebungNumber *number) { 
+    heizkurve_parallelverschiebung_number_ = number; 
+  }
+  void set_heizkurve_absenkung_number(HeizkurveAbsenkungNumber *number) { 
+    heizkurve_absenkung_number_ = number; 
+  }
+  void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
+    heizkurve_festwert_ruecklauf_number_ = number; 
+  }
+  void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
+    brauchwasser_temperatur_number_ = number; 
+  }
+
  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
@@ -460,6 +480,14 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *mischkreis1_parallelverschiebung_{nullptr}; // 3400/7
   sensor::Sensor *mischkreis1_absenkung_{nullptr};            // 3400/8
   sensor::Sensor *mischkreis1_festwert_vorlauf_{nullptr};     // 3400/9
+
+  // Number component pointers
+  HeizkurveTemperaturDeltaNumber *heizkurve_temperaturdelta_number_{nullptr};
+  HeizkurveEndpunktNumber *heizkurve_endpunkt_number_{nullptr};
+  HeizkurveParallelverschiebungNumber *heizkurve_parallelverschiebung_number_{nullptr};
+  HeizkurveAbsenkungNumber *heizkurve_absenkung_number_{nullptr};
+  HeizkurveFestwertRuecklaufNumber *heizkurve_festwert_ruecklauf_number_{nullptr};
+  BrauchwasserTemperaturNumber *brauchwasser_temperatur_number_{nullptr};
 };
 
 }  // namespace luxtronik_v1_component
