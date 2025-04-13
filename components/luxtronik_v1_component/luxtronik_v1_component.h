@@ -10,8 +10,6 @@
 namespace esphome {
 namespace luxtronik_v1_component {
 
-extern const char *const TAG;
-
 static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
@@ -220,24 +218,59 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
   bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
-class LuxtronikV1Component : public Component, public uart::UARTDevice, public PollingComponent{
+
+class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
-  // Define BrauchwasserTemperaturNumber as nested class
-  class BrauchwasserTemperaturNumber : public number::Number, public Component {
-   public:
-    void setup() override;
-    void control(float value) override;
-    void set_initialized(bool initialized);
-    bool is_initialized() const;
-    void set_parent(LuxtronikV1Component *parent) { parent_ = parent; }
+  void setup() override {
+    // Set initial values and min/max limits
+    this->traits.set_min_value(30);    // Minimum temperature 30°C
+    this->traits.set_max_value(65);    // Maximum temperature 65°C
+    this->traits.set_step(0.5f);       // Allow 0.5°C steps
+    initialized_ = false;
+  }
 
-   protected:
-    bool initialized_{false};
-    LuxtronikV1Component *parent_{nullptr};
-  };
+  void control(float value) override {
+    if (!initialized_) {
+      ESP_LOGD("BrauchwasserTemp", "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
+      // Initial state update without writing
+      this->publish_state(value);
+      return;
+    }
 
+    // Check if value actually changed
+    if (std::abs(this->state - value) > 0.1f) {
+      ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
+      
+      if (parent_ != nullptr) {
+        // Format command: 3501;1;<temp*10>
+        char command[32];
+        snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+        
+        delay(100);  // Wait for command to be processed
+        
+        // Send save command
+        parent_->write_str("999\r\n");
+      }
+      
+      // Update state after sending command
+      this->publish_state(value);
+    }
+  }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+  bool is_initialized() const { return initialized_; }
+
+ protected:
+  bool initialized_{false};
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
+ public:
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
-  
+
   void setup() override;
   void loop() override;
   void update() override;
@@ -339,35 +372,21 @@ class LuxtronikV1Component : public Component, public uart::UARTDevice, public P
   // Add setter methods in public section
   void set_heizkurve_temperaturdelta_number(HeizkurveTemperaturDeltaNumber *number) { 
     heizkurve_temperaturdelta_number_ = number; 
-    if (heizkurve_temperaturdelta_number_ != nullptr)
-      heizkurve_temperaturdelta_number_->set_parent(this);
   }
   void set_heizkurve_endpunkt_number(HeizkurveEndpunktNumber *number) { 
     heizkurve_endpunkt_number_ = number; 
-    if (heizkurve_endpunkt_number_ != nullptr)
-      heizkurve_endpunkt_number_->set_parent(this);
   }
   void set_heizkurve_parallelverschiebung_number(HeizkurveParallelverschiebungNumber *number) { 
     heizkurve_parallelverschiebung_number_ = number; 
-    if (heizkurve_parallelverschiebung_number_ != nullptr)
-      heizkurve_parallelverschiebung_number_->set_parent(this);
   }
   void set_heizkurve_absenkung_number(HeizkurveAbsenkungNumber *number) { 
     heizkurve_absenkung_number_ = number; 
-    if (heizkurve_absenkung_number_ != nullptr)
-      heizkurve_absenkung_number_->set_parent(this);
   }
   void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
     heizkurve_festwert_ruecklauf_number_ = number; 
-    if (heizkurve_festwert_ruecklauf_number_ != nullptr)
-      heizkurve_festwert_ruecklauf_number_->set_parent(this);
   }
   void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
-    brauchwasser_temperatur_number_ = number;
-    if (brauchwasser_temperatur_number_ != nullptr) {
-      brauchwasser_temperatur_number_->set_parent(this);
-      ESP_LOGD(TAG, "Set UART parent for BrauchwasserTemperaturNumber");
-    }
+    brauchwasser_temperatur_number_ = number; 
   }
 
  protected:

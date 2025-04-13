@@ -283,11 +283,16 @@ luxtronik_v1_component:
   mischkreis1_festwert_vorlauf:
     name: "Mischkreis1 Festwert Vorlauf"
     id: mischkreis1_festwert_vorlauf
-  brauchwasser_temperatur_number:
-    name: "Brauchwasser Solltemperatur"
-    id: brauchwasser_temperatur
-      
+
 number:
+  - platform: template
+    name: "  Brauchwasser Solltemperatur"
+    id: Brauchwasser_Solltemperatur
+    min_value: 40
+    step: 1
+    max_value: 75
+    optimistic: true
+
   # Heating curve controls
   - platform: template
     name: "  Heizkurve Temperaturdelta"

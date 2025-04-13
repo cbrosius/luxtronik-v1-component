@@ -4,7 +4,7 @@
 namespace esphome {
 namespace luxtronik_v1_component {
 
-const char *const TAG = "luxtronik_v1_component.component";
+static const char *TAG = "luxtronik_v1_component.component";
 
 void LuxtronikV1Component::setup() {
     ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Component...");
@@ -43,12 +43,6 @@ void LuxtronikV1Component::setup() {
             // this->parent_->write_str(command);
         });
     }
-
-    // Initialize BrauchwasserTemperaturNumber if it exists
-    if (brauchwasser_temperatur_number_ != nullptr) {
-        brauchwasser_temperatur_number_->set_parent(this);
-        brauchwasser_temperatur_number_->setup();
-    }
 }
 
 void LuxtronikV1Component::loop() {
@@ -56,7 +50,6 @@ void LuxtronikV1Component::loop() {
         ESP_LOGW(TAG, "Cannot loop - UART parent not set");
         return;
     }
-    
     
     while (this->parent_->available()) {
         uint8_t c;
@@ -214,24 +207,18 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             publish_state_deferred_(sensor, temp, "Temperatur", name);
-            
             // Log wenn es der Brauchwasser-Sollwert ist
             if (sensor == temperatur_brauchwasser_soll_) {
+                ESP_LOGD(TAG, "Brauchwasser Sollwert empfangen: %.1f", temp);
                 if (brauchwasser_temperatur_number_ != nullptr) {
-                    ESP_LOGD(TAG, "Brauchwasser Solltemperatur - Sensor: %.1f°C, Number: %.1f°C", 
-                        temp, brauchwasser_temperatur_number_->state);
-                    
                     if (!brauchwasser_temperatur_number_->is_initialized()) {
-                        ESP_LOGD(TAG, "Initialisiere BrauchwasserTemperaturNumber mit %.1f°C", temp);
                         brauchwasser_temperatur_number_->control(temp);
                         brauchwasser_temperatur_number_->set_initialized(true);
-                    } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
-                        ESP_LOGD(TAG, "Aktualisiere BrauchwasserTemperaturNumber von %.1f°C auf %.1f°C", 
-                            brauchwasser_temperatur_number_->state, temp);
+                    } else {
                         brauchwasser_temperatur_number_->publish_state(temp);
                     }
                 } else {
-                    ESP_LOGW(TAG, "BrauchwasserTemperaturNumber ist nicht initialisiert (nullptr)");
+                    ESP_LOGD(TAG, "brauchwasser_temperatur_number_ ist nullptr!");
                 }
             }
         }
@@ -1054,46 +1041,6 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 799: return "ModBus ASB - Keine ModBus-Kommunikation mit ASB-Platine.";
         default: return "Unbekannter Fehler";
     }
-}
-
-void LuxtronikV1Component::BrauchwasserTemperaturNumber::setup() {
-  if (this->parent_ != nullptr) {
-    ESP_LOGD(TAG, "Parent component initialized");
-  } else {
-    ESP_LOGW(TAG, "Parent component is nullptr!");
-  }
-  this->initialized_ = false;
-}
-
-void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
-  if (!this->initialized_) {
-    ESP_LOGD(TAG, "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
-    this->publish_state(value);
-    return;
-  }
-
-  if (std::abs(this->state - value) > 0.1f) {
-    ESP_LOGD(TAG, "Setting new temperature: %.1f", value);
-    
-    if (this->parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      this->parent_->write_str(command);  // Changed from uart_write_str to write_str
-      
-      delay(100);
-      this->parent_->write_str("999\r\n"); // Changed from uart_write_str to write_str
-    }
-    
-    this->publish_state(value);
-  }
-}
-
-void LuxtronikV1Component::BrauchwasserTemperaturNumber::set_initialized(bool initialized) {
-  this->initialized_ = initialized;
-}
-
-bool LuxtronikV1Component::BrauchwasserTemperaturNumber::is_initialized() const {
-  return this->initialized_;
 }
 
 }  // namespace luxtronik_v1_component
