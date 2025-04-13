@@ -16,33 +16,6 @@ void LuxtronikV1Component::setup() {
 
     // Request initial values immediately after setup
     this->parent_->write_str("1100\r\n");
-
-    // if (modus_brauchwasser_select_ != nullptr) {
-    //     modus_brauchwasser_select_->add_on_state_callback([this](std::string value, size_t index) {
-    //         int mode = 0;  // Default to Automatik
-    //         if (value == "Zweiter Waermeerzeuger") mode = 1;
-    //         else if (value == "Party") mode = 2;
-    //         else if (value == "Ferien") mode = 3;
-    //         else if (value == "Aus") mode = 4;
-            
-    //         // char command[32];
-    //         // snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
-    //         // this->parent_->write_str(command);
-    //     });
-    // }
-    // if (modus_heizung_select_ != nullptr) {
-    //     modus_heizung_select_->add_on_state_callback([this](std::string value, size_t index) {
-    //         int mode = 0;  // Default to Automatik
-    //         if (value == "Zweiter Waermeerzeuger") mode = 1;
-    //         else if (value == "Party") mode = 2;
-    //         else if (value == "Ferien") mode = 3;
-    //         else if (value == "Aus") mode = 4;
-            
-    //         // char command[32];
-    //         // snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
-    //         // this->parent_->write_str(command);
-    //     });
-    // }
 }
 
 void LuxtronikV1Component::loop() {

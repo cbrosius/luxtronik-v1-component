@@ -13,28 +13,56 @@ static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
 
 class ModusBrauchwasserSelect : public select::Select, public Component {
-  public:
-   void setup() override {
-     // Set initial values and options
-     traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
-   }
- 
-   void control(const std::string &value) override {
-     this->publish_state(value);
-   }
- };
+ public:
+  void control(const std::string &value) override {
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+    
+    auto *parent = (LuxtronikV1Component*)this->parent_;
+    if (parent != nullptr && parent->get_uart() != nullptr) {
+      // Send new mode to heatpump
+      char command[32];
+      snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
+      parent->get_uart()->write_str(command);
+      
+      delay(100);  // Brief delay for processing
+      
+      // Send save command
+      parent->get_uart()->write_str("999\r\n");
+      
+      ESP_LOGD("luxtronik_v1", "Changed Brauchwasser mode to: %s (Mode: %d)", value.c_str(), mode);
+    }
+  }
+};
 
- class ModusHeizungSelect : public select::Select, public Component {
-  public:
-   void setup() override {
-     // Set initial values and options
-     traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
-   }
- 
-   void control(const std::string &value) override {
-     this->publish_state(value);
-   }
- };
+class ModusHeizungSelect : public select::Select, public Component {
+ public:
+  void control(const std::string &value) override {
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+    
+    auto *parent = (LuxtronikV1Component*)this->parent_;
+    if (parent != nullptr && parent->get_uart() != nullptr) {
+      // Send new mode to heatpump
+      char command[32];
+      snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+      parent->get_uart()->write_str(command);
+      
+      delay(100);  // Brief delay for processing
+      
+      // Send save command
+      parent->get_uart()->write_str("999\r\n");
+      
+      ESP_LOGD("luxtronik_v1", "Changed Heizung mode to: %s (Mode: %d)", value.c_str(), mode);
+    }
+  }
+};
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
@@ -48,6 +76,9 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_uart_parent(uart::UARTComponent *parent) { 
     this->parent_ = parent;
   }
+
+  // Add getter for UART
+  uart::UARTDevice *get_uart() { return this->parent_; }
 
   // Add temperature sensor setters
   void set_temperatur_vorlauf_sensor(sensor::Sensor *sens) { temperatur_vorlauf_ = sens; }
