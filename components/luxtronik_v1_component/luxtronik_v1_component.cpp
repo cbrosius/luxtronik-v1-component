@@ -833,6 +833,10 @@ void ModusBrauchwasserSelect::control(const std::string &value) {
     else if (value == "Ferien") mode = 3;
     else if (value == "Aus") mode = 4;
     
+    // Set programming mode for water heating
+    parent_->write_str("3506;1\r\n");
+    delay(100);  // Brief delay for processing
+
     // Send new mode to heatpump
     char command[32];
     snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
@@ -855,12 +859,16 @@ void ModusBrauchwasserSelect::control(const std::string &value) {
     else if (value == "Ferien") mode = 3;
     else if (value == "Aus") mode = 4;
     
+    // Set programming mode for heatingmode
+    parent_->write_str("3406;1\r\n");
+    delay(100);  // Brief delay for processing
+ 
     // Send new mode to heatpump
     char command[32];
     snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
     parent_->write_str(command);
     
-    delay(500);  // Brief delay for processing
+    delay(100);  // Brief delay for processing
     
     // Send save command
     parent_->write_str("999\r\n");
