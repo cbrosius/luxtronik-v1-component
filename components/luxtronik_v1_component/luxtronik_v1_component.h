@@ -10,6 +10,8 @@
 namespace esphome {
 namespace luxtronik_v1_component {
 
+static const char *TAG = "luxtronik_v1_component.component";
+
 static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
 static const uint8_t READ_BUFFER_LENGTH = 255;
@@ -403,7 +405,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   }
   void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
     brauchwasser_temperatur_number_ = number;
-    // Pass this component as the UART parent since we inherit from UARTDevice
     if (brauchwasser_temperatur_number_ != nullptr) {
       brauchwasser_temperatur_number_->set_parent(this);
       ESP_LOGD(TAG, "Set UART parent for BrauchwasserTemperaturNumber");
