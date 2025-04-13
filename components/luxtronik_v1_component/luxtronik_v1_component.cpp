@@ -241,7 +241,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     }
 
     // Request input values after temperature values are parsed
-    this->parent_->write_str("1200\r\n");
+    // this->parent_->write_str("1200\r\n");
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
