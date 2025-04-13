@@ -32,7 +32,7 @@ class ModusHeizungSelect : public select::Select, public Component {
   LuxtronikV1Component *parent_{nullptr};
 };
 
-class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
+class LuxtronikV1Component : public PollingComponent {
  public:
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
 
@@ -45,8 +45,12 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
     this->parent_ = parent;
   }
 
-  // Add getter for UART
-  uart::UARTDevice *get_uart() { return this->parent_; }
+  // Keep write_str() method for UART communication
+  void write_str(const char *str) { 
+    if (this->parent_ != nullptr) {
+      this->parent_->write_str(str); 
+    }
+  }
 
   // Add temperature sensor setters
   void set_temperatur_vorlauf_sensor(sensor::Sensor *sens) { temperatur_vorlauf_ = sens; }
@@ -145,13 +149,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_modus_heizung_select(ModusHeizungSelect *select) { 
     modus_heizung_select_ = select;
     select->set_parent(this);
-  }
-
-  // Add method to send UART commands
-  void write_str(const char *str) { 
-    if (this->parent_ != nullptr) {
-      this->parent_->write_str(str); 
-    }
   }
 
  protected:
