@@ -1050,16 +1050,16 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
 }
 
 void LuxtronikV1Component::BrauchwasserTemperaturNumber::setup() {
-  if (parent_ != nullptr) {
+  if (this->parent_ != nullptr) {
     ESP_LOGD(TAG, "UART parent initialized");
   } else {
     ESP_LOGW(TAG, "UART parent is nullptr!");
   }
-  initialized_ = false;
+  this->initialized_ = false;
 }
 
 void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
-  if (!initialized_) {
+  if (!this->initialized_) {
     ESP_LOGD(TAG, "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
     this->publish_state(value);
     return;
@@ -1068,13 +1068,13 @@ void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
   if (std::abs(this->state - value) > 0.1f) {
     ESP_LOGD(TAG, "Setting new temperature: %.1f", value);
     
-    if (parent_ != nullptr) {
+    if (this->parent_ != nullptr) {
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+      this->parent_->write_str(command);
       
       delay(100);
-      parent_->write_str("999\r\n");
+      this->parent_->write_str("999\r\n");
     }
     
     this->publish_state(value);
@@ -1082,11 +1082,11 @@ void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
 }
 
 void LuxtronikV1Component::BrauchwasserTemperaturNumber::set_initialized(bool initialized) {
-  initialized_ = initialized;
+  this->initialized_ = initialized;
 }
 
 bool LuxtronikV1Component::BrauchwasserTemperaturNumber::is_initialized() const {
-  return initialized_;
+  return this->initialized_;
 }
 
 luxtronik_v1_component::BrauchwasserTemperaturNumber *brauchwasser_temperatur;
