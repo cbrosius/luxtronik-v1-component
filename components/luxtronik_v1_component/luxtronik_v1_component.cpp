@@ -67,6 +67,33 @@ void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float
     }
 }
 
+// Add a helper method for text sensors
+void LuxtronikV1Component::publish_text_state_deferred_(text_sensor::TextSensor* sensor, const std::string& new_value, const char* type, const char* name) {
+    if (sensor == nullptr) return;
+
+    // Get current state and compare with new value
+    std::string current = sensor->state;
+    if (current != new_value) {
+        this->defer([this, sensor, new_value, type, name]() {
+            sensor->publish_state(new_value);
+            ESP_LOGV(TAG, "%s %s: %s", type, name, new_value.c_str());
+        });
+    }
+}
+
+void LuxtronikV1Component::publish_timestamp_state_deferred_(text_sensor::TextSensor* sensor, const char* buffer, const char* type, const char* name) {
+    if (sensor == nullptr) return;
+
+    std::string new_value = buffer;
+    std::string current = sensor->state;
+    if (current != new_value) {
+        this->defer([this, sensor, new_value, type, name]() {
+            sensor->publish_state(new_value);
+            ESP_LOGV(TAG, "%s %s: %s", type, name, new_value.c_str());
+        });
+    }
+}
+
 void LuxtronikV1Component::parse_message_(const char* message) {
     std::string msg(message);
     
@@ -484,11 +511,8 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             // Process Fehlerbeschreibung
             if (idx < values.size() && error0_fehlerbeschreibung_ != nullptr) {
                 std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                this->defer([this, error_text]() {
-                    error0_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGD(TAG, "Error0 Fehlerbeschreibung: %s", error_text.c_str());
-                });
-                idx++; // Moved here to advance only when description is processed
+                publish_text_state_deferred_(error0_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 0");
+                idx++;
             }
               // Process Fehlerzeitpunkt
             if (idx < values.size() && error0_zeitpunkt_ != nullptr) {
@@ -502,10 +526,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
               snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                     tag, monat, jahr, stunde, minute);
 
-              this->defer([this, text = std::string(buffer)]() {
-                  error0_zeitpunkt_->publish_state(text);
-                  ESP_LOGD(TAG, "Error0 Zeitpunkt: %s", text.c_str());
-              });
+              publish_timestamp_state_deferred_(error0_zeitpunkt_, buffer, "Error", "Zeitpunkt 0");
             }
             break;
         }
