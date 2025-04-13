@@ -227,7 +227,7 @@ class BrauchwasserTemperaturSlider : public number::Number, public Component {
 
   void control(float value) override {
     if (!initialized_) {
-      ESP_LOGD("BrauchwasserTemp", "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
+      ESP_LOGD(TAG, "BrauchwasserTemp not initialized yet, value: %.1f", value);
       // Initial state update without writing
       this->publish_state(value);
       return;
@@ -235,18 +235,18 @@ class BrauchwasserTemperaturSlider : public number::Number, public Component {
 
     // Check if value actually changed
     if (std::abs(this->state - value) > 0.1f) {
-      ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
+      ESP_LOGD(TAG, "Setting new temperature: %.1f", value);
       
-      if (parent_ != nullptr) {
+      if (this->luxtronik_ != nullptr && this->luxtronik_->get_uart() != nullptr) {
         // Format command: 3501;1;<temp*10>
         char command[32];
         snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
+        this->luxtronik_->get_uart()->write_str(command);
         
         delay(100);  // Wait for command to be processed
         
         // Send save command
-        parent_->write_str("999\r\n");
+        this->luxtronik_->get_uart()->write_str("999\r\n");
       }
       
       // Update state after sending command
@@ -255,12 +255,12 @@ class BrauchwasserTemperaturSlider : public number::Number, public Component {
   }
 
   void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
   bool is_initialized() const { return initialized_; }
+  void set_luxtronik(LuxtronikV1Component *luxtronik) { this->luxtronik_ = luxtronik; }
 
  protected:
   bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
+  LuxtronikV1Component *luxtronik_{nullptr};
 };
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
@@ -271,10 +271,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void loop() override;
   void update() override;
   void dump_config() override;
-
   void set_uart_parent(uart::UARTComponent *parent) { 
     this->parent_ = parent;
   }
+  uart::UARTDevice *get_uart() { return this; }
 
   // Add temperature sensor setters
   void set_temperatur_vorlauf_sensor(sensor::Sensor *sens) { temperatur_vorlauf_ = sens; }
@@ -381,8 +381,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
     heizkurve_festwert_ruecklauf_number_ = number; 
   }
-  void set_brauchwasser_temperatur_slider(BrauchwasserTemperaturSlider *number) { 
-    brauchwasser_temperatur_slider_ = number; 
+  void set_brauchwasser_temperatur_slider(BrauchwasserTemperaturSlider *slider) { 
+    this->brauchwasser_temperatur_slider_ = slider;
+    if (slider != nullptr) {
+      slider->set_luxtronik(this);
+    }
   }
 
  protected:
