@@ -241,21 +241,16 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
     if (std::abs(this->state - value) > 0.1f) {
       ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
       
-     // Check if UART is available
-     if (available()) {
-      // Format command: 3501;1;<temp*10>
-      char command[32];
-      snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+        // Format command: 3501;1;<temp*10>
+        char command[32];
+        snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+        
+        delay(100);  // Wait for command to be processed
+        
+        // Send save command
+        parent_->write_str("999\r\n");
       
-      delay(100);  // Wait for command to be processed
-      
-      // Send save command
-      parent_->write_str("999\r\n");
-    } else {
-      ESP_LOGW("BrauchwasserTemp", "UART not available");
-    }
-    
       // Update state after sending command
       this->publish_state(value);
     }
