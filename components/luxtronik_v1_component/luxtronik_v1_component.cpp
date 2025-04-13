@@ -229,7 +229,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
     if (brauchwasser_temperatur_number_ != nullptr && temperatur_brauchwasser_soll_ != nullptr) {
         float soll_temp = get_float_temp_(values[idx-1]);  // Use last processed value
-        if (!brauchwasser_temperatur_number_->initialized_) {
+        if (!brauchwasser_temperatur_number_->is_initialized()) {  // Use getter method
             brauchwasser_temperatur_number_->control(soll_temp);
             brauchwasser_temperatur_number_->set_initialized(true);
         } else if (std::abs(brauchwasser_temperatur_number_->state - soll_temp) > 0.1f) {
