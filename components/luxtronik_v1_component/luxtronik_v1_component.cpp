@@ -1058,9 +1058,9 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
 
 void LuxtronikV1Component::BrauchwasserTemperaturNumber::setup() {
   if (this->parent_ != nullptr) {
-    ESP_LOGD(TAG, "UART parent initialized");
+    ESP_LOGD(TAG, "Parent component initialized");
   } else {
-    ESP_LOGW(TAG, "UART parent is nullptr!");
+    ESP_LOGW(TAG, "Parent component is nullptr!");
   }
   this->initialized_ = false;
 }
@@ -1078,10 +1078,10 @@ void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
     if (this->parent_ != nullptr) {
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      this->parent_->write_str(command);
+      this->parent_->uart_write_str(command);
       
       delay(100);
-      this->parent_->write_str("999\r\n");
+      this->parent_->uart_write_str("999\r\n");
     }
     
     this->publish_state(value);

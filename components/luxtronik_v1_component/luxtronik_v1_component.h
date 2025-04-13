@@ -230,11 +230,11 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
     void control(float value) override;
     void set_initialized(bool initialized);
     bool is_initialized() const;
-    void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+    void set_parent(LuxtronikV1Component *parent) { parent_ = parent; }
 
    protected:
     bool initialized_{false};
-    uart::UARTDevice *parent_{nullptr};
+    LuxtronikV1Component *parent_{nullptr};
   };
 
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
