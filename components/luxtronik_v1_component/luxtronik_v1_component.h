@@ -164,7 +164,7 @@ class LuxtronikV1Component : public PollingComponent {
   void parse_operatinghours_message_(const char* message);
   void parse_heatingcurve_message_(const char* message);
   void reset_programming_mode_(const char* message);
-  void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
+  void publish_state_deferred_(sensor::Sensor* sensor, float new_value, const char* type, const char* name);
   select::Select *modus_brauchwasser_select_{nullptr};
   select::Select *modus_heizung_select_{nullptr};
   std::string get_betriebszustand_text_(int state);

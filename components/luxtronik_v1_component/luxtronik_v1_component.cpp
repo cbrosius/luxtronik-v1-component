@@ -53,12 +53,18 @@ void LuxtronikV1Component::update() {
     }
 }
 
-// Helper function for deferred publishing
-void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
-    this->defer([this, sensor, value, type, name]() {
-        sensor->publish_state(value);
-        ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
-    });
+// Replace the existing publish_state_deferred_ implementation:
+void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float new_value, const char* type, const char* name) {
+    if (sensor == nullptr) return;
+
+    // Get current state and compare with new value
+    float current = sensor->state;
+    if (std::isnan(current) || current != new_value) {
+        this->defer([this, sensor, new_value, type, name]() {
+            sensor->publish_state(new_value);
+            ESP_LOGV(TAG, "%s %s: %.1f", type, name, new_value);
+        });
+    }
 }
 
 void LuxtronikV1Component::parse_message_(const char* message) {
