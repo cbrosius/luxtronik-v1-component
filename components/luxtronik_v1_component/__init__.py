@@ -583,6 +583,5 @@ async def to_code(config):
             min_value=conf["min_value"],
             max_value=conf["max_value"],
             step=conf["step"],
-            unit_of_measurement="°C"
         )
         cg.add(var.set_warmwasser_solltemperatur_number(var_number))
