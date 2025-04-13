@@ -225,7 +225,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
     ESP_LOGD("TempBrauchwasserSoll", "Received temperature: %.1f", temperatur_brauchwasser_soll_->state);
-    ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", temperatur_brauchwasser_number_->state);
+    ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", brauchwasser_temperatur_number_->state);
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
     if (brauchwasser_temperatur_number_ != nullptr && brauchwasser_soll_idx < values.size()) {
         float temp = get_float_temp_(values[brauchwasser_soll_idx]);
