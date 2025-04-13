@@ -291,11 +291,10 @@ std::string LuxtronikV1Component::get_modus_text_(int state) {
     }
 }
 
-// Update parse_modus_heizung_message_
 void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
-    values.reserve(3);  // Pre-allocate for typical message size
+    values.reserve(3);
     size_t start = 5;  // Skip "3405;"
     size_t end = 0;
     
@@ -303,43 +302,47 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
     }
-    // Add final value if exists
     if (start < msg.length()) {
         values.push_back(msg.substr(start));
     }
     
-    if (values.size() >= 2) {  // At least count and mode value
+    if (values.size() >= 2) {
         float val = std::atof(values[1].c_str());
         std::string mode_text = get_modus_text_(static_cast<int>(val));
 
-        // Update numeric sensor if available
+        // Only update if values have changed
+        bool should_update = false;
+
+        // Check numeric sensor
         if (modus_heizung_numerisch_ != nullptr) {
-            publish_state_deferred_(modus_heizung_numerisch_, val, "Mode", "Heizung Numerisch");
+            if (std::isnan(modus_heizung_numerisch_->state) || modus_heizung_numerisch_->state != val) {
+                publish_state_deferred_(modus_heizung_numerisch_, val, "Mode", "Heizung Numerisch");
+                should_update = true;
+            }
         }
 
-        // Update text sensor if available
+        // Check text sensor
         if (modus_heizung_ != nullptr) {
-            publish_text_state_deferred_(modus_heizung_, mode_text, "Mode", "Heizung");
+            if (modus_heizung_->state != mode_text) {
+                publish_text_state_deferred_(modus_heizung_, mode_text, "Mode", "Heizung");
+                should_update = true;
+            }
         }
 
-        // Always update select component if available
-        if (modus_heizung_select_ != nullptr) {
+        // Update select only if value changed
+        if (modus_heizung_select_ != nullptr && should_update) {
             modus_heizung_select_->publish_state(mode_text);
             ESP_LOGV(TAG, "Mode Heizung Select updated to: %s", mode_text.c_str());
-        }else {
-            ESP_LOGV(TAG, "Mode Heizung Select not available");
         }
     }
     
-    // Request hot water mode after heating mode
     this->parent_->write_str("3505\r\n");
 }
 
-// Update parse_modus_brauchwasser_message_
 void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
-    values.reserve(3);  // Pre-allocate for typical message size
+    values.reserve(3);
     size_t start = 5;  // Skip "3505;"
     size_t end = 0;
     
@@ -347,35 +350,40 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         values.push_back(msg.substr(start, end - start));
         start = end + 1;
     }
-    // Add final value if exists
     if (start < msg.length()) {
         values.push_back(msg.substr(start));
     }
     
-    if (values.size() >= 2) {  // At least count and mode value
+    if (values.size() >= 2) {
         float val = std::atof(values[1].c_str());
         std::string mode_text = get_modus_text_(static_cast<int>(val));
 
-        // Update numeric sensor if available
+        // Only update if values have changed
+        bool should_update = false;
+
+        // Check numeric sensor
         if (modus_brauchwasser_numerisch_ != nullptr) {
-            publish_state_deferred_(modus_brauchwasser_numerisch_, val, "Mode", "Brauchwasser Numerisch");
+            if (std::isnan(modus_brauchwasser_numerisch_->state) || modus_brauchwasser_numerisch_->state != val) {
+                publish_state_deferred_(modus_brauchwasser_numerisch_, val, "Mode", "Brauchwasser Numerisch");
+                should_update = true;
+            }
         }
 
-        // Update text sensor if available
+        // Check text sensor
         if (modus_brauchwasser_ != nullptr) {
-            publish_text_state_deferred_(modus_brauchwasser_, mode_text, "Mode", "Brauchwasser");
+            if (modus_brauchwasser_->state != mode_text) {
+                publish_text_state_deferred_(modus_brauchwasser_, mode_text, "Mode", "Brauchwasser");
+                should_update = true;
+            }
         }
 
-        // Always update select component if available
-        if (modus_brauchwasser_select_ != nullptr) {
+        // Update select only if value changed
+        if (modus_brauchwasser_select_ != nullptr && should_update) {
             modus_brauchwasser_select_->publish_state(mode_text);
             ESP_LOGV(TAG, "Mode Brauchwasser Select updated to: %s", mode_text.c_str());
-        } else {
-            ESP_LOGV(TAG, "Mode Brauchwasser Select not available");
         }
     }
     
-    // Request status values after brauchwasser mode
     this->parent_->write_str("1700\r\n");
 }
 
