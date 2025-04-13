@@ -227,14 +227,24 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
 
   void control(float value) override {
     if (!initialized_) {
+      // Initial state update without writing
       this->publish_state(value);
     } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        // Convert to deci-celsius (multiply by 10)
-        snprintf(command, sizeof(command), "3502;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
+      // Only write if value has changed
+      if (value != this->state) {
+        this->publish_state(value);
+        if (parent_ != nullptr) {
+          char command[32];
+          // First send new temperature value (3501;1;value)
+          snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
+          parent_->write_str(command);
+          
+          // Wait for response
+          delay(100);
+          
+          // Then send save command (999)
+          parent_->write_str("999\r\n");
+        }
       }
     }
   }
