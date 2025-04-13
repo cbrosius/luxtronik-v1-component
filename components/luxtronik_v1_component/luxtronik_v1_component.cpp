@@ -15,18 +15,18 @@ void LuxtronikV1Component::setup() {
     }
 
     // Request initial values immediately after setup
-    this->parent_->write_str("1100\r\n");
+    this->write_str("1100\r\n");
 
     // Set up hot water mode select component
     if (modus_brauchwasser_select_ != nullptr) {
         auto brauchwasser_select = (ModusBrauchwasserSelect*)modus_brauchwasser_select_;
-        brauchwasser_select->set_parent(this->parent_);
+        brauchwasser_select->set_parent(this);
     }
 
     // Set up heating mode select component
     if (modus_heizung_select_ != nullptr) {
         auto heizung_select = (ModusHeizungSelect*)modus_heizung_select_;
-        heizung_select->set_parent(this->parent_);
+        heizung_select->set_parent(this);
     }
 }
 
