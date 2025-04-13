@@ -508,7 +508,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
 
     // Process Fehlerindex
     size_t idx = 0;  // get error index
-    ESP_LOGD(TAG, "Error index: %s", values[idx].c_str());
+    // ESP_LOGD(TAG, "Error index: %s", values[idx].c_str());
     int error_index = std::atoi(values[idx].c_str());
     switch (error_index) {
         case 1500: {
