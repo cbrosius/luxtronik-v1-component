@@ -266,7 +266,6 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
   }
 
   void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
   bool is_initialized() const { return initialized_; }
 
  protected:
