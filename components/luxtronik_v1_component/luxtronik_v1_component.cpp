@@ -842,7 +842,7 @@ void ModusBrauchwasserSelect::control(const std::string &value) {
     snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
     parent_->write_str(command);
     
-    delay(500);  // Brief delay for processing
+    delay(100);  // Brief delay for processing
     
     // Send save command
     parent_->write_str("999\r\n");
