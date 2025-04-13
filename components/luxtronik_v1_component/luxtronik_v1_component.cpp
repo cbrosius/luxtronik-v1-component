@@ -314,6 +314,17 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
                 ESP_LOGV(TAG, "Mode Heizung: %s", mode_text.c_str());
             });
         }
+
+        // Update select component without triggering control event
+        if (modus_heizung_select_ != nullptr) {
+            if (!modus_heizung_select_->state.has_value() || 
+                modus_heizung_select_->state.value() != mode_text) {
+                auto select = static_cast<ModusHeizungSelect*>(modus_heizung_select_);
+                select->set_initialized(false);
+                select->publish_state(mode_text);
+                select->set_initialized(true);
+            }
+        }
     }
     
     // Request hot water mode after heating mode
@@ -344,16 +355,22 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         }
         
         std::string mode_text = get_modus_text_(static_cast<int>(val));
-        if (modus_brauchwasser_ != nullptr && mode_text != modus_brauchwasser_->get_state()) {
+        if (modus_brauchwasser_ != nullptr) {
             this->defer([this, mode_text]() {
                 modus_brauchwasser_->publish_state(mode_text);
                 ESP_LOGV(TAG, "Modus Brauchwasser: %s", mode_text.c_str());
-                
-                // Update select component
-                if (modus_brauchwasser_select_ != nullptr) {
-                    modus_brauchwasser_select_->publish_state(mode_text);
-                }
             });
+        }
+        
+        // Update select component without triggering control event
+        if (modus_brauchwasser_select_ != nullptr) {
+            if (!modus_brauchwasser_select_->state.has_value() || 
+                modus_brauchwasser_select_->state.value() != mode_text) {
+                auto select = static_cast<ModusBrauchwasserSelect*>(modus_brauchwasser_select_);
+                select->set_initialized(false);
+                select->publish_state(mode_text);
+                select->set_initialized(true);
+            }
         }
     }
     
@@ -749,7 +766,16 @@ void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
 
     size_t idx = 1;  // Skip count
 
-    auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
+    auto update_number_component = [this](number::Number* number, float value) {
+        if (number != nullptr) {
+            auto num = static_cast<HeizkurveTemperaturDeltaNumber*>(number);
+            num->set_initialized(false);
+            num->publish_state(value);
+            num->set_initialized(true);
+        }
+    };
+
+    auto update_sensor = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             publish_state_deferred_(sensor, temp, "Temperatur", name);
@@ -757,15 +783,41 @@ void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
     };
 
     // Process Heizkurve
-    if (idx < values.size()) publish_temp(heizkurve_temperaturdelta_, values[idx++], "Heizkurve Temperaturdelta");
-    if (idx < values.size()) publish_temp(heizkurve_endpunkt_, values[idx++], "Heizkurve Endpunkt");
-    if (idx < values.size()) publish_temp(heizkurve_parallelverschiebung_, values[idx++], "Heizkurve Parallelverschiebung");
-    if (idx < values.size()) publish_temp(heizkurve_absenkung_, values[idx++], "Heizkurve Absenkung");
-    if (idx < values.size()) publish_temp(heizkurve_festwert_ruecklauf_, values[idx++], "Heizkurve Festwert Rücklauf");
-    if (idx < values.size()) publish_temp(mischkreis1_heizkurvenendpunkt_, values[idx++], "Mischkreis1 Heizkurvenendpunkt");
-    if (idx < values.size()) publish_temp(mischkreis1_parallelverschiebung_, values[idx++], "Mischkreis1 Parallelverschiebung");
-    if (idx < values.size()) publish_temp(mischkreis1_absenkung_, values[idx++], "Mischkreis1 Absenkung");
-    if (idx < values.size()) publish_temp(mischkreis1_festwert_vorlauf_, values[idx++], "Mischkreis1 Festwert Vorlauf");
+    if (idx < values.size()) {
+        float temp = get_float_temp_(values[idx]);
+        update_sensor(heizkurve_temperaturdelta_, values[idx], "Heizkurve Temperaturdelta");
+        update_number_component(heizkurve_temperaturdelta_number_, temp);
+        idx++;
+    }
+    if (idx < values.size()) {
+        float temp = get_float_temp_(values[idx]);
+        update_sensor(heizkurve_endpunkt_, values[idx], "Heizkurve Endpunkt");
+        update_number_component(heizkurve_endpunkt_number_, temp);
+        idx++;
+    }
+    if (idx < values.size()) {
+        float temp = get_float_temp_(values[idx]);
+        update_sensor(heizkurve_parallelverschiebung_, values[idx], "Heizkurve Parallelverschiebung");
+        update_number_component(heizkurve_parallelverschiebung_number_, temp);
+        idx++;
+    }
+    if (idx < values.size()) {
+        float temp = get_float_temp_(values[idx]);
+        update_sensor(heizkurve_absenkung_, values[idx], "Heizkurve Absenkung");
+        update_number_component(heizkurve_absenkung_number_, temp);
+        idx++;
+    }
+    if (idx < values.size()) {
+        float temp = get_float_temp_(values[idx]);
+        update_sensor(heizkurve_festwert_ruecklauf_, values[idx], "Heizkurve Festwert Rücklauf");
+        update_number_component(heizkurve_festwert_ruecklauf_number_, temp);
+        idx++;
+    }
+    // Update remaining read-only sensors
+    if (idx < values.size()) update_sensor(mischkreis1_heizkurvenendpunkt_, values[idx++], "Mischkreis1 Heizkurvenendpunkt");
+    if (idx < values.size()) update_sensor(mischkreis1_parallelverschiebung_, values[idx++], "Mischkreis1 Parallelverschiebung");
+    if (idx < values.size()) update_sensor(mischkreis1_absenkung_, values[idx++], "Mischkreis1 Absenkung");
+    if (idx < values.size()) update_sensor(mischkreis1_festwert_vorlauf_, values[idx++], "Mischkreis1 Festwert Vorlauf");
 }  
 
 void LuxtronikV1Component::reset_programming_mode_(const char* message) {

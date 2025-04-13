@@ -19,113 +19,231 @@ class ModusBrauchwasserSelect : public select::Select, public Component {
    void setup() override {
      // Set initial values and options
      traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+     initialized_ = false;
    }
  
    void control(const std::string &value) override {
-     this->publish_state(value);
+     if (!initialized_) {
+       this->publish_state(value);
+     } else {
+       this->publish_state(value);
+       if (parent_ != nullptr) {
+         int mode = 0;  // Default to Automatik
+         if (value == "Zweiter Waermeerzeuger") mode = 1;
+         else if (value == "Party") mode = 2;
+         else if (value == "Ferien") mode = 3;
+         else if (value == "Aus") mode = 4;
+         
+         char command[32];
+         snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
+         parent_->write_str(command);
+       }
+     }
    }
- };
 
- class ModusHeizungSelect : public select::Select, public Component {
+   void set_initialized(bool initialized) { initialized_ = initialized; }
+   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
+  protected:
+   bool initialized_{false};
+   uart::UARTDevice *parent_{nullptr};
+};
+
+class ModusHeizungSelect : public select::Select, public Component {
   public:
    void setup() override {
      // Set initial values and options
      traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+     initialized_ = false;
    }
  
    void control(const std::string &value) override {
-     this->publish_state(value);
+     if (!initialized_) {
+       this->publish_state(value);
+     } else {
+       this->publish_state(value);
+       if (parent_ != nullptr) {
+         int mode = 0;  // Default to Automatik
+         if (value == "Zweiter Waermeerzeuger") mode = 1;
+         else if (value == "Party") mode = 2;
+         else if (value == "Ferien") mode = 3;
+         else if (value == "Aus") mode = 4;
+         
+         char command[32];
+         snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+         parent_->write_str(command);
+       }
+     }
    }
- };
+
+   void set_initialized(bool initialized) { initialized_ = initialized; }
+   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
+  protected:
+   bool initialized_{false};
+   uart::UARTDevice *parent_{nullptr};
+};
 
 class HeizkurveTemperaturDeltaNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3401;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        snprintf(command, sizeof(command), "3401;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
 class HeizkurveEndpunktNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3402;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        snprintf(command, sizeof(command), "3402;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
 class HeizkurveParallelverschiebungNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3403;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        snprintf(command, sizeof(command), "3403;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
 class HeizkurveAbsenkungNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3404;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        snprintf(command, sizeof(command), "3404;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
 class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      snprintf(command, sizeof(command), "3408;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        snprintf(command, sizeof(command), "3408;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
 class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
+  void setup() override {
+    initialized_ = false;
+  }
+
   void control(float value) override {
-    this->publish_state(value);
-    if (parent_ != nullptr) {
-      char command[32];
-      // Convert to deci-celsius (multiply by 10)
-      snprintf(command, sizeof(command), "3502;1;%d\r\n", (int)(value * 10));
-      parent_->write_str(command);
+    if (!initialized_) {
+      this->publish_state(value);
+    } else {
+      this->publish_state(value);
+      if (parent_ != nullptr) {
+        char command[32];
+        // Convert to deci-celsius (multiply by 10)
+        snprintf(command, sizeof(command), "3502;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+      }
     }
   }
+
+  void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+
  protected:
+  bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
 
