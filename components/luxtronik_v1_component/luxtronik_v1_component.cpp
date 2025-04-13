@@ -25,9 +25,9 @@ void LuxtronikV1Component::setup() {
             else if (value == "Ferien") mode = 3;
             else if (value == "Aus") mode = 4;
             
-            char command[32];
-            snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
-            this->parent_->write_str(command);
+            // char command[32];
+            // snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
+            // this->parent_->write_str(command);
         });
     }
     if (modus_heizung_select_ != nullptr) {
@@ -38,9 +38,9 @@ void LuxtronikV1Component::setup() {
             else if (value == "Ferien") mode = 3;
             else if (value == "Aus") mode = 4;
             
-            char command[32];
-            snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
-            this->parent_->write_str(command);
+            // char command[32];
+            // snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+            // this->parent_->write_str(command);
         });
     }
 }
