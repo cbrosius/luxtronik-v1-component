@@ -385,8 +385,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
     heizkurve_festwert_ruecklauf_number_ = number; 
   }
-  void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
-    brauchwasser_temperatur_number_ = number; 
+  void set_brauchwasser_temperatur_slider(BrauchwasserTemperaturSlider *number) { 
+    brauchwasser_temperatur_slider_ = number; 
   }
 
  protected:
