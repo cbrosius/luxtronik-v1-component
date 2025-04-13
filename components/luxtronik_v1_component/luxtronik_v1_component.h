@@ -159,6 +159,12 @@ class LuxtronikV1Component : public PollingComponent {
     modus_heizung_select_ = select;
     select->set_parent(this);
   }
+  // Add setter for number component
+  void set_warmwasser_solltemperatur_number(WarmwasserSolltemperaturNumber *number) { 
+    warmwasser_solltemperatur_number_ = number;
+    number->set_parent(this);
+  }
+
 
  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
@@ -185,12 +191,6 @@ class LuxtronikV1Component : public PollingComponent {
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
-
-  // Add setter for number component
-  void set_warmwasser_solltemperatur_number(WarmwasserSolltemperaturNumber *number) { 
-    warmwasser_solltemperatur_number_ = number;
-    number->set_parent(this);
-  }
 
   WarmwasserSolltemperaturNumber *warmwasser_solltemperatur_number_{nullptr};
 
