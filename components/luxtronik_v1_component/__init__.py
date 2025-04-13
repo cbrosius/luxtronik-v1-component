@@ -10,7 +10,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor","text_sensor","select"]
+AUTO_LOAD = ["sensor","text_sensor","select", "number"]
 
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
@@ -192,13 +192,13 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional("brauchwasser_temperatur_number"): number.NUMBER_SCHEMA.extend({
-            cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
+        cv.Optional("brauchwasser_temperatur_number"): cv.Schema({
+            cv.GenerateID(): cv.declare_id("BrauchwasserTemperaturNumber"),
             cv.Optional(CONF_NAME): cv.string,
-            cv.Optional("min_value"): cv.float_,
-            cv.Optional("max_value"): cv.float_,
-            cv.Optional("step"): cv.float_,
-        }).extend(cv.COMPONENT_SCHEMA),
+            cv.Optional("min_value", default=40): cv.float_,
+            cv.Optional("max_value", default=75): cv.float_,
+            cv.Optional("step", default=1): cv.float_,
+        }).extend(cv.COMPONENT_SCHEMA).extend(number.NUMBER_SCHEMA),
 
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
@@ -417,16 +417,16 @@ async def to_code(config):
 
     if "brauchwasser_temperatur_number" in config:
         conf = config["brauchwasser_temperatur_number"]
-        temp_number = cg.new_Pvariable(conf[CONF_ID])
-        await cg.register_component(temp_number, conf)
+        var_number = cg.Pvariable(conf[CONF_ID], LuxtronikV1Component.BrauchwasserTemperaturNumber)
+        await cg.register_component(var_number, conf)
         await number.register_number(
-            temp_number,
+            var_number,
             conf,
-            min_value=conf.get("min_value", 40),
-            max_value=conf.get("max_value", 75),
-            step=conf.get("step", 1)
+            min_value=conf["min_value"],
+            max_value=conf["max_value"],
+            step=conf["step"]
         )
-        cg.add(var.set_brauchwasser_temperatur_number(temp_number))
+        cg.add(var.set_brauchwasser_temperatur_number(var_number))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
