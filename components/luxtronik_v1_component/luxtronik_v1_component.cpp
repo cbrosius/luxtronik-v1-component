@@ -1076,7 +1076,7 @@ void BrauchwasserTemperaturNumber::control(float value) {
   if (std::abs(this->state - value) > 0.1f) {
     ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
     
-    if (parent_ != nullptr) {
+    if (this->parent_ != nullptr) {
       // Format command: 3501;1;<temp*10>
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
