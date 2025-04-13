@@ -175,13 +175,16 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             publish_state_deferred_(sensor, temp, "Temperatur", name);
-
-            // If this is the target water temperature sensor, update the number component
+    
+            // If this is the target water temperature sensor, update the number component if value changed
             if (sensor == temperatur_brauchwasser_soll_ && warmwasser_solltemperatur_number_ != nullptr) {
-                this->defer([this, temp]() {
-                    warmwasser_solltemperatur_number_->publish_state(temp);
-                    ESP_LOGV(TAG, "Updated Warmwasser Solltemperatur Number to: %.1f°C", temp);
-                });
+                float current = warmwasser_solltemperatur_number_->state;
+                if (std::isnan(current) || current != temp) {
+                    this->defer([this, temp]() {
+                        warmwasser_solltemperatur_number_->publish_state(temp);
+                        ESP_LOGV(TAG, "Updated Warmwasser Solltemperatur Number to: %.1f°C", temp);
+                    });
+                }
             }
         }
     };
