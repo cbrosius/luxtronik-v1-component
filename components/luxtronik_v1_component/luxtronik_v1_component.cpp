@@ -431,10 +431,8 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
     // special handling because Softwareversion is a string
     if (idx < values.size()) {
         if (status_softwareversion_ != nullptr) {
-            this->defer([this, value = values[idx]]() {
-                status_softwareversion_->publish_state(value);
-                ESP_LOGV(TAG, "Status Softwareversion: %s", value.c_str());
-            });
+            publish_text_state_deferred_(status_softwareversion_, values[idx], "Status", "Softwareversion");
+            ESP_LOGV(TAG, "Status Softwareversion: %s", values[idx].c_str());
         }
         idx++;
     }
@@ -450,10 +448,11 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         }
         if (status_betriebszustand_ != nullptr) {
             std::string state_text = get_betriebszustand_text_(static_cast<int>(val));
-            this->defer([this, state_text]() {
-                status_betriebszustand_->publish_state(state_text);
-                ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
-            });
+            publish_text_state_deferred_(status_betriebszustand_, state_text, "Status", "Betriebszustand");
+            // this->defer([this, state_text]() {
+            //     status_betriebszustand_->publish_state(state_text);
+            //     ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
+            // });
         }
         idx++;
     }
@@ -471,10 +470,11 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d:%02d", 
                  tag, monat, jahr, stunde, minute, sekunde);
         
-        this->defer([this, text = std::string(buffer)]() {
-            status_letzter_start_->publish_state(text);
-            ESP_LOGV(TAG, "Status Letzter Start: %s", text.c_str());
-        });
+        publish_timestamp_state_deferred_(status_letzter_start_, buffer, "Status", "Letzter Start");
+        // this->defer([this, text = std::string(buffer)]() {
+        //     status_letzter_start_->publish_state(text);
+        //     ESP_LOGV(TAG, "Status Letzter Start: %s", text.c_str());
+        // });
     }
 
     // Request error values after status values are parsed
