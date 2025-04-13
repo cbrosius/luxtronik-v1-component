@@ -245,13 +245,6 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
-        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_NUMBER): number.NUMBER_SCHEMA.extend({
-            cv.GenerateID(): cv.declare_id(BrauchwasserTemperaturNumber),
-            cv.Optional(CONF_NAME): cv.string,
-            cv.Optional("min_value", default=30): cv.float_,
-            cv.Optional("max_value", default=65): cv.float_,
-            cv.Optional("step", default=0.5): cv.float_,
-        }).extend(cv.COMPONENT_SCHEMA),
 
     })
     .extend(cv.COMPONENT_SCHEMA)
