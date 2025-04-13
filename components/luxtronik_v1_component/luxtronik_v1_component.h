@@ -383,6 +383,9 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_heatingcurve_message_(const char* message);
   void reset_programming_mode_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
+  void publish_state_deferred_(text_sensor::TextSensor* sensor, const std::string& value, const char* type, const char* name);
+  void update_select_state_(select::Select* select, const std::string& value, bool& initialized);
+  void update_number_state_(number::Number* number, float value);
   select::Select *modus_brauchwasser_select_{nullptr};
   select::Select *modus_heizung_select_{nullptr};
   std::string get_betriebszustand_text_(int state);

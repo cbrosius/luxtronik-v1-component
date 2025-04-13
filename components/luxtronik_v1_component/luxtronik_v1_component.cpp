@@ -82,10 +82,51 @@ void LuxtronikV1Component::update() {
 
 // Helper function for deferred publishing
 void LuxtronikV1Component::publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name) {
-    this->defer([this, sensor, value, type, name]() {
-        sensor->publish_state(value);
-        ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
-    });
+    if (sensor != nullptr) {
+        // Only publish if the value has changed or sensor has no state yet
+        if (!sensor->has_state() || sensor->state != value) {
+            this->defer([this, sensor, value, type, name]() {
+                sensor->publish_state(value);
+                ESP_LOGV(TAG, "%s %s: %.1f", type, name, value);
+            });
+        }
+    }
+}
+
+// Helper function for text sensor publishing with value comparison
+void LuxtronikV1Component::publish_state_deferred_(text_sensor::TextSensor* sensor, const std::string& value, const char* type, const char* name) {
+    if (sensor != nullptr) {
+        // Only publish if the value has changed or sensor has no state yet
+        if (!sensor->has_state() || sensor->state != value) {
+            this->defer([this, sensor, value, type, name]() {
+                sensor->publish_state(value);
+                ESP_LOGV(TAG, "%s %s: %s", type, name, value.c_str());
+            });
+        }
+    }
+}
+
+// Helper function for select component updates with value comparison
+void LuxtronikV1Component::update_select_state_(select::Select* select, const std::string& value, bool& initialized) {
+    if (select != nullptr) {
+        if (!select->has_state() || select->state != value) {
+            initialized = false;
+            select->publish_state(value);
+            initialized = true;
+        }
+    }
+}
+
+// Helper function for number component updates with value comparison
+void LuxtronikV1Component::update_number_state_(number::Number* number, float value) {
+    if (number != nullptr) {
+        if (!number->has_state() || number->state != value) {
+            auto num = static_cast<HeizkurveTemperaturDeltaNumber*>(number);
+            num->set_initialized(false);
+            num->publish_state(value);
+            num->set_initialized(true);
+        }
+    }
 }
 
 void LuxtronikV1Component::parse_message_(const char* message) {
@@ -310,21 +351,13 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
 
         std::string mode_text = get_modus_text_(static_cast<int>(val));
         if (modus_heizung_ != nullptr) {
-            this->defer([this, mode_text]() {
-                modus_heizung_->publish_state(mode_text);
-                ESP_LOGV(TAG, "Mode Heizung: %s", mode_text.c_str());
-            });
+            publish_state_deferred_(modus_heizung_, mode_text, "Mode", "Heizung");
         }
 
         // Update select component without triggering control event
         if (modus_heizung_select_ != nullptr) {
-            std::string current = modus_heizung_select_->state;
-            if (current != mode_text) {
-                auto select = static_cast<ModusHeizungSelect*>(modus_heizung_select_);
-                select->set_initialized(false);
-                select->publish_state(mode_text);
-                select->set_initialized(true);
-            }
+            update_select_state_(modus_heizung_select_, mode_text, 
+                static_cast<ModusHeizungSelect*>(modus_heizung_select_)->initialized_);
         }
     }
     
@@ -332,7 +365,6 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
     this->parent_->write_str("3505\r\n");
 }
 
-// Update parse_modus_brauchwasser_message_
 void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
