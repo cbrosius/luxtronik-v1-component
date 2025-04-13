@@ -435,8 +435,8 @@ async def to_code(config):
             max_value=conf.get("max_value", 75),
             step=conf.get("step", 1)
         )
+        cg.add(var.set_brauchwasser_temperatur_number(temp_number))
 
-    cg.add(var.set_brauchwasser_temperatur_number(temp_number))
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
         cg.add(var.set_status_anlagentyp_sensor(sens))
