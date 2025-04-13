@@ -220,29 +220,7 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
   bool initialized_{false};
   uart::UARTDevice *parent_{nullptr};
 };
-
-class LuxtronikV1Component : public Component, public uart::UARTDevice {
- public:
-  class BrauchwasserTemperaturNumber : public number::Number, public Component {
-   public:
-    void setup() override;
-    void control(float value) override;
-    void set_parent(LuxtronikV1Component *parent) { parent_ = parent; }
-    bool initialized_{false};
-
-   protected:
-    LuxtronikV1Component *parent_{nullptr};
-  };
-
-  void set_brauchwasser_temperatur_number(BrauchwasserTemperaturNumber *number) { 
-    this->brauchwasser_temperatur_number_ = number; 
-  }
-
- protected:
-  BrauchwasserTemperaturNumber *brauchwasser_temperatur_number_{nullptr};
-};
-
-class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
+class LuxtronikV1Component : public Component, public uart::UARTDevice, public PollingComponent{
  public:
   // Define BrauchwasserTemperaturNumber as nested class
   class BrauchwasserTemperaturNumber : public number::Number, public Component {
