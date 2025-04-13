@@ -224,17 +224,11 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
-    if (idx < values.size()) publish_temp(temperatur_brauchwasser_soll_, values[idx++], "Temperatur Brauchwasser Soll");
-    
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
     if (brauchwasser_temperatur_number_ != nullptr && temperatur_brauchwasser_soll_ != nullptr) {
-        float soll_temp = get_float_temp_(values[idx-1]);  // Use last processed value
         if (!brauchwasser_temperatur_number_->is_initialized()) {  // Use getter method
-            brauchwasser_temperatur_number_->control(soll_temp);
+            brauchwasser_temperatur_number_->control(temperatur_brauchwasser_soll_);
             brauchwasser_temperatur_number_->set_initialized(true);
-        } else if (std::abs(brauchwasser_temperatur_number_->state - soll_temp) > 0.1f) {
-            // Only update if difference is more than 0.1°C to avoid loops
-            brauchwasser_temperatur_number_->publish_state(soll_temp);
         }
     }
 
