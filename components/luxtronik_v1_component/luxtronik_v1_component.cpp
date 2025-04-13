@@ -326,6 +326,8 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         if (modus_heizung_select_ != nullptr) {
             modus_heizung_select_->publish_state(mode_text);
             ESP_LOGV(TAG, "Mode Heizung Select updated to: %s", mode_text.c_str());
+        }else {
+            ESP_LOGV(TAG, "Mode Heizung Select not available");
         }
     }
     
