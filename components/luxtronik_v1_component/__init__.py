@@ -122,7 +122,7 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 # Add after namespace definition
 ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
 ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
-BrauchwasserTemperaturNumber = luxtronik_v1_component_ns.class_("BrauchwasserTemperaturNumber", number.Number, cg.Component)
+BrauchwasserTemperaturSlider = luxtronik_v1_component_ns.class_("BrauchwasserTemperaturSlider", number.Number, cg.Component)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
