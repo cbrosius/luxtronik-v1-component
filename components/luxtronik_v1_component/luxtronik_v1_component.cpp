@@ -639,11 +639,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 int jahr = std::atoi(values[idx++].c_str());
                 int stunde = std::atoi(values[idx++].c_str());
                 int minute = std::atoi(values[idx++].c_str());
-                ESP_LOGD(TAG, "Error3 tag: %d", tag);
-                ESP_LOGD(TAG, "Error3 monat: %d", monat);
-                ESP_LOGD(TAG, "Error3 jahr: %d", jahr);
-                ESP_LOGD(TAG, "Error3 stunde: %d", stunde);
-                ESP_LOGD(TAG, "Error3 minute: %d", minute);
+                // ESP_LOGD(TAG, "Error3 tag: %d", tag);
+                // ESP_LOGD(TAG, "Error3 monat: %d", monat);
+                // ESP_LOGD(TAG, "Error3 jahr: %d", jahr);
+                // ESP_LOGD(TAG, "Error3 stunde: %d", stunde);
+                // ESP_LOGD(TAG, "Error3 minute: %d", minute);
 
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
@@ -682,11 +682,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 int jahr = std::atoi(values[idx++].c_str());
                 int stunde = std::atoi(values[idx++].c_str());
                 int minute = std::atoi(values[idx++].c_str());
-                ESP_LOGD(TAG, "Error4 tag: %d", tag);
-                ESP_LOGD(TAG, "Error4 monat: %d", monat);
-                ESP_LOGD(TAG, "Error4 jahr: %d", jahr);
-                ESP_LOGD(TAG, "Error4 stunde: %d", stunde);
-                ESP_LOGD(TAG, "Error4 minute: %d", minute);
+                // ESP_LOGD(TAG, "Error4 tag: %d", tag);
+                // ESP_LOGD(TAG, "Error4 monat: %d", monat);
+                // ESP_LOGD(TAG, "Error4 jahr: %d", jahr);
+                // ESP_LOGD(TAG, "Error4 stunde: %d", stunde);
+                // ESP_LOGD(TAG, "Error4 minute: %d", minute);
 
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
