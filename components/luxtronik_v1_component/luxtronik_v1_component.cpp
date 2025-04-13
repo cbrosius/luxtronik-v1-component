@@ -825,6 +825,11 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
 
 // Move control implementations to cpp file
 void ModusBrauchwasserSelect::control(const std::string &value) {
+    // Example message format:
+    // Send "3506;1" to set programming mode for water heating
+    // Send "3506;1;<MODE>" to program mode    
+    // Send "999" to save the new mode
+
     if (parent_ == nullptr) return;
     
     int mode = 0;  // Default to Automatik
@@ -851,6 +856,11 @@ void ModusBrauchwasserSelect::control(const std::string &value) {
   }
   
   void ModusHeizungSelect::control(const std::string &value) {
+    // Example message format:
+    // Send "3406;1" to set programming mode for heating
+    // Send "3406;1;<MODE>" to program mode    
+    // Send "999" to save the new mode
+    
     if (parent_ == nullptr) return;
     
     int mode = 0;  // Default to Automatik
