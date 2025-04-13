@@ -96,7 +96,7 @@ CONF_MISCHKREIS1_ABSENKUNG = "mischkreis1_absenkung"
 CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
 
 # Add this constant near the top with other CONF definitions
-CONF_BRAUCHWASSER_TEMPERATUR_NUMBER = "brauchwasser_temperatur_number"
+CONF_BRAUCHWASSER_TEMPERATUR_SLIDER = "brauchwasser_temperatur_slider"
 
 MODUS_BRAUCHWASSER_OPTIONS = {
     "Automatik": 0,
