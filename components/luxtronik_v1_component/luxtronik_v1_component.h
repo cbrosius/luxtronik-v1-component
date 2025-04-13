@@ -5,6 +5,8 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
+#include "esphome/components/number/number.h"
+
 namespace esphome {
 namespace luxtronik_v1_component {
 
@@ -35,6 +37,97 @@ class ModusBrauchwasserSelect : public select::Select, public Component {
      this->publish_state(value);
    }
  };
+
+class HeizkurveTemperaturDeltaNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      snprintf(command, sizeof(command), "3401;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class HeizkurveEndpunktNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      snprintf(command, sizeof(command), "3402;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class HeizkurveParallelverschiebungNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      snprintf(command, sizeof(command), "3403;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class HeizkurveAbsenkungNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      snprintf(command, sizeof(command), "3404;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      snprintf(command, sizeof(command), "3408;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
+
+class BrauchwasserTemperaturNumber : public number::Number, public Component {
+ public:
+  void control(float value) override {
+    this->publish_state(value);
+    if (parent_ != nullptr) {
+      char command[32];
+      // Convert to deci-celsius (multiply by 10)
+      snprintf(command, sizeof(command), "3502;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+    }
+  }
+  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
+ protected:
+  uart::UARTDevice *parent_{nullptr};
+};
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:

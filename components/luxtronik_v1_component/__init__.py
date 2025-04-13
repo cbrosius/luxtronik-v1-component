@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, text_sensor, select
+from esphome.components import uart, sensor, text_sensor, select, number
 from esphome.const import (
     CONF_ID,
     CONF_NAME,
@@ -119,6 +119,7 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 # Add after namespace definition
 ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
 ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
+BrauchwasserTemperaturNumber = luxtronik_v1_component_ns.class_("BrauchwasserTemperaturNumber", number.Number, cg.Component)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
@@ -190,6 +191,13 @@ CONFIG_SCHEMA = (
         cv.Optional("modus_brauchwasser_select"): select.SELECT_SCHEMA.extend({
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
+        }).extend(cv.COMPONENT_SCHEMA),
+        cv.Optional("brauchwasser_temperatur"): number.NUMBER_SCHEMA.extend({
+            cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
+            cv.Optional(CONF_NAME): cv.string,
+            cv.Optional("min_value", default=40): cv.float_,
+            cv.Optional("max_value", default=75): cv.float_,
+            cv.Optional("step", default=1): cv.float_,
         }).extend(cv.COMPONENT_SCHEMA),
 
         # Status sensors
@@ -406,6 +414,19 @@ async def to_code(config):
             options=list(MODUS_BRAUCHWASSER_OPTIONS.keys())
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
+
+    if "brauchwasser_temperatur" in config:
+        conf = config["brauchwasser_temperatur"]
+        temp_number = cg.new_Pvariable(conf[CONF_ID])
+        await cg.register_component(temp_number, conf)
+        await number.register_number(
+            temp_number,
+            conf,
+            min_value=conf["min_value"],
+            max_value=conf["max_value"],
+            step=conf["step"]
+        )
+        cg.add(temp_number.set_parent(var))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])

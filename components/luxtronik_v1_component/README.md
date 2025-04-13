@@ -293,6 +293,52 @@ number:
     max_value: 75
     optimistic: true
 
+  # Heating curve controls
+  - platform: template
+    name: "  Heizkurve Temperaturdelta"
+    id: heizkurve_temperaturdelta_number
+    min_value: 5
+    max_value: 50
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    
+  - platform: template
+    name: "  Heizkurve Endpunkt"
+    id: heizkurve_endpunkt_number
+    min_value: 20
+    max_value: 70
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    
+  - platform: template
+    name: "  Heizkurve Parallelverschiebung"
+    id: heizkurve_parallel_number
+    min_value: -5
+    max_value: 5
+    step: 0.5
+    unit_of_measurement: "°C"
+    optimistic: true
+    
+  - platform: template
+    name: "  Heizkurve Absenkung"
+    id: heizkurve_absenkung_number
+    min_value: 0
+    max_value: 10
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    
+  - platform: template
+    name: "  Heizkurve Festwert Rücklauf"
+    id: heizkurve_festwert_ruecklauf_number
+    min_value: 20
+    max_value: 70
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+
 button:
   - platform: template
     name: " UART prüfen"
