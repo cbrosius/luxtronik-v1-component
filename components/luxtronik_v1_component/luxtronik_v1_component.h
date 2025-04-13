@@ -221,21 +221,21 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
   uart::UARTDevice *parent_{nullptr};
 };
 
-class BrauchwasserTemperaturNumber : public number::Number, public Component {
- public:
-  void setup() override;
-  void set_parent(uart::UARTDevice *parent);
-  void control(float value) override;
-  void set_initialized(bool initialized);
-  bool is_initialized() const;
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
+  class BrauchwasserTemperaturNumber : public number::Number, public Component {
+   public:
+    void setup() override;
+    void set_parent(uart::UARTDevice *parent);
+    void control(float value) override;
+    void set_initialized(bool initialized);
+    bool is_initialized() const;
+
+   protected:
+    bool initialized_{false};
+    uart::UARTDevice *parent_{nullptr};
+  };
+
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
 
   void setup() override;
