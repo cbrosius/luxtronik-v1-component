@@ -550,10 +550,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             // Process Fehlerbeschreibung
             if (idx < values.size() && error1_fehlerbeschreibung_ != nullptr) {
                 std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                this->defer([this, error_text]() {
-                    error1_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGD(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
-                });
+                publish_text_state_deferred_(error1_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 1");
+                // this->defer([this, error_text]() {
+                //     error1_fehlerbeschreibung_->publish_state(error_text);
+                //     ESP_LOGD(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
+                // });
                 idx++; // Moved here to advance only when description is processed
             }
             // Process Fehlerzeitpunkt
