@@ -210,6 +210,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
             // Log wenn es der Brauchwasser-Sollwert ist
             if (sensor == temperatur_brauchwasser_soll_) {
                 ESP_LOGD(TAG, "Brauchwasser Sollwert empfangen: %.1f", temp);
+                ESP_LOGD(TAG, "Brauchwasser Temperatur Slider aktueller Wert: %.1f", brauchwasser_temperatur_slider_->state);
                 if (this->brauchwasser_temperatur_slider_ != nullptr) {
                     if (!this->brauchwasser_temperatur_slider_->is_initialized()) {
                         this->brauchwasser_temperatur_slider_->control(temp);
