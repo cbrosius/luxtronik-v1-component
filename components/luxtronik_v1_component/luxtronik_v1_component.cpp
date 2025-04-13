@@ -207,7 +207,19 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
             publish_state_deferred_(sensor, temp, "Temperatur", name);
-        }
+             // Log wenn es der Brauchwasser-Sollwert ist
+             if (sensor == temperatur_brauchwasser_soll_) {
+                ESP_LOGD(TAG, "Brauchwasser Sollwert empfangen: %.1f", temp);
+                if (brauchwasser_temperatur_number_ != nullptr) {
+                    if (!brauchwasser_temperatur_number_->is_initialized()) {
+                        brauchwasser_temperatur_number_->publish_state(temp);
+                        brauchwasser_temperatur_number_->set_initialized(true);
+                    } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
+                        brauchwasser_temperatur_number_->publish_state(temp);
+                    }
+                }
+            }
+       }
     };
 
     // Process all temperature sensors
@@ -224,21 +236,21 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
-    ESP_LOGD("TempBrauchwasserSoll", "Received temperature: %.1f", temperatur_brauchwasser_soll_->state);
-    ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", brauchwasser_temperatur_number_->state);
-    // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
-    if (brauchwasser_temperatur_number_ != nullptr) {
-        // float temp = temperatur_brauchwasser_soll_->state;
+    // ESP_LOGD("TempBrauchwasserSoll", "Received temperature: %.1f", temperatur_brauchwasser_soll_->state);
+    // ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", brauchwasser_temperatur_number_->state);
+    // // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
+    // if (brauchwasser_temperatur_number_ != nullptr) {
+    //     // float temp = temperatur_brauchwasser_soll_->state;
         
-        // ESP_LOGD("BrauchwasserTemp", "Received temperature: %.1f", temp);
+    //     // ESP_LOGD("BrauchwasserTemp", "Received temperature: %.1f", temp);
         
-        // if (!brauchwasser_temperatur_number_->is_initialized()) {
-        //     brauchwasser_temperatur_number_->publish_state(temp);
-        //     brauchwasser_temperatur_number_->set_initialized(true);
-        // } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
-        //     brauchwasser_temperatur_number_->publish_state(temp);
-        // }
-    }
+    //     // if (!brauchwasser_temperatur_number_->is_initialized()) {
+    //     //     brauchwasser_temperatur_number_->publish_state(temp);
+    //     //     brauchwasser_temperatur_number_->set_initialized(true);
+    //     // } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
+    //     //     brauchwasser_temperatur_number_->publish_state(temp);
+    //     // }
+    // }
 
     // Request input values after temperature values are parsed
     // this->parent_->write_str("1200\r\n");
