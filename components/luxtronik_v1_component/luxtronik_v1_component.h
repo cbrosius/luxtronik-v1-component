@@ -5,8 +5,6 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
-#include "esphome/components/number/number.h"
-
 namespace esphome {
 namespace luxtronik_v1_component {
 
@@ -19,249 +17,24 @@ class ModusBrauchwasserSelect : public select::Select, public Component {
    void setup() override {
      // Set initial values and options
      traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
-     initialized_ = false;
    }
  
    void control(const std::string &value) override {
-     if (!initialized_) {
-       this->publish_state(value);
-     } else {
-       this->publish_state(value);
-       if (parent_ != nullptr) {
-         int mode = 0;  // Default to Automatik
-         if (value == "Zweiter Waermeerzeuger") mode = 1;
-         else if (value == "Party") mode = 2;
-         else if (value == "Ferien") mode = 3;
-         else if (value == "Aus") mode = 4;
-         
-         char command[32];
-         snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
-         parent_->write_str(command);
-       }
-     }
+     this->publish_state(value);
    }
+ };
 
-   void set_initialized(bool initialized) { initialized_ = initialized; }
-   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
-  protected:
-   bool initialized_{false};
-   uart::UARTDevice *parent_{nullptr};
-};
-
-class ModusHeizungSelect : public select::Select, public Component {
+ class ModusHeizungSelect : public select::Select, public Component {
   public:
    void setup() override {
      // Set initial values and options
      traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
-     initialized_ = false;
    }
  
    void control(const std::string &value) override {
-     if (!initialized_) {
-       this->publish_state(value);
-     } else {
-       this->publish_state(value);
-       if (parent_ != nullptr) {
-         int mode = 0;  // Default to Automatik
-         if (value == "Zweiter Waermeerzeuger") mode = 1;
-         else if (value == "Party") mode = 2;
-         else if (value == "Ferien") mode = 3;
-         else if (value == "Aus") mode = 4;
-         
-         char command[32];
-         snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
-         parent_->write_str(command);
-       }
-     }
+     this->publish_state(value);
    }
-
-   void set_initialized(bool initialized) { initialized_ = initialized; }
-   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
-  protected:
-   bool initialized_{false};
-   uart::UARTDevice *parent_{nullptr};
-};
-
-class HeizkurveTemperaturDeltaNumber : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      this->publish_state(value);
-    } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        snprintf(command, sizeof(command), "3401;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-      }
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
-class HeizkurveEndpunktNumber : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      this->publish_state(value);
-    } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        snprintf(command, sizeof(command), "3402;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-      }
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
-class HeizkurveParallelverschiebungNumber : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      this->publish_state(value);
-    } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        snprintf(command, sizeof(command), "3403;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-      }
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
-class HeizkurveAbsenkungNumber : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      this->publish_state(value);
-    } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        snprintf(command, sizeof(command), "3404;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-      }
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
-class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      this->publish_state(value);
-    } else {
-      this->publish_state(value);
-      if (parent_ != nullptr) {
-        char command[32];
-        snprintf(command, sizeof(command), "3408;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-      }
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-
- protected:
-  bool initialized_{false};
-  uart::UARTDevice *parent_{nullptr};
-};
-
-class BrauchwasserTemperaturSlider : public number::Number, public Component {
- public:
-  void setup() override {
-    initialized_ = false;
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      ESP_LOGD(TAG, "BrauchwasserTemp not initialized yet, value: %.1f", value);
-      // Initial state update without writing
-      this->publish_state(value);
-      return;
-    }
-
-    // Check if value actually changed
-    if (std::abs(this->state - value) > 0.1f) {
-      ESP_LOGD(TAG, "Setting new temperature: %.1f", value);
-      
-      if (this->luxtronik_ != nullptr && this->luxtronik_->get_uart() != nullptr) {
-        // Format command: 3501;1;<temp*10>
-        char command[32];
-        snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-        this->luxtronik_->get_uart()->write_str(command);
-        
-        delay(100);  // Wait for command to be processed
-        
-        // Send save command
-        this->luxtronik_->get_uart()->write_str("999\r\n");
-      }
-      
-      // Update state after sending command
-      this->publish_state(value);
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  bool is_initialized() const { return initialized_; }
-  void set_luxtronik(LuxtronikV1Component *luxtronik) { this->luxtronik_ = luxtronik; }
-
- protected:
-  bool initialized_{false};
-  LuxtronikV1Component *luxtronik_{nullptr};
-};
+ };
 
 class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
  public:
@@ -271,10 +44,10 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void loop() override;
   void update() override;
   void dump_config() override;
+
   void set_uart_parent(uart::UARTComponent *parent) { 
     this->parent_ = parent;
   }
-  uart::UARTDevice *get_uart() { return this; }
 
   // Add temperature sensor setters
   void set_temperatur_vorlauf_sensor(sensor::Sensor *sens) { temperatur_vorlauf_ = sens; }
@@ -365,29 +138,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void set_mischkreis1_absenkung_sensor(sensor::Sensor *sens) { mischkreis1_absenkung_ = sens; }
   void set_mischkreis1_festwert_vorlauf_sensor(sensor::Sensor *sens) { mischkreis1_festwert_vorlauf_ = sens; } 
 
-  // Add setter methods in public section
-  void set_heizkurve_temperaturdelta_number(HeizkurveTemperaturDeltaNumber *number) { 
-    heizkurve_temperaturdelta_number_ = number; 
-  }
-  void set_heizkurve_endpunkt_number(HeizkurveEndpunktNumber *number) { 
-    heizkurve_endpunkt_number_ = number; 
-  }
-  void set_heizkurve_parallelverschiebung_number(HeizkurveParallelverschiebungNumber *number) { 
-    heizkurve_parallelverschiebung_number_ = number; 
-  }
-  void set_heizkurve_absenkung_number(HeizkurveAbsenkungNumber *number) { 
-    heizkurve_absenkung_number_ = number; 
-  }
-  void set_heizkurve_festwert_ruecklauf_number(HeizkurveFestwertRuecklaufNumber *number) { 
-    heizkurve_festwert_ruecklauf_number_ = number; 
-  }
-  void set_brauchwasser_temperatur_slider(BrauchwasserTemperaturSlider *slider) { 
-    this->brauchwasser_temperatur_slider_ = slider;
-    if (slider != nullptr) {
-      slider->set_luxtronik(this);
-    }
-  }
-
  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
   void parse_message_(const char* message);
@@ -402,13 +152,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   void parse_heatingcurve_message_(const char* message);
   void reset_programming_mode_(const char* message);
   void publish_state_deferred_(sensor::Sensor* sensor, float value, const char* type, const char* name);
-  void publish_state_deferred_(text_sensor::TextSensor* sensor, const std::string& value, const char* type, const char* name);
-  void update_select_state_(select::Select* select, const std::string& value, bool& initialized);
-  void update_number_state_(number::Number* number, float value);
   select::Select *modus_brauchwasser_select_{nullptr};
   select::Select *modus_heizung_select_{nullptr};
-  number::Number *brauchwasser_temperatur_number_{nullptr};
-  
   std::string get_betriebszustand_text_(int state);
   std::string get_modus_text_(int state);
   std::string get_error_description_(int error_code);
@@ -504,16 +249,6 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *mischkreis1_parallelverschiebung_{nullptr}; // 3400/7
   sensor::Sensor *mischkreis1_absenkung_{nullptr};            // 3400/8
   sensor::Sensor *mischkreis1_festwert_vorlauf_{nullptr};     // 3400/9
-
-  // Number component pointers
-  HeizkurveTemperaturDeltaNumber *heizkurve_temperaturdelta_number_{nullptr};
-  HeizkurveEndpunktNumber *heizkurve_endpunkt_number_{nullptr};
-  HeizkurveParallelverschiebungNumber *heizkurve_parallelverschiebung_number_{nullptr};
-  HeizkurveAbsenkungNumber *heizkurve_absenkung_number_{nullptr};
-  HeizkurveFestwertRuecklaufNumber *heizkurve_festwert_ruecklauf_number_{nullptr};
-
-  // Slider component pointer
-  BrauchwasserTemperaturSlider *brauchwasser_temperatur_slider_{nullptr};
 };
 
 }  // namespace luxtronik_v1_component

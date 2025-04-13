@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, text_sensor, select, number
+from esphome.components import uart, sensor, text_sensor, select
 from esphome.const import (
     CONF_ID,
     CONF_NAME,
@@ -95,9 +95,6 @@ CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG = "mischkreis1_parallelverschiebung"
 CONF_MISCHKREIS1_ABSENKUNG = "mischkreis1_absenkung"
 CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
 
-# Add this constant near the top with other CONF definitions
-CONF_BRAUCHWASSER_TEMPERATUR_SLIDER = "brauchwasser_temperatur_slider"
-
 MODUS_BRAUCHWASSER_OPTIONS = {
     "Automatik": 0,
     "Zweiter Waermeerzeuger": 1, 
@@ -122,7 +119,6 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 # Add after namespace definition
 ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
 ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
-BrauchwasserTemperaturSlider = luxtronik_v1_component_ns.class_("BrauchwasserTemperaturSlider", number.Number, cg.Component)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
@@ -195,16 +191,7 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional("brauchwasser_temperatur_number"): cv.Schema({
-            cv.Required(CONF_ID): cv.declare_id(cv.COMPONENT_SCHEMA),
-        }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_SLIDER): number.NUMBER_SCHEMA.extend({
-            cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturSlider),
-            cv.Optional(CONF_NAME): cv.string,
-            cv.Optional("min_value"): cv.float_range(min=0, max=100),
-            cv.Optional("max_value"): cv.float_range(min=0, max=100),
-            cv.Optional("step"): cv.float_range(min=0.1, max=10),
-        }).extend(cv.COMPONENT_SCHEMA),
+
         # Status sensors
         cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
@@ -419,19 +406,6 @@ async def to_code(config):
             options=list(MODUS_BRAUCHWASSER_OPTIONS.keys())
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
-
-    if "brauchwasser_temperatur_slider" in config:
-        conf = config["brauchwasser_temperatur_slider"]
-        temp_number = cg.new_Pvariable(conf[CONF_ID])
-        await cg.register_component(temp_number, conf)
-        await number.register_number(
-            temp_number,
-            conf,
-            min_value=conf.get("min_value", 30),
-            max_value=conf.get("max_value", 65),
-            step=conf.get("step", 1)
-        )
-        cg.add(temp_number.set_parent(var))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
