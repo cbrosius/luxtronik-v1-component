@@ -1049,9 +1049,18 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
     }
 }
 
+void LuxtronikV1Component::BrauchwasserTemperaturNumber::setup() {
+  if (parent_ != nullptr) {
+    ESP_LOGD(TAG, "UART parent initialized");
+  } else {
+    ESP_LOGW(TAG, "UART parent is nullptr!");
+  }
+  initialized_ = false;
+}
+
 void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
   if (!initialized_) {
-    ESP_LOGD(TAG, "Not initialized yet, value: %.1f", value);
+    ESP_LOGD(TAG, "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
     this->publish_state(value);
     return;
   }
@@ -1059,13 +1068,13 @@ void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
   if (std::abs(this->state - value) > 0.1f) {
     ESP_LOGD(TAG, "Setting new temperature: %.1f", value);
     
-    if (this->parent_ != nullptr) {
+    if (parent_ != nullptr) {
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      this->parent_->write_str(command);
+      parent_->write_str(command);
       
       delay(100);
-      this->parent_->write_str("999\r\n");
+      parent_->write_str("999\r\n");
     }
     
     this->publish_state(value);
