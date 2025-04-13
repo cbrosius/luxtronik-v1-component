@@ -228,16 +228,16 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", brauchwasser_temperatur_number_->state);
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
     if (brauchwasser_temperatur_number_ != nullptr) {
-        float temp = temperatur_brauchwasser_soll_->state;
+        // float temp = temperatur_brauchwasser_soll_->state;
         
-        ESP_LOGD("BrauchwasserTemp", "Received temperature: %.1f", temp);
+        // ESP_LOGD("BrauchwasserTemp", "Received temperature: %.1f", temp);
         
-        if (!brauchwasser_temperatur_number_->is_initialized()) {
-            brauchwasser_temperatur_number_->publish_state(temp);
-            brauchwasser_temperatur_number_->set_initialized(true);
-        } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
-            brauchwasser_temperatur_number_->publish_state(temp);
-        }
+        // if (!brauchwasser_temperatur_number_->is_initialized()) {
+        //     brauchwasser_temperatur_number_->publish_state(temp);
+        //     brauchwasser_temperatur_number_->set_initialized(true);
+        // } else if (std::abs(brauchwasser_temperatur_number_->state - temp) > 0.1f) {
+        //     brauchwasser_temperatur_number_->publish_state(temp);
+        // }
     }
 
     // Request input values after temperature values are parsed
