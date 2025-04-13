@@ -217,8 +217,6 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_heissgas_, values[idx++], "Heissgas");
     if (idx < values.size()) publish_temp(temperatur_aussen_, values[idx++], "Aussen");
     if (idx < values.size()) publish_temp(temperatur_brauchwasser_, values[idx++], "Brauchwasser");
-    // Store brauchwasser_soll index for later use
-    size_t brauchwasser_soll_idx = idx;
     if (idx < values.size()) publish_temp(temperatur_brauchwasser_soll_, values[idx++], "Brauchwasser Soll");
     if (idx < values.size()) publish_temp(temperatur_waermequelle_eingang_, values[idx++], "Wärmequelle Eingang");
     if (idx < values.size()) publish_temp(temperatur_kaeltekreis_, values[idx++], "Kältekreis");
@@ -226,8 +224,9 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_mischkreis1_vorlauf_soll_, values[idx++], "Mischkreis1 Vorlauf Soll");
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
+    ESP_LOGD("TempBrauchwasserSoll", "Received temperature: %.1f", temperatur_brauchwasser_soll_->state);
+    ESP_LOGD("TempBrauchwasserSollNumber", "Temperature: %.1f", temperatur_brauchwasser_number_->state);
     // Sync brauchwasser_temperatur_number with temperatur_brauchwasser_soll_
-    ESP_LOGD("BrauchwasserSollIdx", ": %.1f", brauchwasser_soll_idx);
     if (brauchwasser_temperatur_number_ != nullptr && brauchwasser_soll_idx < values.size()) {
         float temp = get_float_temp_(values[brauchwasser_soll_idx]);
         
