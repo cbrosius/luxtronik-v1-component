@@ -72,11 +72,12 @@ void LuxtronikV1Component::publish_text_state_deferred_(text_sensor::TextSensor*
     if (sensor == nullptr) return;
 
     // Get current state and compare with new value
-    std::string current = sensor->state;
-    if (current != new_value) {
+    std::string current = sensor->get_state();
+    if (current.empty() || current.compare(new_value) != 0) {
         this->defer([this, sensor, new_value, type, name]() {
             sensor->publish_state(new_value);
-            ESP_LOGV(TAG, "%s %s: %s", type, name, new_value.c_str());
+            ESP_LOGV(TAG, "%s %s: changed from '%s' to '%s'", 
+                     type, name, sensor->get_state().c_str(), new_value.c_str());
         });
     }
 }
@@ -85,11 +86,12 @@ void LuxtronikV1Component::publish_timestamp_state_deferred_(text_sensor::TextSe
     if (sensor == nullptr) return;
 
     std::string new_value = buffer;
-    std::string current = sensor->state;
-    if (current != new_value) {
+    std::string current = sensor->get_state();
+    if (current.empty() || current.compare(new_value) != 0) {
         this->defer([this, sensor, new_value, type, name]() {
             sensor->publish_state(new_value);
-            ESP_LOGV(TAG, "%s %s: %s", type, name, new_value.c_str());
+            ESP_LOGV(TAG, "%s %s: changed from '%s' to '%s'", 
+                     type, name, sensor->get_state().c_str(), new_value.c_str());
         });
     }
 }
