@@ -32,6 +32,14 @@ class ModusHeizungSelect : public select::Select, public Component {
   LuxtronikV1Component *parent_{nullptr};
 };
 
+class WarmwasserSolltemperaturNumber : public number::Number, public Component {
+ public:
+  void set_parent(LuxtronikV1Component *parent) { parent_ = parent; }
+  void control(float value) override;
+ protected:
+  LuxtronikV1Component *parent_{nullptr};
+};
+
 class LuxtronikV1Component : public PollingComponent {
  public:
   LuxtronikV1Component() : PollingComponent(60000) {}  // Default to 60 seconds
@@ -176,6 +184,14 @@ class LuxtronikV1Component : public PollingComponent {
   uart::UARTComponent *parent_{nullptr};
   char read_buffer_[READ_BUFFER_LENGTH];
   size_t read_pos_{0};
+
+  // Add setter for number component
+  void set_warmwasser_solltemperatur_number(WarmwasserSolltemperaturNumber *number) { 
+    warmwasser_solltemperatur_number_ = number;
+    number->set_parent(this);
+  }
+
+  WarmwasserSolltemperaturNumber *warmwasser_solltemperatur_number_{nullptr};
 
   // Temperature sensor pointers
   sensor::Sensor *temperatur_vorlauf_{nullptr};                 // 1100/2

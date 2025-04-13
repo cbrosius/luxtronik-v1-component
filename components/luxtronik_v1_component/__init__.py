@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, text_sensor, select
+from esphome.components import uart, sensor, text_sensor, select, number
 from esphome.const import (
     CONF_ID,
     CONF_NAME,
@@ -9,8 +9,10 @@ from esphome.const import (
     UNIT_CELSIUS,
 )
 
+CONF_WARMWASSER_SOLLTEMPERATUR = "warmwasser_solltemperatur"
+
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor","text_sensor","select"]
+AUTO_LOAD = ["sensor","text_sensor","select","number"]
 
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
@@ -119,6 +121,7 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 # Add after namespace definition
 ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
 ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
+WarmwasserSolltemperaturNumber = luxtronik_v1_component_ns.class_("WarmwasserSolltemperaturNumber", number.Number, cg.Component)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
@@ -235,6 +238,13 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
+        cv.Optional(CONF_WARMWASSER_SOLLTEMPERATUR): number.NUMBER_SCHEMA.extend({
+            cv.Required(CONF_ID): cv.declare_id(WarmwasserSolltemperaturNumber),
+            cv.Optional(CONF_NAME): cv.string,
+            cv.Optional("min_value", default=30.0): cv.float_,
+            cv.Optional("max_value", default=65.0): cv.float_,
+            cv.Optional("step", default=1): cv.float_,
+        }).extend(cv.COMPONENT_SCHEMA),
 
     })
     .extend(cv.COMPONENT_SCHEMA)
@@ -562,3 +572,17 @@ async def to_code(config):
     if CONF_MISCHKREIS1_FESTWERT_VORLAUF in config:
         sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_FESTWERT_VORLAUF])
         cg.add(var.set_mischkreis1_festwert_vorlauf_sensor(sens))
+
+    if CONF_WARMWASSER_SOLLTEMPERATUR in config:
+        conf = config[CONF_WARMWASSER_SOLLTEMPERATUR]
+        var_number = cg.new_Pvariable(conf[CONF_ID])
+        await cg.register_component(var_number, conf)
+        await number.register_number(
+            var_number,
+            conf,
+            min_value=conf["min_value"],
+            max_value=conf["max_value"],
+            step=conf["step"],
+            unit_of_measurement="°C"
+        )
+        cg.add(var.set_warmwasser_solltemperatur_number(var_number))
