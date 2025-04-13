@@ -573,7 +573,7 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                     //     this->defer([this, text = std::string(buffer)]() {
                     // error1_zeitpunkt_->publish_state(text);
                     // ESP_LOGD(TAG, "Error1 Zeitpunkt: %s", text.c_str());
-                });
+                    // });
             }
             break;
         }
