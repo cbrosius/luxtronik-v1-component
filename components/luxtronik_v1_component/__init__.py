@@ -420,8 +420,8 @@ async def to_code(config):
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
 
-    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
-        conf = config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER]
+    if "brauchwasser_temperatur_slider" in config:
+        conf = config["brauchwasser_temperatur_slider"]
         temp_number = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(temp_number, conf)
         await number.register_number(
