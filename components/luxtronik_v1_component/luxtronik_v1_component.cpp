@@ -4,7 +4,7 @@
 namespace esphome {
 namespace luxtronik_v1_component {
 
-static const char *TAG = "luxtronik_v1_component.component";
+const char *const TAG = "luxtronik_v1_component.component";
 
 void LuxtronikV1Component::setup() {
     ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Component...");
