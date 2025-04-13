@@ -431,19 +431,6 @@ async def to_code(config):
         await number.register_number(
             temp_number,
             conf,
-            min_value=conf["min_value"],
-            max_value=conf["max_value"],
-            step=conf["step"]
-        )
-        cg.add(temp_number.set_parent(var))
-
-    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
-        conf = config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER]
-        temp_number = cg.new_Pvariable(conf[CONF_ID])
-        await cg.register_component(temp_number, conf)
-        await number.register_number(
-            temp_number,
-            conf,
             min_value=conf.get("min_value", 30),
             max_value=conf.get("max_value", 65),
             step=conf.get("step", 0.5)
