@@ -198,8 +198,8 @@ CONFIG_SCHEMA = (
         cv.Optional("brauchwasser_temperatur_number"): cv.Schema({
             cv.Required(CONF_ID): cv.declare_id(cv.COMPONENT_SCHEMA),
         }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_NUMBER): number.NUMBER_SCHEMA.extend({
-            cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
+        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_SLIDER): number.NUMBER_SCHEMA.extend({
+            cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturSlider),
             cv.Optional(CONF_NAME): cv.string,
             cv.Optional("min_value"): cv.float_range(min=0, max=100),
             cv.Optional("max_value"): cv.float_range(min=0, max=100),
