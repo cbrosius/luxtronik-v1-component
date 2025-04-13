@@ -95,6 +95,8 @@ CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG = "mischkreis1_parallelverschiebung"
 CONF_MISCHKREIS1_ABSENKUNG = "mischkreis1_absenkung"
 CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
 
+CONF_BRAUCHWASSER_TEMPERATUR_NUMBER = "brauchwasser_temperatur_number"
+
 MODUS_BRAUCHWASSER_OPTIONS = {
     "Automatik": 0,
     "Zweiter Waermeerzeuger": 1, 
@@ -243,6 +245,13 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
+        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_NUMBER): number.NUMBER_SCHEMA.extend({
+            cv.GenerateID(): cv.declare_id(BrauchwasserTemperaturNumber),
+            cv.Optional(CONF_NAME): cv.string,
+            cv.Optional("min_value", default=30): cv.float_,
+            cv.Optional("max_value", default=65): cv.float_,
+            cv.Optional("step", default=0.5): cv.float_,
+        }).extend(cv.COMPONENT_SCHEMA),
 
     })
     .extend(cv.COMPONENT_SCHEMA)
@@ -415,8 +424,8 @@ async def to_code(config):
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
 
-    if "brauchwasser_temperatur" in config:
-        conf = config["brauchwasser_temperatur"]
+    if "brauchwasser_temperatur_number" in config:
+        conf = config["brauchwasser_temperatur_number"]
         temp_number = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(temp_number, conf)
         await number.register_number(
@@ -427,6 +436,19 @@ async def to_code(config):
             step=conf["step"]
         )
         cg.add(temp_number.set_parent(var))
+
+    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
+        conf = config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER]
+        temp_number = cg.new_Pvariable(conf[CONF_ID])
+        await cg.register_component(temp_number, conf)
+        await number.register_number(
+            temp_number,
+            conf,
+            min_value=conf.get("min_value", 30),
+            max_value=conf.get("max_value", 65),
+            step=conf.get("step", 0.5)
+        )
+        cg.add(var.set_brauchwasser_temperatur_number(temp_number))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
@@ -583,12 +605,3 @@ async def to_code(config):
     if CONF_MISCHKREIS1_FESTWERT_VORLAUF in config:
         sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_FESTWERT_VORLAUF])
         cg.add(var.set_mischkreis1_festwert_vorlauf_sensor(sens))
-
-    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
-        number = await number.new_number(
-            config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER],
-            min_value=30,
-            max_value=65,
-            step=0.5
-        )
-        cg.add(var.set_brauchwasser_temperatur_number(number))
