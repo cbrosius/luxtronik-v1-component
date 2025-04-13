@@ -17,31 +17,16 @@ void LuxtronikV1Component::setup() {
     // Request initial values immediately after setup
     this->parent_->write_str("1100\r\n");
 
+    // Set up hot water mode select component
     if (modus_brauchwasser_select_ != nullptr) {
-        modus_brauchwasser_select_->add_on_state_callback([this](std::string value, size_t index) {
-            int mode = 0;  // Default to Automatik
-            if (value == "Zweiter Waermeerzeuger") mode = 1;
-            else if (value == "Party") mode = 2;
-            else if (value == "Ferien") mode = 3;
-            else if (value == "Aus") mode = 4;
-            
-            char command[32];
-            snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
-            this->parent_->write_str(command);
-        });
+        auto brauchwasser_select = (ModusBrauchwasserSelect*)modus_brauchwasser_select_;
+        brauchwasser_select->set_parent(this->parent_);
     }
+
+    // Set up heating mode select component
     if (modus_heizung_select_ != nullptr) {
-        modus_heizung_select_->add_on_state_callback([this](std::string value, size_t index) {
-            int mode = 0;  // Default to Automatik
-            if (value == "Zweiter Waermeerzeuger") mode = 1;
-            else if (value == "Party") mode = 2;
-            else if (value == "Ferien") mode = 3;
-            else if (value == "Aus") mode = 4;
-            
-            char command[32];
-            snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
-            this->parent_->write_str(command);
-        });
+        auto heizung_select = (ModusHeizungSelect*)modus_heizung_select_;
+        heizung_select->set_parent(this->parent_);
     }
 }
 
@@ -926,6 +911,48 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
         case 799: return "ModBus ASB - Keine ModBus-Kommunikation mit ASB-Platine.";
         default: return "Unbekannter Fehler";
     }
+}
+
+void ModusBrauchwasserSelect::setup() {
+    // Set initial values and options
+    traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+}
+
+void ModusBrauchwasserSelect::control(const std::string &value) {
+    // Map the selected value to the corresponding mode number
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+
+    // Send command to heat pump
+    char command[32];
+    snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
+    parent_->write_str(command);
+    
+    this->publish_state(value);
+}
+
+void ModusHeizungSelect::setup() {
+    // Set initial values and options
+    traits.set_options({"Automatik", "Zweiter Waermeerzeuger", "Party", "Ferien", "Aus"});
+}
+
+void ModusHeizungSelect::control(const std::string &value) {
+    // Map the selected value to the corresponding mode number
+    int mode = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode = 1;
+    else if (value == "Party") mode = 2;
+    else if (value == "Ferien") mode = 3;
+    else if (value == "Aus") mode = 4;
+
+    // Send command to heat pump
+    char command[32];
+    snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
+    parent_->write_str(command);
+    
+    this->publish_state(value);
 }
 
 }  // namespace luxtronik_v1_component
