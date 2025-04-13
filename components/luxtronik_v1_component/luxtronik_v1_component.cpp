@@ -181,7 +181,7 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
                 float current = warmwasser_solltemperatur_number_->state;
                 if (std::isnan(current) || current != temp) {
                     this->defer([this, temp]() {
-                        warmwasser_solltemperatur_number_->update_state(temp);
+                        warmwasser_solltemperatur_number_->publish_state(temp);
                         ESP_LOGV(TAG, "Updated Warmwasser Solltemperatur Number to: %.1f°C", temp);
                     });
                 }
