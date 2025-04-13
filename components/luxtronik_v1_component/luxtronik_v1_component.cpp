@@ -569,9 +569,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
-                this->defer([this, text = std::string(buffer)]() {
-                    error1_zeitpunkt_->publish_state(text);
-                    ESP_LOGD(TAG, "Error1 Zeitpunkt: %s", text.c_str());
+                publish_timestamp_state_deferred_(error1_zeitpunkt_, buffer, "Error", "Zeitpunkt 1");
+                    //     this->defer([this, text = std::string(buffer)]() {
+                    // error1_zeitpunkt_->publish_state(text);
+                    // ESP_LOGD(TAG, "Error1 Zeitpunkt: %s", text.c_str());
                 });
             }
             break;
@@ -586,10 +587,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             // Process Fehlerbeschreibung
             if (idx < values.size() && error2_fehlerbeschreibung_ != nullptr) {
                 std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                this->defer([this, error_text]() {
-                    error2_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGV(TAG, "Error2 Fehlerbeschreibung: %s", error_text.c_str());
-                });
+                publish_text_state_deferred_(error2_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 2");
+                // this->defer([this, error_text]() {
+                //     error2_fehlerbeschreibung_->publish_state(error_text);
+                //     ESP_LOGV(TAG, "Error2 Fehlerbeschreibung: %s", error_text.c_str());
+                // });
                 idx++; // Moved here to advance only when description is processed
             }
              // Process Fehlerzeitpunkt
@@ -604,10 +606,12 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
-                this->defer([this, text = std::string(buffer)]() {
-                    error2_zeitpunkt_->publish_state(text);
-                    ESP_LOGV(TAG, "Error2 Zeitpunkt: %s", text.c_str());
-                });
+                publish_timestamp_state_deferred_(error2_zeitpunkt_, buffer, "Error", "Zeitpunkt 2");
+
+                // this->defer([this, text = std::string(buffer)]() {
+                //     error2_zeitpunkt_->publish_state(text);
+                //     ESP_LOGV(TAG, "Error2 Zeitpunkt: %s", text.c_str());
+                // });
             }
             break;
         }
@@ -621,10 +625,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             // Process Fehlerbeschreibung
             if (idx < values.size() && error3_fehlerbeschreibung_ != nullptr) {
                 std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                this->defer([this, error_text]() {
-                    error3_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGD(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
-                });
+                publish_text_state_deferred_(error3_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 3");
+                // this->defer([this, error_text]() {
+                //     error3_fehlerbeschreibung_->publish_state(error_text);
+                //     ESP_LOGD(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
+                // });
                 idx++; // Moved here to advance only when description is processed
             }
             // Process Fehlerzeitpunkt
@@ -644,10 +649,12 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
-                this->defer([this, text = std::string(buffer)]() {
-                    error3_zeitpunkt_->publish_state(text);
-                    ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
-                });
+                publish_timestamp_state_deferred_(error1_zeitpunkt_, buffer, "Error", "Zeitpunkt 1");
+
+                //  this->defer([this, text = std::string(buffer)]() {
+                //     error3_zeitpunkt_->publish_state(text);
+                //     ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
+                // });
             }
             break;
         }
@@ -661,10 +668,11 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
             // Process Fehlerbeschreibung
             if (idx < values.size() && error4_fehlerbeschreibung_ != nullptr) {
                 std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                this->defer([this, error_text]() {
-                    error4_fehlerbeschreibung_->publish_state(error_text);
-                    ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
-                });
+                publish_text_state_deferred_(error4_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 4");
+                // this->defer([this, error_text]() {
+                //     error4_fehlerbeschreibung_->publish_state(error_text);
+                //     ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
+                // });
                 idx++; // Moved here to advance only when description is processed
             }
              // Process Fehlerzeitpunkt
@@ -684,10 +692,12 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
-                this->defer([this, text = std::string(buffer)]() {
-                    error4_zeitpunkt_->publish_state(text);
-                    ESP_LOGV(TAG, "Error4 Zeitpunkt: %s", text.c_str());
-                });
+                publish_timestamp_state_deferred_(error4_zeitpunkt_, buffer, "Error", "Zeitpunkt 4");
+
+                //     this->defer([this, text = std::string(buffer)]() {
+                //     error4_zeitpunkt_->publish_state(text);
+                //     ESP_LOGV(TAG, "Error4 Zeitpunkt: %s", text.c_str());
+                // });
             }
             break;
         }
