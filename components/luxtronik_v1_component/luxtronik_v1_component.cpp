@@ -1089,5 +1089,7 @@ bool LuxtronikV1Component::BrauchwasserTemperaturNumber::is_initialized() const 
   return initialized_;
 }
 
+luxtronik_v1_component::BrauchwasserTemperaturNumber *brauchwasser_temperatur;
+
 }  // namespace luxtronik_v1_component
 }  // namespace esphome
