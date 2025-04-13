@@ -223,9 +223,9 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
   void setup() override {
     // Set initial values and min/max limits
-    traits.set_min_value(30); // Minimum temperature 30°C
-    traits.set_max_value(65); // Maximum temperature 65°C
-    traits.set_step(0.5f);    // Allow 0.5°C steps
+    this->traits.set_min_value(30);    // Minimum temperature 30°C
+    this->traits.set_max_value(65);    // Maximum temperature 65°C
+    this->traits.set_step(0.5f);       // Allow 0.5°C steps
     initialized_ = false;
   }
 
@@ -233,29 +233,33 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
     if (!initialized_) {
       // Initial state update without writing
       this->publish_state(value);
-    } else {
-      // Only write if value has changed
-      if (value != this->state) {
-        this->publish_state(value);
-        if (parent_ != nullptr) {
-          char command[32];
-          // First send new temperature value (3501;1;value)
-          snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-          parent_->write_str(command);
-          
-          // Wait for response
-          delay(100);
-          
-          // Then send save command (999)
-          parent_->write_str("999\r\n");
-        }
+      return;
+    }
+
+    // Check if value actually changed
+    if (std::abs(this->state - value) > 0.1f) {
+      ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
+      
+      if (parent_ != nullptr) {
+        // Format command: 3501;1;<temp*10>
+        char command[32];
+        snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
+        parent_->write_str(command);
+        
+        delay(100);  // Wait for command to be processed
+        
+        // Send save command
+        parent_->write_str("999\r\n");
       }
+      
+      // Update state after sending command
+      this->publish_state(value);
     }
   }
 
   void set_initialized(bool initialized) { initialized_ = initialized; }
   void set_parent(uart::UARTDevice *parent) { parent_ = parent; }
-  bool is_initialized() const { return initialized_; }  // New getter method
+  bool is_initialized() const { return initialized_; }
 
  protected:
   bool initialized_{false};
