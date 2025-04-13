@@ -222,11 +222,18 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
 class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
   void setup() override {
-    // Set initial values and min/max limits
-    this->traits.set_min_value(30);    // Minimum temperature 30°C
-    this->traits.set_max_value(65);    // Maximum temperature 65°C
-    this->traits.set_step(0.5f);       // Allow 0.5°C steps
+    // Ensure UART is initialized
+    if (parent_ != nullptr) {
+      ESP_LOGD("BrauchwasserTemp", "UART parent initialized");
+    } else {
+      ESP_LOGW("BrauchwasserTemp", "UART parent is nullptr!");
+    }
     initialized_ = false;
+  }
+
+  void set_parent(uart::UARTDevice *parent) { 
+    parent_ = parent;
+    ESP_LOGD("BrauchwasserTemp", "Setting UART parent");
   }
 
   void control(float value) override {
@@ -241,6 +248,7 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
     if (std::abs(this->state - value) > 0.1f) {
       ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
       
+      if (parent_ != nullptr) {
         // Format command: 3501;1;<temp*10>
         char command[32];
         snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
@@ -250,6 +258,7 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
         
         // Send save command
         parent_->write_str("999\r\n");
+      }
       
       // Update state after sending command
       this->publish_state(value);
