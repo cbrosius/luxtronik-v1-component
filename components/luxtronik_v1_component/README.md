@@ -287,7 +287,7 @@ luxtronik_v1_component:
 number:
   - platform: template
     name: "  Brauchwasser Solltemperatur"
-    id: Brauchwasser_Solltemperatur
+    id: brauchwasser_solltemperatur_number
     min_value: 40
     step: 1
     max_value: 75

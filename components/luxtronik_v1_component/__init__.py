@@ -194,7 +194,7 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional("brauchwasser_temperatur"): number.NUMBER_SCHEMA.extend({
+        cv.Optional(CONF_BRAUCHWASSER_TEMPERATUR_NUMBER): number.NUMBER_SCHEMA.extend({
             cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
             cv.Optional(CONF_NAME): cv.string,
             cv.Optional("min_value", default=40): cv.float_,
@@ -424,19 +424,19 @@ async def to_code(config):
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
 
-    if "brauchwasser_temperatur_number" in config:
-        conf = config["brauchwasser_temperatur_number"]
+    if CONF_BRAUCHWASSER_TEMPERATUR_NUMBER in config:
+        conf = config[CONF_BRAUCHWASSER_TEMPERATUR_NUMBER]
         temp_number = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(temp_number, conf)
         await number.register_number(
             temp_number,
             conf,
-            min_value=conf.get("min_value", 30),
-            max_value=conf.get("max_value", 65),
-            step=conf.get("step", 0.5)
+            min_value=conf.get("min_value", 40),
+            max_value=conf.get("max_value", 75),
+            step=conf.get("step", 1)
         )
-        cg.add(var.set_brauchwasser_temperatur_number(temp_number))
 
+    cg.add(var.set_brauchwasser_temperatur_number(temp_number))
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
         cg.add(var.set_status_anlagentyp_sensor(sens))
