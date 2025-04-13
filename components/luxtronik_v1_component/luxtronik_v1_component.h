@@ -223,52 +223,11 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
 
 class BrauchwasserTemperaturNumber : public number::Number, public Component {
  public:
-  void setup() override {
-    // Ensure UART is initialized
-    if (parent_ != nullptr) {
-      ESP_LOGD("BrauchwasserTemp", "UART parent initialized");
-    } else {
-      ESP_LOGW("BrauchwasserTemp", "UART parent is nullptr!");
-    }
-    initialized_ = false;
-  }
-
-  void set_parent(uart::UARTDevice *parent) { 
-    parent_ = parent;
-    ESP_LOGD("BrauchwasserTemp", "Setting UART parent");
-  }
-
-  void control(float value) override {
-    if (!initialized_) {
-      ESP_LOGD("BrauchwasserTemp", "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
-      // Initial state update without writing
-      this->publish_state(value);
-      return;
-    }
-
-    // Check if value actually changed
-    if (std::abs(this->state - value) > 0.1f) {
-      ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
-      
-      if (parent_ != nullptr) {
-        // Format command: 3501;1;<temp*10>
-        char command[32];
-        snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-        parent_->write_str(command);
-        
-        delay(100);  // Wait for command to be processed
-        
-        // Send save command
-        parent_->write_str("999\r\n");
-      }
-      
-      // Update state after sending command
-      this->publish_state(value);
-    }
-  }
-
-  void set_initialized(bool initialized) { initialized_ = initialized; }
-  bool is_initialized() const { return initialized_; }
+  void setup() override;
+  void set_parent(uart::UARTDevice *parent);
+  void control(float value) override;
+  void set_initialized(bool initialized);
+  bool is_initialized() const;
 
  protected:
   bool initialized_{false};

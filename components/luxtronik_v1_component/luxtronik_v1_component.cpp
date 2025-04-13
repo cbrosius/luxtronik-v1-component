@@ -1049,5 +1049,57 @@ std::string LuxtronikV1Component::get_error_description_(int error_code) {
     }
 }
 
+void BrauchwasserTemperaturNumber::setup() {
+  // Ensure UART is initialized
+  if (parent_ != nullptr) {
+    ESP_LOGD("BrauchwasserTemp", "UART parent initialized");
+  } else {
+    ESP_LOGW("BrauchwasserTemp", "UART parent is nullptr!");
+  }
+  initialized_ = false;
+}
+
+void BrauchwasserTemperaturNumber::set_parent(uart::UARTDevice *parent) { 
+  parent_ = parent;
+  ESP_LOGD("BrauchwasserTemp", "Setting UART parent");
+}
+
+void BrauchwasserTemperaturNumber::control(float value) {
+  if (!initialized_) {
+    ESP_LOGD("BrauchwasserTemp", "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
+    // Initial state update without writing
+    this->publish_state(value);
+    return;
+  }
+
+  // Check if value actually changed
+  if (std::abs(this->state - value) > 0.1f) {
+    ESP_LOGD("BrauchwasserTemp", "Setting new temperature: %.1f", value);
+    
+    if (parent_ != nullptr) {
+      // Format command: 3501;1;<temp*10>
+      char command[32];
+      snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
+      parent_->write_str(command);
+      
+      delay(100);  // Wait for command to be processed
+      
+      // Send save command
+      parent_->write_str("999\r\n");
+    }
+    
+    // Update state after sending command
+    this->publish_state(value);
+  }
+}
+
+void BrauchwasserTemperaturNumber::set_initialized(bool initialized) { 
+  initialized_ = initialized; 
+}
+
+bool BrauchwasserTemperaturNumber::is_initialized() const { 
+  return initialized_; 
+}
+
 }  // namespace luxtronik_v1_component
 }  // namespace esphome
