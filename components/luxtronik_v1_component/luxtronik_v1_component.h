@@ -219,13 +219,9 @@ class HeizkurveFestwertRuecklaufNumber : public number::Number, public Component
   uart::UARTDevice *parent_{nullptr};
 };
 
-class BrauchwasserTemperaturNumber : public number::Number, public Component {
+class BrauchwasserTemperaturSlider : public number::Number, public Component {
  public:
   void setup() override {
-    // Set initial values and min/max limits
-    this->traits.set_min_value(30);    // Minimum temperature 30°C
-    this->traits.set_max_value(65);    // Maximum temperature 65°C
-    this->traits.set_step(0.5f);       // Allow 0.5°C steps
     initialized_ = false;
   }
 
@@ -510,6 +506,8 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   HeizkurveParallelverschiebungNumber *heizkurve_parallelverschiebung_number_{nullptr};
   HeizkurveAbsenkungNumber *heizkurve_absenkung_number_{nullptr};
   HeizkurveFestwertRuecklaufNumber *heizkurve_festwert_ruecklauf_number_{nullptr};
+
+  // Slider component pointer
   BrauchwasserTemperaturSlider *brauchwasser_temperatur_slider_{nullptr};
 };
 
