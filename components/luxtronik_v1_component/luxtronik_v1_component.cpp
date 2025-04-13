@@ -1078,10 +1078,10 @@ void LuxtronikV1Component::BrauchwasserTemperaturNumber::control(float value) {
     if (this->parent_ != nullptr) {
       char command[32];
       snprintf(command, sizeof(command), "3501;1;%d\r\n", (int)(value * 10));
-      this->parent_->uart_write_str(command);
+      this->parent_->write_str(command);  // Changed from uart_write_str to write_str
       
       delay(100);
-      this->parent_->uart_write_str("999\r\n");
+      this->parent_->write_str("999\r\n"); // Changed from uart_write_str to write_str
     }
     
     this->publish_state(value);
