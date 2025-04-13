@@ -307,11 +307,20 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         if (modus_heizung_numerisch_ != nullptr) {
             publish_state_deferred_(modus_heizung_numerisch_, val, "Mode", "Heizung Numerisch");
         }
+
+        std::string mode_text = get_modus_text_(static_cast<int>(val));
         if (modus_heizung_ != nullptr) {
-            std::string mode_text = get_modus_text_(static_cast<int>(val));
             this->defer([this, mode_text]() {
                 modus_heizung_->publish_state(mode_text);
                 ESP_LOGV(TAG, "Mode Heizung: %s", mode_text.c_str());
+            });
+        }
+
+        // Update select component with current mode
+        if (modus_heizung_select_ != nullptr) {
+            this->defer([this, mode_text]() {
+                modus_heizung_select_->publish_state(mode_text);
+                ESP_LOGV(TAG, "Mode Heizung Select: %s", mode_text.c_str());
             });
         }
     }
@@ -344,15 +353,18 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         }
         
         std::string mode_text = get_modus_text_(static_cast<int>(val));
-        if (modus_brauchwasser_ != nullptr && mode_text != modus_brauchwasser_->get_state()) {
+        if (modus_brauchwasser_ != nullptr) {
             this->defer([this, mode_text]() {
                 modus_brauchwasser_->publish_state(mode_text);
                 ESP_LOGV(TAG, "Modus Brauchwasser: %s", mode_text.c_str());
-                
-                // Update select component
-                if (modus_brauchwasser_select_ != nullptr) {
-                    modus_brauchwasser_select_->publish_state(mode_text);
-                }
+            });
+        }
+
+        // Update select component with current mode
+        if (modus_brauchwasser_select_ != nullptr) {
+            this->defer([this, mode_text]() {
+                modus_brauchwasser_select_->publish_state(mode_text);
+                ESP_LOGV(TAG, "Modus Brauchwasser Select: %s", mode_text.c_str());
             });
         }
     }
