@@ -231,6 +231,7 @@ class BrauchwasserTemperaturNumber : public number::Number, public Component {
 
   void control(float value) override {
     if (!initialized_) {
+      ESP_LOGD("BrauchwasserTemp", "BrauchwasserTempNumber not initialized yet, value: %.1f", value);
       // Initial state update without writing
       this->publish_state(value);
       return;
