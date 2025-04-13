@@ -10,7 +10,7 @@
 namespace esphome {
 namespace luxtronik_v1_component {
 
-static const char *TAG = "luxtronik_v1_component.component";
+static const char *TAG;
 
 static const char ASCII_CR = '\r';
 static const char ASCII_LF = '\n';
