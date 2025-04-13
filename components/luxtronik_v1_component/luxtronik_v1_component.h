@@ -510,7 +510,7 @@ class LuxtronikV1Component : public uart::UARTDevice, public PollingComponent {
   HeizkurveParallelverschiebungNumber *heizkurve_parallelverschiebung_number_{nullptr};
   HeizkurveAbsenkungNumber *heizkurve_absenkung_number_{nullptr};
   HeizkurveFestwertRuecklaufNumber *heizkurve_festwert_ruecklauf_number_{nullptr};
-  BrauchwasserTemperaturNumber *brauchwasser_temperatur_number_{nullptr};
+  BrauchwasserTemperaturSlider *brauchwasser_temperatur_slider_{nullptr};
 };
 
 }  // namespace luxtronik_v1_component
