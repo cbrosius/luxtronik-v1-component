@@ -192,9 +192,12 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional("brauchwasser_temperatur_number"): cv.Schema({
+        cv.Optional("brauchwasser_temperatur_number"): number.NUMBER_SCHEMA.extend({
             cv.Required(CONF_ID): cv.declare_id(BrauchwasserTemperaturNumber),
             cv.Optional(CONF_NAME): cv.string,
+            cv.Optional("min_value"): cv.float_,
+            cv.Optional("max_value"): cv.float_,
+            cv.Optional("step"): cv.float_,
         }).extend(cv.COMPONENT_SCHEMA),
 
         # Status sensors
