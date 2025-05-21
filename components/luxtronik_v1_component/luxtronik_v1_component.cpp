@@ -1,10 +1,64 @@
 #include "esphome/core/log.h"
 #include "luxtronik_v1_component.h"
 
+#include <vector> // Required for std::vector
+#include <string> // Required for std::string
+
 namespace esphome {
 namespace luxtronik_v1_component {
 
 static const char *TAG = "luxtronik_v1_component.component";
+
+// Protocol Command Constants
+static const char* CMD_GET_TEMPERATURES = "1100";
+static const char* CMD_GET_INPUTS = "1200";
+static const char* CMD_GET_OUTPUTS = "1300";
+static const char* CMD_GET_HEATING_MODE = "3405";
+static const char* CMD_GET_HOT_WATER_MODE = "3505";
+static const char* CMD_GET_STATUS = "1700";
+static const char* CMD_GET_ERRORS_BASE = "1500"; // Base prefix for error messages
+static const char* CMD_GET_OPERATING_HOURS = "1450";
+static const char* CMD_GET_HEATING_CURVE = "3400";
+static const char* CMD_PROGRAMMING_ERROR_PREFIX = "779";
+static const char* CMD_SAVE_PROGRAMMING = "999";
+static const char* CMD_PROGRAM_HOT_WATER_MODE = "3506";
+static const char* CMD_PROGRAM_HEATING_MODE = "3406";
+static const char* CMD_PROGRAM_HOT_WATER_TEMP = "3507";
+
+// Implementation of the new helper function
+bool LuxtronikV1Component::split_message_(const std::string& msg, std::vector<std::string>& values, const std::string& expected_prefix) {
+    values.clear();
+    if (msg.rfind(expected_prefix, 0) != 0) { // Check if msg starts with expected_prefix
+        ESP_LOGW(TAG, "Message '%s' does not start with expected prefix '%s'", msg.c_str(), expected_prefix.c_str());
+        return false;
+    }
+
+    size_t prefix_len = expected_prefix.length();
+    if (msg.length() <= prefix_len || msg[prefix_len] != ';') {
+        ESP_LOGW(TAG, "Message '%s' has invalid format after prefix '%s'", msg.c_str(), expected_prefix.c_str());
+        return false;
+    }
+
+    size_t start = prefix_len + 1; // Skip "<prefix>;"
+    size_t end = 0;
+    
+    while ((end = msg.find(';', start)) != std::string::npos) {
+        values.push_back(msg.substr(start, end - start));
+        start = end + 1;
+    }
+    if (start < msg.length()) { // Add the last part
+        values.push_back(msg.substr(start));
+    }
+    
+    if (values.empty() || values.size() < 1) { // Original code often expects "count" as first value, so at least 1 value (the count itself)
+        ESP_LOGW(TAG, "Message '%s' resulted in no values after splitting.", msg.c_str());
+        return false; 
+    }
+    // It's common for the first value to be a count of subsequent values.
+    // The original code checks "if (values.size() < 2) return;" which means count + at least one data value.
+    // We'll keep this check more generic here, specific parsers can check values.size() further.
+    return true;
+}
 
 void LuxtronikV1Component::setup() {
     ESP_LOGCONFIG(TAG, "Setting up Luxtronik V1 Component...");
@@ -15,7 +69,7 @@ void LuxtronikV1Component::setup() {
     }
 
     // Request initial values immediately after setup
-    this->parent_->write_str("1100\r\n");
+    this->parent_->write_str(std::string(CMD_GET_TEMPERATURES) + "\r\n");
 }
 
 void LuxtronikV1Component::loop() {
@@ -49,7 +103,7 @@ void LuxtronikV1Component::loop() {
 void LuxtronikV1Component::update() {
     ESP_LOGD(TAG, "Polling Luxtronik V1 Component...");
     if (this->parent_ != nullptr) {
-        this->parent_->write_str("1100\r\n");
+        this->parent_->write_str(std::string(CMD_GET_TEMPERATURES) + "\r\n");
     }
 }
 
@@ -108,43 +162,43 @@ void LuxtronikV1Component::parse_message_(const char* message) {
     if (semicolon_pos == std::string::npos) return;
     std::string prefix = msg.substr(0, semicolon_pos);
 
-    if (prefix == "1100") { // temperature message -> get temperature values
+    if (prefix == CMD_GET_TEMPERATURES) { // temperature message -> get temperature values
         this->defer([this, msg]() {
             parse_temperatur_message_(msg.c_str());
         });
-    } else if (prefix == "1200") { // input message -> get input values
+    } else if (prefix == CMD_GET_INPUTS) { // input message -> get input values
         this->defer([this, msg]() {
             parse_input_message_(msg.c_str());
         });
-    } else if (prefix == "1300") { // output message -> get output values
+    } else if (prefix == CMD_GET_OUTPUTS) { // output message -> get output values
         this->defer([this, msg]() {
             parse_output_message_(msg.c_str());
         });
-    } else if (prefix == "3405") { // modus_heizung -> get modus values
+    } else if (prefix == CMD_GET_HEATING_MODE) { // modus_heizung -> get modus values
         this->defer([this, msg]() {
             parse_modus_heizung_message_(msg.c_str());
         });
-    } else if (prefix == "3505") { // modus_brauchwasser -> get modus values
+    } else if (prefix == CMD_GET_HOT_WATER_MODE) { // modus_brauchwasser -> get modus values
         this->defer([this, msg]() {
             parse_modus_brauchwasser_message_(msg.c_str());
         });
-    } else if (prefix == "1700") { // status message -> get status values
+    } else if (prefix == CMD_GET_STATUS) { // status message -> get status values
         this->defer([this, msg]() {
             parse_status_message_(msg.c_str());
         });
-    } else if (prefix == "1500") { // error message -> get error values
+    } else if (prefix == CMD_GET_ERRORS_BASE) { // error message -> get error values
         this->defer([this, msg]() {
             parse_error_message_(msg.c_str());
         });
-    } else if (prefix == "1450") { // operating hours -> get operating hours values
+    } else if (prefix == CMD_GET_OPERATING_HOURS) { // operating hours -> get operating hours values
         this->defer([this, msg]() {
             parse_operatinghours_message_(msg.c_str());
         });
-    } else if (prefix == "3400") { // heating curve -> get heating curve values
+    } else if (prefix == CMD_GET_HEATING_CURVE) { // heating curve -> get heating curve values
         this->defer([this, msg]() {
             parse_heatingcurve_message_(msg.c_str());
         });
-    } else if (prefix == "779") { // programming error -> reset programming mode
+    } else if (prefix == CMD_PROGRAMMING_ERROR_PREFIX) { // programming error -> reset programming mode
         this->defer([this, msg]() {
             reset_programming_mode_(msg.c_str());
         });
@@ -153,24 +207,18 @@ void LuxtronikV1Component::parse_message_(const char* message) {
 
 void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     // ESP_LOGD(TAG, "Temperatures message received: %s", message);
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "1100;"
-    size_t end = 0;
-    
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
+    if (!split_message_(msg_str, values, CMD_GET_TEMPERATURES)) {
+        return;
+    }
+    // values[0] is the count, data starts from values[1]
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Temperatures message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
     }
     
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
-    }
-    
-    if (values.size() < 2) return;  // At least count and one value needed
-    
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
     auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float temp = get_float_temp_(value);
@@ -204,29 +252,22 @@ void LuxtronikV1Component::parse_temperatur_message_(const char* message) {
     if (idx < values.size()) publish_temp(temperatur_raumstation_, values[idx++], "Raumstation");
 
     // Request input values after temperature values are parsed
-    this->parent_->write_str("1200\r\n");
+    this->parent_->write_str(std::string(CMD_GET_INPUTS) + "\r\n");
 }
 
 void LuxtronikV1Component::parse_input_message_(const char* message) {
     // ESP_LOGD(TAG, "Input message received: %s", message);
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "1200;"
-    size_t end = 0;
-    
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
+    if (!split_message_(msg_str, values, CMD_GET_INPUTS)) {
+        return;
+    }
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Input message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
     }
     
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
-    }
-    
-    if (values.size() < 2) return;  // At least count and one value needed
-    
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
     auto publish_input = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
@@ -243,29 +284,22 @@ void LuxtronikV1Component::parse_input_message_(const char* message) {
     if (idx < values.size()) publish_input(eingang_fremdstromanode_, values[idx++], "Fremdstromanode");
 
     // Request output values after input values are parsed
-    this->parent_->write_str("1300\r\n");
+    this->parent_->write_str(std::string(CMD_GET_OUTPUTS) + "\r\n");
 }
 
 void LuxtronikV1Component::parse_output_message_(const char* message) {
     // ESP_LOGD(TAG, "Output message received: %s", message);
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "1300;"
-    size_t end = 0;
-    
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
+    if (!split_message_(msg_str, values, CMD_GET_OUTPUTS)) {
+        return;
+    }
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Output message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
     }
     
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
-    }
-    
-    if (values.size() < 2) return;  // At least count and one value needed
-    
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
     auto publish_output = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
             float val = std::atof(value.c_str());
@@ -289,11 +323,10 @@ void LuxtronikV1Component::parse_output_message_(const char* message) {
     if (idx < values.size()) publish_output(ausgang_zweiter_waermeerzeuger_stoerung_, values[idx++], "ZWE Störung");
 
     // Request heizungs-modus after input values are parsed
-    this->parent_->write_str("3405\r\n");
+    this->parent_->write_str(std::string(CMD_GET_HEATING_MODE) + "\r\n");
 
 }
 
-// Add helper function implementation
 std::string LuxtronikV1Component::get_modus_text_(int state) {
     switch (state) {
         case 0: return "Automatik";
@@ -306,22 +339,15 @@ std::string LuxtronikV1Component::get_modus_text_(int state) {
 }
 
 void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    values.reserve(3);
-    size_t start = 5;  // Skip "3405;"
-    size_t end = 0;
-    
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
-    }
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
+    if (!split_message_(msg_str, values, CMD_GET_HEATING_MODE)) {
+        return;
     }
     
-    if (values.size() >= 2) {
-        float val = std::atof(values[1].c_str());
+    // values[0] is count, values[1] is the mode value
+    if (values.size() >= 2) { 
+        float val = std::atof(values[1].c_str()); // Data is at index 1
         std::string mode_text = get_modus_text_(static_cast<int>(val));
 
         // Only update if values have changed
@@ -350,26 +376,19 @@ void LuxtronikV1Component::parse_modus_heizung_message_(const char* message) {
         }
     }
     
-    this->parent_->write_str("3505\r\n");
+    this->parent_->write_str(std::string(CMD_GET_HOT_WATER_MODE) + "\r\n");
 }
 
 void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message) {
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    values.reserve(3);
-    size_t start = 5;  // Skip "3505;"
-    size_t end = 0;
-    
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
-    }
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
+    if (!split_message_(msg_str, values, CMD_GET_HOT_WATER_MODE)) {
+        return;
     }
     
+    // values[0] is count, values[1] is the mode value
     if (values.size() >= 2) {
-        float val = std::atof(values[1].c_str());
+        float val = std::atof(values[1].c_str()); // Data is at index 1
         std::string mode_text = get_modus_text_(static_cast<int>(val));
 
         // Only update if values have changed
@@ -398,7 +417,7 @@ void LuxtronikV1Component::parse_modus_brauchwasser_message_(const char* message
         }
     }
     
-    this->parent_->write_str("1700\r\n");
+    this->parent_->write_str(std::string(CMD_GET_STATUS) + "\r\n");
 }
 
 std::string LuxtronikV1Component::get_betriebszustand_text_(int state) {
@@ -412,23 +431,18 @@ std::string LuxtronikV1Component::get_betriebszustand_text_(int state) {
 }
 
 void LuxtronikV1Component::parse_status_message_(const char* message) {
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    values.reserve(13);  // Pre-allocate for all status values
-    size_t start = 5;  // Skip "1700;"
-    size_t end = 0;
-    
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
-    }
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
+    if (!split_message_(msg_str, values, CMD_GET_STATUS)) {
+        return;
     }
     
-    if (values.size() < 2) return;  // At least count and one value needed
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Status message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
+    }
     
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
 
     auto publish_status = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
@@ -444,7 +458,7 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
     if (idx < values.size()) {
         if (status_softwareversion_ != nullptr) {
             publish_text_state_deferred_(status_softwareversion_, values[idx], "Status", "Softwareversion");
-            ESP_LOGV(TAG, "Status Softwareversion: %s", values[idx].c_str());
+            // ESP_LOGV(TAG, "Status Softwareversion: %s", values[idx].c_str()); // Redundant, publish_text_state_deferred_ logs
         }
         idx++;
     }
@@ -461,42 +475,60 @@ void LuxtronikV1Component::parse_status_message_(const char* message) {
         if (status_betriebszustand_ != nullptr) {
             std::string state_text = get_betriebszustand_text_(static_cast<int>(val));
             publish_text_state_deferred_(status_betriebszustand_, state_text, "Status", "Betriebszustand");
-            // this->defer([this, state_text]() {
-            //     status_betriebszustand_->publish_state(state_text);
-            //     ESP_LOGV(TAG, "Status Betriebszustand: %s", state_text.c_str());
-            // });
         }
         idx++;
     }
 
     // Process Letzter Start
-    if (idx < values.size() && status_letzter_start_ != nullptr) {
-        int tag = std::atoi(values[idx++].c_str());
-        int monat = std::atoi(values[idx++].c_str());
-        int jahr = std::atoi(values[idx++].c_str());
-        int stunde = std::atoi(values[idx++].c_str());
-        int minute = std::atoi(values[idx++].c_str());
-        int sekunde = std::atoi(values[idx++].c_str());
-        
-        char buffer[32];
-        snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d:%02d", 
-                 tag, monat, jahr, stunde, minute, sekunde);
-        
-        publish_timestamp_state_deferred_(status_letzter_start_, buffer, "Status", "Letzter Start");
-        // this->defer([this, text = std::string(buffer)]() {
-        //     status_letzter_start_->publish_state(text);
-        //     ESP_LOGV(TAG, "Status Letzter Start: %s", text.c_str());
-        // });
+    // After previous fields, idx should point to the start of 'Letzter Start' data if available.
+    // The timestamp is expected in 6 separate fields: Tag;Monat;Jahr;Stunde;Minute;Sekunde
+    if (status_letzter_start_ != nullptr) {
+        if (idx + 5 < values.size()) { // Check for all 6 parts of the timestamp
+            int tag = std::atoi(values[idx++].c_str());
+            int monat = std::atoi(values[idx++].c_str());
+            int jahr = std::atoi(values[idx++].c_str());
+            int stunde = std::atoi(values[idx++].c_str());
+            int minute = std::atoi(values[idx++].c_str());
+            int sekunde = std::atoi(values[idx++].c_str());
+            
+            char buffer[32];
+            snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d:%02d", 
+                     tag, monat, jahr, stunde, minute, sekunde);
+            
+            publish_timestamp_state_deferred_(status_letzter_start_, buffer, "Status", "Letzter Start");
+        } else {
+            ESP_LOGW(TAG, "Status message: Incomplete 'Letzter Start' timestamp data. Expected 6 fields, got %zu starting at index %zu. Skipping.", values.size() - idx, idx);
+            idx = values.size(); 
+        }
+    } else {
+        // If sensor is null, but data might exist, advance idx accordingly if it's fixed length
+        if (idx + 5 < values.size()) {
+             idx +=6; // Advance past the 6 fields for timestamp
+        } else {
+            idx = values.size(); 
+        }
     }
 
     // Request error values after status values are parsed
-    this->parent_->write_str("1500\r\n");
+    this->parent_->write_str(std::string(CMD_GET_ERRORS_BASE) + "\r\n");
 }
 
+// Keeping existing splitting logic for parse_error_message_ due to its unique structure
 void LuxtronikV1Component::parse_error_message_(const char* message) {
     std::string msg(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "1500;"
+    // CMD_GET_ERRORS_BASE is "1500". Error messages can also be 1501, 1502 etc.
+    // The first part of the message IS the command number for errors.
+    // So we don't use split_message here which expects a fixed prefix.
+    // Instead, we find the first semicolon to get the actual command/error index.
+    size_t first_semicolon = msg.find(';');
+    if (first_semicolon == std::string::npos) return;
+    // The part before the first semicolon is the error_index_str (e.g. "1500", "1501")
+    std::string error_index_str = msg.substr(0, first_semicolon);
+    // ESP_LOGD(TAG, "Error index string: %s", error_index_str.c_str());
+    
+    // The rest of the message is split by semicolons.
+    size_t start = first_semicolon + 1;
     size_t end = 0;
 
     // Split message into vector for faster processing
@@ -519,227 +551,255 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
     };
 
     // Process Fehlerindex
-    size_t idx = 0;  // get error index
-    // ESP_LOGD(TAG, "Error index: %s", values[idx].c_str());
-    int error_index = std::atoi(values[idx].c_str());
-    switch (error_index) {
-        case 1500: {
-            // skip Fehlerindex
-            idx++;
-            // skip Count
-            idx++;
-            // Process Fehlercode
-            if (idx < values.size()) publish_output(error0_fehlercode_, values[idx], "error0_fehlercode");
-            // Process Fehlerbeschreibung
-            if (idx < values.size() && error0_fehlerbeschreibung_ != nullptr) {
-                std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                publish_text_state_deferred_(error0_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 0");
-                idx++;
+    int error_index_val = std::atoi(error_index_str.c_str()); // Convert the extracted error index string to int
+    // idx now refers to the elements in 'values' which are *after* the first semicolon
+    size_t idx = 0; 
+
+    switch (error_index_val) { // Use the integer value of the error index
+        case 1500: { // This specific case might mean the general error message structure, or error 1500 itself
+            // The original code structure implies values[0] is count, values[1] is data, if error_index was from values.
+            // Now, values[0] is the count of items *after* "1500;"
+            // So, if values[0] is "count", then actual data starts from values[1]
+            if (values.empty()) break; // Should have at least count
+            idx = 1; // Skip count (values[0]), so data starts at values[1]
+            
+            // values[idx] (originally values[1]) is expected to be the Fehlercode
+            std::string fehlercode_str;
+            if (idx < values.size()) {
+                fehlercode_str = values[idx];
+                if (error0_fehlercode_ != nullptr) {
+                    publish_output(error0_fehlercode_, fehlercode_str, "error0_fehlercode");
+                }
+                // Fehlerbeschreibung uses the same fehlercode_str for lookup
+                if (error0_fehlerbeschreibung_ != nullptr) {
+                    std::string error_text = get_error_description_(std::atoi(fehlercode_str.c_str()));
+                    publish_text_state_deferred_(error0_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 0");
+                }
+                idx++; // Advance idx past Fehlercode
+            } else {
+                ESP_LOGW(TAG, "Error message (1500): Missing Fehlercode data at index %zu. Total values: %zu.", idx, values.size());
+                break; 
             }
-              // Process Fehlerzeitpunkt
-            if (idx < values.size() && error0_zeitpunkt_ != nullptr) {
-              int tag = std::atoi(values[idx++].c_str());
-              int monat = std::atoi(values[idx++].c_str());
-              int jahr = std::atoi(values[idx++].c_str());
-              int stunde = std::atoi(values[idx++].c_str());
-              int minute = std::atoi(values[idx++].c_str());
+              
+            // After Fehlercode, values[idx] through values[idx+4] are for Zeitpunkt: Tag;Monat;Jahr;Stunde;Minute
+            if (error0_zeitpunkt_ != nullptr) {
+                if (idx + 4 < values.size()) { // Check for all 5 parts of the timestamp
+                    int tag = std::atoi(values[idx++].c_str()); 
+                    int monat = std::atoi(values[idx++].c_str());
+                    int jahr = std::atoi(values[idx++].c_str());
+                    int stunde = std::atoi(values[idx++].c_str());
+                    int minute = std::atoi(values[idx++].c_str());
 
-              char buffer[32];
-              snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
-                    tag, monat, jahr, stunde, minute);
-
-              publish_timestamp_state_deferred_(error0_zeitpunkt_, buffer, "Error", "Zeitpunkt 0");
+                    char buffer[32];
+                    snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
+                             tag, monat, jahr, stunde, minute);
+                    publish_timestamp_state_deferred_(error0_zeitpunkt_, buffer, "Error", "Zeitpunkt 0");
+                } else {
+                    ESP_LOGW(TAG, "Error message (1500): Incomplete Zeitpunkt data. Expected 5 fields, got %zu starting at index %zu.", values.size() - idx, idx);
+                    idx = values.size(); // Stop processing further fields for this error
+                }
+            } else {
+                // If sensor is null, but data might exist, advance idx accordingly if it's fixed length
+                if (idx + 4 < values.size()) {
+                    idx += 5;
+                } else {
+                    idx = values.size();
+                }
             }
             break;
         }
         case 1501: {
-            // skip Fehlerindex
-            idx++;
-            // skip Count
-            idx++;
-            // Process Fehlercode
-            if (idx < values.size()) publish_output(error1_fehlercode_, values[idx], "error1_fehlercode");
-            // Process Fehlerbeschreibung
-            if (idx < values.size() && error1_fehlerbeschreibung_ != nullptr) {
-                std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                publish_text_state_deferred_(error1_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 1");
-                // this->defer([this, error_text]() {
-                //     error1_fehlerbeschreibung_->publish_state(error_text);
-                //     ESP_LOGD(TAG, "Error1 Fehlerbeschreibung: %s", error_text.c_str());
-                // });
-                idx++; // Moved here to advance only when description is processed
+            if (values.empty()) break;
+            idx = 1; // Skip count (values[0]), so data starts at values[1]
+
+            // values[idx] (originally values[1]) is expected to be the Fehlercode
+            std::string fehlercode_str;
+            if (idx < values.size()) {
+                fehlercode_str = values[idx];
+                if (error1_fehlercode_ != nullptr) {
+                    publish_output(error1_fehlercode_, fehlercode_str, "error1_fehlercode");
+                }
+                if (error1_fehlerbeschreibung_ != nullptr) {
+                    std::string error_text = get_error_description_(std::atoi(fehlercode_str.c_str()));
+                    publish_text_state_deferred_(error1_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 1");
+                }
+                idx++; // Advance idx past Fehlercode
+            } else {
+                ESP_LOGW(TAG, "Error message (1501): Missing Fehlercode data at index %zu. Total values: %zu.", idx, values.size());
+                break;
             }
-            // Process Fehlerzeitpunkt
-            if (idx < values.size() && error1_zeitpunkt_ != nullptr) {
-                int tag = std::atoi(values[idx++].c_str());
-                int monat = std::atoi(values[idx++].c_str());
-                int jahr = std::atoi(values[idx++].c_str());
-                int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx++].c_str());
 
-                char buffer[32];
-                snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
-                        tag, monat, jahr, stunde, minute);
-
-                publish_timestamp_state_deferred_(error1_zeitpunkt_, buffer, "Error", "Zeitpunkt 1");
-                    //     this->defer([this, text = std::string(buffer)]() {
-                    // error1_zeitpunkt_->publish_state(text);
-                    // ESP_LOGD(TAG, "Error1 Zeitpunkt: %s", text.c_str());
-                    // });
+            // After Fehlercode, values[idx] through values[idx+4] are for Zeitpunkt: Tag;Monat;Jahr;Stunde;Minute
+            if (error1_zeitpunkt_ != nullptr) {
+                if (idx + 4 < values.size()) { // Check for all 5 parts of the timestamp
+                    int tag = std::atoi(values[idx++].c_str()); 
+                    int monat = std::atoi(values[idx++].c_str());
+                    int jahr = std::atoi(values[idx++].c_str());
+                    int stunde = std::atoi(values[idx++].c_str());
+                    int minute = std::atoi(values[idx++].c_str());
+                    char buffer[32];
+                    snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
+                             tag, monat, jahr, stunde, minute);
+                    publish_timestamp_state_deferred_(error1_zeitpunkt_, buffer, "Error", "Zeitpunkt 1");
+                } else {
+                    ESP_LOGW(TAG, "Error message (1501): Incomplete Zeitpunkt data. Expected 5 fields, got %zu starting at index %zu.", values.size() - idx, idx);
+                    idx = values.size();
+                }
+            } else {
+                // If sensor is null, but data might exist, advance idx to skip these fields
+                if (idx + 4 < values.size()) { idx += 5; } else { idx = values.size(); }
             }
             break;
         }
         case 1502: {
-            // skip Fehlerindex
-            idx++;
-            // skip Count
-            idx++;
-            // Process Fehlercode
-            if (idx < values.size()) publish_output(error2_fehlercode_, values[idx], "error2_fehlercode");
-            // Process Fehlerbeschreibung
-            if (idx < values.size() && error2_fehlerbeschreibung_ != nullptr) {
-                std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                publish_text_state_deferred_(error2_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 2");
-                // this->defer([this, error_text]() {
-                //     error2_fehlerbeschreibung_->publish_state(error_text);
-                //     ESP_LOGV(TAG, "Error2 Fehlerbeschreibung: %s", error_text.c_str());
-                // });
-                idx++; // Moved here to advance only when description is processed
+            if (values.empty()) break;
+            idx = 1; // Skip count (values[0]), so data starts at values[1]
+
+            // values[idx] (originally values[1]) is expected to be the Fehlercode
+            std::string fehlercode_str;
+            if (idx < values.size()) {
+                fehlercode_str = values[idx];
+                if (error2_fehlercode_ != nullptr) {
+                    publish_output(error2_fehlercode_, fehlercode_str, "error2_fehlercode");
+                }
+                if (error2_fehlerbeschreibung_ != nullptr) {
+                    std::string error_text = get_error_description_(std::atoi(fehlercode_str.c_str()));
+                    publish_text_state_deferred_(error2_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 2");
+                }
+                idx++; // Advance idx past Fehlercode
+            } else {
+                ESP_LOGW(TAG, "Error message (1502): Missing Fehlercode data at index %zu. Total values: %zu.", idx, values.size());
+                break;
             }
-             // Process Fehlerzeitpunkt
-            if (idx < values.size() && error2_zeitpunkt_ != nullptr) {
-                int tag = std::atoi(values[idx++].c_str());
-                int monat = std::atoi(values[idx++].c_str());
-                int jahr = std::atoi(values[idx++].c_str());
-                int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx++].c_str());
 
-                char buffer[32];
-                snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
-                        tag, monat, jahr, stunde, minute);
-
-                publish_timestamp_state_deferred_(error2_zeitpunkt_, buffer, "Error", "Zeitpunkt 2");
-
-                // this->defer([this, text = std::string(buffer)]() {
-                //     error2_zeitpunkt_->publish_state(text);
-                //     ESP_LOGV(TAG, "Error2 Zeitpunkt: %s", text.c_str());
-                // });
+            // After Fehlercode, values[idx] through values[idx+4] are for Zeitpunkt: Tag;Monat;Jahr;Stunde;Minute
+            if (error2_zeitpunkt_ != nullptr) {
+                if (idx + 4 < values.size()) { // Check for all 5 parts of the timestamp
+                    int tag = std::atoi(values[idx++].c_str()); 
+                    int monat = std::atoi(values[idx++].c_str());
+                    int jahr = std::atoi(values[idx++].c_str());
+                    int stunde = std::atoi(values[idx++].c_str());
+                    int minute = std::atoi(values[idx++].c_str());
+                    char buffer[32];
+                    snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
+                             tag, monat, jahr, stunde, minute);
+                    publish_timestamp_state_deferred_(error2_zeitpunkt_, buffer, "Error", "Zeitpunkt 2");
+                } else {
+                    ESP_LOGW(TAG, "Error message (1502): Incomplete Zeitpunkt data. Expected 5 fields, got %zu starting at index %zu.", values.size() - idx, idx);
+                    idx = values.size();
+                }
+            } else {
+                if (idx + 4 < values.size()) { idx += 5; } else { idx = values.size(); }
             }
             break;
         }
         case 1503: {
-            // skip Fehlerindex
-            idx++;
-            // skip Count
-            idx++;
-            // Process Fehlercode
-            if (idx < values.size()) publish_output(error3_fehlercode_, values[idx], "error3_fehlercode");
-            // Process Fehlerbeschreibung
-            if (idx < values.size() && error3_fehlerbeschreibung_ != nullptr) {
-                std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                publish_text_state_deferred_(error3_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 3");
-                // this->defer([this, error_text]() {
-                //     error3_fehlerbeschreibung_->publish_state(error_text);
-                //     ESP_LOGD(TAG, "Error3 Fehlerbeschreibung: %s", error_text.c_str());
-                // });
-                idx++; // Moved here to advance only when description is processed
+            if (values.empty()) break;
+            idx = 1; // Skip count (values[0]), so data starts at values[1]
+
+            // values[idx] (originally values[1]) is expected to be the Fehlercode
+            std::string fehlercode_str;
+            if (idx < values.size()) {
+                fehlercode_str = values[idx];
+                if (error3_fehlercode_ != nullptr) {
+                    publish_output(error3_fehlercode_, fehlercode_str, "error3_fehlercode");
+                }
+                if (error3_fehlerbeschreibung_ != nullptr) {
+                    std::string error_text = get_error_description_(std::atoi(fehlercode_str.c_str()));
+                    publish_text_state_deferred_(error3_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 3");
+                }
+                idx++; // Advance idx past Fehlercode
+            } else {
+                ESP_LOGW(TAG, "Error message (1503): Missing Fehlercode data at index %zu. Total values: %zu.", idx, values.size());
+                break;
             }
-            // Process Fehlerzeitpunkt
-            if (idx < values.size() && error3_zeitpunkt_ != nullptr) {
-                int tag = std::atoi(values[idx++].c_str());
-                int monat = std::atoi(values[idx++].c_str());
-                int jahr = std::atoi(values[idx++].c_str());
-                int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx++].c_str());
-                // ESP_LOGD(TAG, "Error3 tag: %d", tag);
-                // ESP_LOGD(TAG, "Error3 monat: %d", monat);
-                // ESP_LOGD(TAG, "Error3 jahr: %d", jahr);
-                // ESP_LOGD(TAG, "Error3 stunde: %d", stunde);
-                // ESP_LOGD(TAG, "Error3 minute: %d", minute);
 
-                char buffer[32];
-                snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
-                        tag, monat, jahr, stunde, minute);
-
-                publish_timestamp_state_deferred_(error3_zeitpunkt_, buffer, "Error", "Zeitpunkt 3");
-
-                //  this->defer([this, text = std::string(buffer)]() {
-                //     error3_zeitpunkt_->publish_state(text);
-                //     ESP_LOGD(TAG, "Error3 Zeitpunkt: %s", text.c_str());
-                // });
+            // After Fehlercode, values[idx] through values[idx+4] are for Zeitpunkt: Tag;Monat;Jahr;Stunde;Minute
+            if (error3_zeitpunkt_ != nullptr) {
+                if (idx + 4 < values.size()) { // Check for all 5 parts of the timestamp
+                    int tag = std::atoi(values[idx++].c_str()); 
+                    int monat = std::atoi(values[idx++].c_str());
+                    int jahr = std::atoi(values[idx++].c_str());
+                    int stunde = std::atoi(values[idx++].c_str());
+                    int minute = std::atoi(values[idx++].c_str());
+                    char buffer[32];
+                    snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
+                             tag, monat, jahr, stunde, minute);
+                    publish_timestamp_state_deferred_(error3_zeitpunkt_, buffer, "Error", "Zeitpunkt 3");
+                } else {
+                    ESP_LOGW(TAG, "Error message (1503): Incomplete Zeitpunkt data. Expected 5 fields, got %zu starting at index %zu.", values.size() - idx, idx);
+                    idx = values.size();
+                }
+            } else {
+                if (idx + 4 < values.size()) { idx += 5; } else { idx = values.size(); }
             }
             break;
         }
         case 1504: {
-            // skip Fehlerindex
-            idx++;
-            // skip Count
-            idx++;
-            // Process Fehlercode
-            if (idx < values.size()) publish_output(error4_fehlercode_, values[idx], "error4_fehlercode");
-            // Process Fehlerbeschreibung
-            if (idx < values.size() && error4_fehlerbeschreibung_ != nullptr) {
-                std::string error_text = get_error_description_(std::atoi(values[idx].c_str()));
-                publish_text_state_deferred_(error4_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 4");
-                // this->defer([this, error_text]() {
-                //     error4_fehlerbeschreibung_->publish_state(error_text);
-                //     ESP_LOGV(TAG, "Error4 Fehlerbeschreibung: %s", error_text.c_str());
-                // });
-                idx++; // Moved here to advance only when description is processed
+            if (values.empty()) break;
+            idx = 1; // Skip count (values[0]), so data starts at values[1]
+
+            // values[idx] (originally values[1]) is expected to be the Fehlercode
+            std::string fehlercode_str;
+            if (idx < values.size()) {
+                fehlercode_str = values[idx];
+                if (error4_fehlercode_ != nullptr) {
+                    publish_output(error4_fehlercode_, fehlercode_str, "error4_fehlercode");
+                }
+                if (error4_fehlerbeschreibung_ != nullptr) {
+                    std::string error_text = get_error_description_(std::atoi(fehlercode_str.c_str()));
+                    publish_text_state_deferred_(error4_fehlerbeschreibung_, error_text, "Error", "Fehlerbeschreibung 4");
+                }
+                idx++; // Advance idx past Fehlercode
+            } else {
+                ESP_LOGW(TAG, "Error message (1504): Missing Fehlercode data at index %zu. Total values: %zu.", idx, values.size());
+                break;
             }
-             // Process Fehlerzeitpunkt
-            if (idx < values.size() && error4_zeitpunkt_ != nullptr) {
-                int tag = std::atoi(values[idx++].c_str());
-                int monat = std::atoi(values[idx++].c_str());
-                int jahr = std::atoi(values[idx++].c_str());
-                int stunde = std::atoi(values[idx++].c_str());
-                int minute = std::atoi(values[idx++].c_str());
-                // ESP_LOGD(TAG, "Error4 tag: %d", tag);
-                // ESP_LOGD(TAG, "Error4 monat: %d", monat);
-                // ESP_LOGD(TAG, "Error4 jahr: %d", jahr);
-                // ESP_LOGD(TAG, "Error4 stunde: %d", stunde);
-                // ESP_LOGD(TAG, "Error4 minute: %d", minute);
 
-                char buffer[32];
-                snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
-                        tag, monat, jahr, stunde, minute);
-
-                publish_timestamp_state_deferred_(error4_zeitpunkt_, buffer, "Error", "Zeitpunkt 4");
-
-                //     this->defer([this, text = std::string(buffer)]() {
-                //     error4_zeitpunkt_->publish_state(text);
-                //     ESP_LOGV(TAG, "Error4 Zeitpunkt: %s", text.c_str());
-                // });
+            // After Fehlercode, values[idx] through values[idx+4] are for Zeitpunkt: Tag;Monat;Jahr;Stunde;Minute
+            if (error4_zeitpunkt_ != nullptr) {
+                if (idx + 4 < values.size()) { // Check for all 5 parts of the timestamp
+                    int tag = std::atoi(values[idx++].c_str()); 
+                    int monat = std::atoi(values[idx++].c_str());
+                    int jahr = std::atoi(values[idx++].c_str());
+                    int stunde = std::atoi(values[idx++].c_str());
+                    int minute = std::atoi(values[idx++].c_str());
+                    char buffer[32];
+                    snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
+                             tag, monat, jahr, stunde, minute);
+                    publish_timestamp_state_deferred_(error4_zeitpunkt_, buffer, "Error", "Zeitpunkt 4");
+                } else {
+                    ESP_LOGW(TAG, "Error message (1504): Incomplete Zeitpunkt data. Expected 5 fields, got %zu starting at index %zu.", values.size() - idx, idx);
+                    idx = values.size();
+                }
+            } else {
+                if (idx + 4 < values.size()) { idx += 5; } else { idx = values.size(); }
             }
             break;
         }
         default: {
+            ESP_LOGW(TAG, "Unknown error index value: %d in message: %s", error_index_val, msg.c_str());
+            // Removed extra "tag, monat, jahr, stunde, minute" from the log message as they are not defined in this scope.
             break;
         }
     }
     // Request operating hours after error values are parsed
-    this->parent_->write_str("1450\r\n");
+    this->parent_->write_str(std::string(CMD_GET_OPERATING_HOURS) + "\r\n");
 }
 
 void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "1450;"  
-    size_t end = 0;
-
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
+    if (!split_message_(msg_str, values, CMD_GET_OPERATING_HOURS)) {
+        return;
     }
 
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Operating hours message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
     }
 
-    if (values.size() < 2) return;  // At least count and one value needed
-
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
     
     auto publish_hours = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
@@ -770,29 +830,23 @@ void LuxtronikV1Component::parse_operatinghours_message_(const char* message) {
     if (idx < values.size()) publish_hours(betriebsstunden_waermepumpe_, values[idx++], "Betriebsstunden Waermepumpe");
 
     // Request heating curve after operating hour values are parsed
-    this->parent_->write_str("3400\r\n");
+    this->parent_->write_str(std::string(CMD_GET_HEATING_CURVE) + "\r\n");
 }
 
 void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) { 
     // Received: 3400;9;20;310;200;0;350;340;200;0;350
-    std::string msg(message);
+    std::string msg_str(message);
     std::vector<std::string> values;
-    size_t start = 5;  // Skip "3400;"
-    size_t end = 0;
-
-    // Split message into vector for faster processing
-    while ((end = msg.find(';', start)) != std::string::npos) {
-        values.push_back(msg.substr(start, end - start));
-        start = end + 1;
+    if (!split_message_(msg_str, values, CMD_GET_HEATING_CURVE)) {
+        return;
     }
 
-    if (start < msg.length()) {
-        values.push_back(msg.substr(start));
+    if (values.size() < 2) { // Need at least count and one data value
+        ESP_LOGW(TAG, "Heating curve message '%s' has insufficient data after splitting.", msg_str.c_str());
+        return;
     }
 
-    if (values.size() < 2) return;  // At least count and one value needed
-
-    size_t idx = 1;  // Skip count
+    size_t idx = 1;  // Data starts from index 1, as values[0] is the count
 
     auto publish_temp = [this](sensor::Sensor* sensor, const std::string& value, const char* name) {
         if (sensor != nullptr) {
@@ -813,19 +867,24 @@ void LuxtronikV1Component::parse_heatingcurve_message_(const char* message) {
     if (idx < values.size()) publish_temp(mischkreis1_festwert_vorlauf_, values[idx++], "Mischkreis1 Festwert Vorlauf");
 }  
 
+// Keeping existing splitting logic for reset_programming_mode_ due to its unique structure
 void LuxtronikV1Component::reset_programming_mode_(const char* message) {
     // Example message format:
     // Received: 779;3506;1
-    // to reset programming mode, send "779;3506;0" to the device followed by "999\r\n"
-    // Received: 779;3406;1
-    // to reset programming mode, send "779;3406;0" to the device followed by "999\r\n"
+    // to reset programming mode, send "<CMD_PROGRAMMING_ERROR_PREFIX>;<mode_val>;0" to the device followed by "<CMD_SAVE_PROGRAMMING>\r\n"
+    // e.g. "779;3506;0\r\n" then "999\r\n"
 
     ESP_LOGD(TAG, "Programming-Errormessage received: %s", message);
     ESP_LOGD(TAG, "Reset programming mode...");
 
     std::string msg(message);
     std::vector<std::string> values;
-    size_t start = 4;  // Skip "779;"
+    size_t prefix_len = strlen(CMD_PROGRAMMING_ERROR_PREFIX);
+    if (msg.rfind(CMD_PROGRAMMING_ERROR_PREFIX, 0) != 0 || msg.length() <= prefix_len || msg[prefix_len] != ';') {
+        ESP_LOGW(TAG, "Invalid programming error message format: %s", message);
+        return;
+    }
+    size_t start = prefix_len + 1;  // Skip "779;"
     size_t end = 0;
   
     // Split message into vector for faster processing
@@ -848,75 +907,81 @@ void LuxtronikV1Component::reset_programming_mode_(const char* message) {
         
         // Send reset command followed by confirmation
         this->parent_->write_str(command);
-        // Wait for a short time to ensure the command is processed
-        // This delay may need to be adjusted based on the device's response time
+        // Allow time for the Luxtronik to process the mode reset command before sending confirmation.
+        // This delay may need to be adjusted based on the device's response time.
         delay(500);
         // Send confirmation command
-        this->parent_->write_str("999\r\n");
+        this->parent_->write_str(std::string(CMD_SAVE_PROGRAMMING) + "\r\n");
     }
 }
 
 // Move control implementations to cpp file
 void ModusBrauchwasserSelect::control(const std::string &value) {
     // Example message format:
-    // Send "3506;1" to set programming mode for water heating
-    // Send "3506;1;<MODE>" to program mode    
-    // Send "999" to save the new mode
+    // Send "<CMD_PROGRAM_HOT_WATER_MODE>;1" to set programming mode for water heating
+    // Send "<CMD_PROGRAM_HOT_WATER_MODE>;1;<MODE>" to program mode
+    // Send "<CMD_SAVE_PROGRAMMING>" to save the new mode
 
     if (parent_ == nullptr) return;
     
-    int mode = 0;  // Default to Automatik
-    if (value == "Zweiter Waermeerzeuger") mode = 1;
-    else if (value == "Party") mode = 2;
-    else if (value == "Ferien") mode = 3;
-    else if (value == "Aus") mode = 4;
+    int mode_val = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode_val = 1;
+    else if (value == "Party") mode_val = 2;
+    else if (value == "Ferien") mode_val = 3;
+    else if (value == "Aus") mode_val = 4;
     
+    char command_buffer[32];
     // Set programming mode for water heating
-    parent_->write_str("3506;1\r\n");
-    delay(100);  // Brief delay for processing
+    snprintf(command_buffer, sizeof(command_buffer), "%s;1\r\n", CMD_PROGRAM_HOT_WATER_MODE);
+    parent_->write_str(command_buffer);
+    // Brief delay to allow Luxtronik to process the previous command.
+    delay(100);
 
     // Send new mode to heatpump
-    char command[32];
-    snprintf(command, sizeof(command), "3506;1;%d\r\n", mode);
-    parent_->write_str(command);
+    snprintf(command_buffer, sizeof(command_buffer), "%s;1;%d\r\n", CMD_PROGRAM_HOT_WATER_MODE, mode_val);
+    parent_->write_str(command_buffer);
     
-    delay(100);  // Brief delay for processing
+    // Brief delay to allow Luxtronik to process the previous command.
+    delay(100);
     
     // Send save command
-    parent_->write_str("999\r\n");
+    parent_->write_str(std::string(CMD_SAVE_PROGRAMMING) + "\r\n");
     
-    ESP_LOGD("luxtronik_v1", "Changed Brauchwasser mode to: %s (Mode: %d)", value.c_str(), mode);
+    ESP_LOGD("luxtronik_v1", "Changed Brauchwasser mode to: %s (Mode: %d)", value.c_str(), mode_val);
   }
   
   void ModusHeizungSelect::control(const std::string &value) {
     // Example message format:
-    // Send "3406;1" to set programming mode for heating
-    // Send "3406;1;<MODE>" to program mode    
-    // Send "999" to save the new mode
+    // Send "<CMD_PROGRAM_HEATING_MODE>;1" to set programming mode for heating
+    // Send "<CMD_PROGRAM_HEATING_MODE>;1;<MODE>" to program mode
+    // Send "<CMD_SAVE_PROGRAMMING>" to save the new mode
     
     if (parent_ == nullptr) return;
     
-    int mode = 0;  // Default to Automatik
-    if (value == "Zweiter Waermeerzeuger") mode = 1;
-    else if (value == "Party") mode = 2;
-    else if (value == "Ferien") mode = 3;
-    else if (value == "Aus") mode = 4;
+    int mode_val = 0;  // Default to Automatik
+    if (value == "Zweiter Waermeerzeuger") mode_val = 1;
+    else if (value == "Party") mode_val = 2;
+    else if (value == "Ferien") mode_val = 3;
+    else if (value == "Aus") mode_val = 4;
     
+    char command_buffer[32];
     // Set programming mode for heatingmode
-    parent_->write_str("3406;1\r\n");
-    delay(100);  // Brief delay for processing
+    snprintf(command_buffer, sizeof(command_buffer), "%s;1\r\n", CMD_PROGRAM_HEATING_MODE);
+    parent_->write_str(command_buffer);
+    // Brief delay to allow Luxtronik to process the previous command.
+    delay(100);
  
     // Send new mode to heatpump
-    char command[32];
-    snprintf(command, sizeof(command), "3406;1;%d\r\n", mode);
-    parent_->write_str(command);
+    snprintf(command_buffer, sizeof(command_buffer), "%s;1;%d\r\n", CMD_PROGRAM_HEATING_MODE, mode_val);
+    parent_->write_str(command_buffer);
     
-    delay(100);  // Brief delay for processing
+    // Brief delay to allow Luxtronik to process the previous command.
+    delay(100);
     
     // Send save command
-    parent_->write_str("999\r\n");
+    parent_->write_str(std::string(CMD_SAVE_PROGRAMMING) + "\r\n");
     
-    ESP_LOGD("luxtronik_v1", "Changed Heizung mode to: %s (Mode: %d)", value.c_str(), mode);
+    ESP_LOGD("luxtronik_v1", "Changed Heizung mode to: %s (Mode: %d)", value.c_str(), mode_val);
   }
   
 // Add after ModusHeizungSelect implementation:
@@ -925,21 +990,24 @@ void WarmwasserSolltemperaturNumber::control(float value) {
   if (parent_ == nullptr) return;
 
   // Convert float to integer (multiplied by 10 as protocol expects)
-  int temp = static_cast<int>(value * 10);
+  int temp_val = static_cast<int>(value * 10);
   
-//   // Set programming mode for water heating temperature
-//   parent_->write_str("3507;1\r\n");
-//   delay(100);  // Brief delay for processing
+  char command_buffer[32];
+  // Set programming mode for water heating temperature
+  snprintf(command_buffer, sizeof(command_buffer), "%s;1\r\n", CMD_PROGRAM_HOT_WATER_TEMP);
+  parent_->write_str(command_buffer);
+  // Brief delay to allow Luxtronik to process the previous command.
+  delay(100);
 
-//   // Send new temperature to heat pump
-//   char command[32];
-//   snprintf(command, sizeof(command), "3507;1;%d\r\n", temp);
-//   parent_->write_str(command);
+  // Send new temperature to heat pump
+  snprintf(command_buffer, sizeof(command_buffer), "%s;1;%d\r\n", CMD_PROGRAM_HOT_WATER_TEMP, temp_val);
+  parent_->write_str(command_buffer);
   
-//   delay(100);  // Brief delay for processing
+  // Brief delay to allow Luxtronik to process the previous command.
+  delay(100);
   
-//   // Send save command
-//   parent_->write_str("999\r\n");
+  // Send save command
+  parent_->write_str(std::string(CMD_SAVE_PROGRAMMING) + "\r\n");
   
   ESP_LOGD("luxtronik_v1", "Changed Warmwasser Solltemperatur to: %.1f°C", value);
 }
