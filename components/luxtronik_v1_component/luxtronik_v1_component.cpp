@@ -927,19 +927,19 @@ void WarmwasserSolltemperaturNumber::control(float value) {
   // Convert float to integer (multiplied by 10 as protocol expects)
   int temp = static_cast<int>(value * 10);
   
-//   // Set programming mode for water heating temperature
-//   parent_->write_str("3507;1\r\n");
-//   delay(100);  // Brief delay for processing
+  // Set programming mode for water heating temperature
+  parent_->write_str("3507;1\r\n");
+  delay(100);  // Brief delay for processing
 
-//   // Send new temperature to heat pump
-//   char command[32];
-//   snprintf(command, sizeof(command), "3507;1;%d\r\n", temp);
-//   parent_->write_str(command);
+  // Send new temperature to heat pump
+  char command[32];
+  snprintf(command, sizeof(command), "3507;1;%d\r\n", temp);
+  parent_->write_str(command);
   
-//   delay(100);  // Brief delay for processing
+  delay(100);  // Brief delay for processing
   
-//   // Send save command
-//   parent_->write_str("999\r\n");
+  // Send save command
+  parent_->write_str("999\r\n");
   
   ESP_LOGD("luxtronik_v1", "Changed Warmwasser Solltemperatur to: %.1f°C", value);
 }
