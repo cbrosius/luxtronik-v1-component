@@ -183,14 +183,14 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,        
-        cv.Optional("modus_heizung_select"): select.select_schema().extend({
+        cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
+        cv.Optional("modus_heizung_select"): select.select_schema(ModusHeizungSelect).extend({
             cv.Required(CONF_ID): cv.declare_id(ModusHeizungSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
         cv.Optional(CONF_MODUS_BRAUCHWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_BRAUCHWASSER): TEXT_SENSOR_SCHEMA,
-        cv.Optional("modus_brauchwasser_select"): select.select_schema().extend({
+        cv.Optional("modus_brauchwasser_select"): select.select_schema(ModusBrauchwasserSelect).extend({
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
@@ -238,7 +238,7 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
         cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
-        cv.Optional(CONF_WARMWASSER_SOLLTEMPERATUR): number.number_schema().extend({
+        cv.Optional(CONF_WARMWASSER_SOLLTEMPERATUR): number.number_schema(WarmwasserSolltemperaturNumber).extend({
             cv.Required(CONF_ID): cv.declare_id(WarmwasserSolltemperaturNumber),
             cv.Optional(CONF_NAME): cv.string,
             cv.Optional("min_value", default=30.0): cv.float_,
