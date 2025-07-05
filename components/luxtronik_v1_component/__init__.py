@@ -184,13 +184,13 @@ CONFIG_SCHEMA = (
         cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional("modus_heizung_select"): select.select_schema.extend({
+        cv.Optional("modus_heizung_select"): select.SELECT_SCHEMA.extend({
             cv.Required(CONF_ID): cv.declare_id(ModusHeizungSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
         cv.Optional(CONF_MODUS_BRAUCHWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
         cv.Optional(CONF_MODUS_BRAUCHWASSER): TEXT_SENSOR_SCHEMA,
-        cv.Optional("modus_brauchwasser_select"): select.select_schema.extend({
+        cv.Optional("modus_brauchwasser_select"): select.SELECT_SCHEMA.extend({
             cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
             cv.Optional(CONF_NAME): cv.string,
         }).extend(cv.COMPONENT_SCHEMA),
