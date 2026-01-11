@@ -12,7 +12,7 @@ from esphome.const import (
 CONF_WARMWASSER_SOLLTEMPERATUR = "warmwasser_solltemperatur"
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor","text_sensor","select","number"]
+AUTO_LOAD = ["sensor", "text_sensor", "select", "number"]
 
 CONF_TEMPERATUR_VORLAUF = "temperatur_vorlauf"
 CONF_TEMPERATUR_RUECKLAUF = "temperatur_ruecklauf"
@@ -75,15 +75,28 @@ CONF_ERROR4_FEHLERCODE = "error4_fehlercode"
 CONF_ERROR4_FEHLERBESCHREIBUNG = "error4_fehlerbeschreibung"
 CONF_ERROR4_ZEITPUNKT = "error4_zeitpunkt"
 
+CONF_ON_ERROR_NOTIFICATION = "on_error_notification"
+
+# Add trigger constant for error notifications
+CONF_TRIGGER_ID = "trigger_id"
+
 # Add operatinghours sensor constants after error sensors
 CONF_BETRIEBSSTUNDEN_VERDICHTER_1 = "betriebsstunden_verdichter_1"
 CONF_IMPULSE_VERDICHTER_1 = "impulse_verdichter_1"
-CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1 = "durchschnittliche_einschaltdauer_verdichter_1"
-CONF_BETRIEBSSTUNDEN_VERDICHTER_2 = "betriebsstunden_verdichter_2" 
+CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1 = (
+    "durchschnittliche_einschaltdauer_verdichter_1"
+)
+CONF_BETRIEBSSTUNDEN_VERDICHTER_2 = "betriebsstunden_verdichter_2"
 CONF_IMPULSE_VERDICHTER_2 = "impulse_verdichter_2"
-CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2 = "durchschnittliche_einschaltdauer_verdichter_2"
-CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 = "betriebsstunden_zweiter_waermeerzeuger_1"
-CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2 = "betriebsstunden_zweiter_waermeerzeuger_2"
+CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2 = (
+    "durchschnittliche_einschaltdauer_verdichter_2"
+)
+CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 = (
+    "betriebsstunden_zweiter_waermeerzeuger_1"
+)
+CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2 = (
+    "betriebsstunden_zweiter_waermeerzeuger_2"
+)
 CONF_BETRIEBSSTUNDEN_WAERMEPUMPE = "betriebsstunden_waermepumpe"
 
 # Add heating curve constants after operatinghours sensors
@@ -99,18 +112,18 @@ CONF_MISCHKREIS1_FESTWERT_VORLAUF = "mischkreis1_festwert_vorlauf"
 
 MODUS_BRAUCHWASSER_OPTIONS = {
     "Automatik": 0,
-    "Zweiter Waermeerzeuger": 1, 
+    "Zweiter Waermeerzeuger": 1,
     "Party": 2,
     "Ferien": 3,
-    "Aus": 4
+    "Aus": 4,
 }
 
 MODUS_HEIZUNG_OPTIONS = {
     "Automatik": 0,
-    "Zweiter Waermeerzeuger": 1, 
+    "Zweiter Waermeerzeuger": 1,
     "Party": 2,
     "Ferien": 3,
-    "Aus": 4
+    "Aus": 4,
 }
 
 luxtronik_v1_component_ns = cg.esphome_ns.namespace("luxtronik_v1_component")
@@ -119,9 +132,15 @@ LuxtronikV1Component = luxtronik_v1_component_ns.class_(
 )
 
 # Add after namespace definition
-ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_("ModusBrauchwasserSelect", select.Select, cg.Component)
-ModusHeizungSelect = luxtronik_v1_component_ns.class_("ModusHeizungSelect", select.Select, cg.Component)
-WarmwasserSolltemperaturNumber = luxtronik_v1_component_ns.class_("WarmwasserSolltemperaturNumber", number.Number, cg.Component)
+ModusBrauchwasserSelect = luxtronik_v1_component_ns.class_(
+    "ModusBrauchwasserSelect", select.Select, cg.Component
+)
+ModusHeizungSelect = luxtronik_v1_component_ns.class_(
+    "ModusHeizungSelect", select.Select, cg.Component
+)
+WarmwasserSolltemperaturNumber = luxtronik_v1_component_ns.class_(
+    "WarmwasserSolltemperaturNumber", number.Number, cg.Component
+)
 
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
@@ -132,8 +151,8 @@ TEMPERATURE_SCHEMA = sensor.sensor_schema(
 
 INPUT_OUTPUT_SCHEMA = sensor.sensor_schema(
     state_class=STATE_CLASS_MEASUREMENT,
-    unit_of_measurement="", # no unit
-    accuracy_decimals=0,    # no decimals
+    unit_of_measurement="",  # no unit
+    accuracy_decimals=0,  # no decimals
 )
 
 TEXT_SENSOR_SCHEMA = text_sensor.text_sensor_schema()
@@ -149,117 +168,161 @@ IMPULS_SENSOR_SCHEMA = sensor.sensor_schema(
 )
 
 CONFIG_SCHEMA = (
-    cv.Schema({
-        cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
-        cv.Optional(CONF_TEMPERATUR_VORLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_RUECKLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_RUECKLAUF_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_HEISSGAS): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_AUSSEN): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_WAERMEQUELLE_EINGANG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_KAELTEKREIS): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_TEMPERATUR_RAUMSTATION): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_EINGANG_SPERRZEIT_EVU): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_EINGANG_HOCHDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_EINGANG_MOTORSCHUTZ): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_EINGANG_NIEDERDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_EINGANG_FREMDSTROMANODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ABTAUVENTIL): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_BRAUCHWASSERPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_HEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_MISCHER_1_AUF): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_MISCHER_1_ZU): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VENTILATOR_WAERMEPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VENTILATOR_BRUNNEN): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VERDICHTER_1): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_VERDICHTER_2): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZIRKULATIONSPUMPE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional("modus_heizung_select"): select.select_schema(ModusHeizungSelect).extend({
-            cv.Required(CONF_ID): cv.declare_id(ModusHeizungSelect),
-            cv.Optional(CONF_NAME): cv.string,
-        }).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional(CONF_MODUS_BRAUCHWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_MODUS_BRAUCHWASSER): TEXT_SENSOR_SCHEMA,
-        cv.Optional("modus_brauchwasser_select"): select.select_schema(ModusBrauchwasserSelect).extend({
-            cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
-            cv.Optional(CONF_NAME): cv.string,
-        }).extend(cv.COMPONENT_SCHEMA),
-
-        # Status sensors
-        cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_STATUS_BIVALENZSTUFE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_STATUS_LETZTER_START): TEXT_SENSOR_SCHEMA,
-        # Error sensors
-        cv.Optional(CONF_ERROR0_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_ERROR0_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR0_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR1_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_ERROR1_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR1_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR2_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_ERROR2_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR2_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR3_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_ERROR3_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR3_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR4_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
-        cv.Optional(CONF_ERROR4_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
-        cv.Optional(CONF_ERROR4_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-        # Workinghours sensors
-        cv.Optional(CONF_BETRIEBSSTUNDEN_VERDICHTER_1): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_IMPULSE_VERDICHTER_1): IMPULS_SENSOR_SCHEMA,
-        cv.Optional(CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_BETRIEBSSTUNDEN_VERDICHTER_2): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_IMPULSE_VERDICHTER_2): IMPULS_SENSOR_SCHEMA,
-        cv.Optional(CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2): OPERATINGHOURS_SENSOR_SCHEMA,
-        cv.Optional(CONF_BETRIEBSSTUNDEN_WAERMEPUMPE): OPERATINGHOURS_SENSOR_SCHEMA,
-        # heating curve
-        cv.Optional(CONF_HEIZKURVE_TEMPERATURDELTA): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_HEIZKURVE_ENDPUNKT): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_HEIZKURVE_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_HEIZKURVE_ABSENKUNG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_HEIZKURVE_FESTWERT_RUECKLAUF): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_MISCHKREIS1_HEIZKURVENENDPUNKT): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
-        cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,      
-        cv.Optional(CONF_WARMWASSER_SOLLTEMPERATUR): number.number_schema(WarmwasserSolltemperaturNumber).extend({
-            cv.Required(CONF_ID): cv.declare_id(WarmwasserSolltemperaturNumber),
-            cv.Optional(CONF_NAME): cv.string,
-            cv.Optional("min_value", default=30.0): cv.float_,
-            cv.Optional("max_value", default=65.0): cv.float_,
-            cv.Optional("step", default=1): cv.float_,
-        }).extend(cv.COMPONENT_SCHEMA),
-
-    })
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(LuxtronikV1Component),
+            cv.Optional(CONF_TEMPERATUR_VORLAUF): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_RUECKLAUF): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_RUECKLAUF_SOLL): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_HEISSGAS): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_AUSSEN): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_BRAUCHWASSER_SOLL): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_WAERMEQUELLE_EINGANG): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_KAELTEKREIS): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_MISCHKREIS1_VORLAUF_SOLL): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_TEMPERATUR_RAUMSTATION): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_EINGANG_ABTAU_SOLEDRUCK_DURCHFLUSS): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_EINGANG_SPERRZEIT_EVU): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_EINGANG_HOCHDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_EINGANG_MOTORSCHUTZ): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_EINGANG_NIEDERDRUCKPRESSOSTAT): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_EINGANG_FREMDSTROMANODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_ABTAUVENTIL): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_BRAUCHWASSERPUMPE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_HEIZUNGSPUMPE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_MISCHER_1_AUF): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_MISCHER_1_ZU): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_VENTILATOR_WAERMEPUMPE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_VENTILATOR_BRUNNEN): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_VERDICHTER_1): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_VERDICHTER_2): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_ZIRKULATIONSPUMPE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_AUSGANG_ZWEITER_WAERMEERZEUGER): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(
+                CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG
+            ): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_MODUS_HEIZUNG_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_MODUS_HEIZUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional("modus_heizung_select"): select.select_schema(
+                ModusHeizungSelect
+            )
+            .extend(
+                {
+                    cv.Required(CONF_ID): cv.declare_id(ModusHeizungSelect),
+                    cv.Optional(CONF_NAME): cv.string,
+                }
+            )
+            .extend(cv.COMPONENT_SCHEMA),
+            cv.Optional(CONF_MODUS_BRAUCHWASSER_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_MODUS_BRAUCHWASSER): TEXT_SENSOR_SCHEMA,
+            cv.Optional("modus_brauchwasser_select"): select.select_schema(
+                ModusBrauchwasserSelect
+            )
+            .extend(
+                {
+                    cv.Required(CONF_ID): cv.declare_id(ModusBrauchwasserSelect),
+                    cv.Optional(CONF_NAME): cv.string,
+                }
+            )
+            .extend(cv.COMPONENT_SCHEMA),
+            # Status sensors
+            cv.Optional(CONF_STATUS_ANLAGENTYP): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_STATUS_SOFTWAREVERSION): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_STATUS_BIVALENZSTUFE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_STATUS_BETRIEBSZUSTAND): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_STATUS_LETZTER_START): TEXT_SENSOR_SCHEMA,
+            # Error sensors
+            cv.Optional(CONF_ERROR0_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_ERROR0_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR0_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR1_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_ERROR1_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR1_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR2_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_ERROR2_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR2_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR3_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_ERROR3_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR3_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR4_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
+            cv.Optional(CONF_ERROR4_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ERROR4_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
+            cv.Optional(CONF_ON_ERROR_NOTIFICATION): cv.Triggers(
+                cv.Schema(
+                    {
+                        cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                            cg.Trigger.template(
+                                cg.std_string, cg.std_string, cg.std_string
+                            )
+                        ),
+                    }
+                )
+            ),
+            # Workinghours sensors
+            cv.Optional(
+                CONF_BETRIEBSSTUNDEN_VERDICHTER_1
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(CONF_IMPULSE_VERDICHTER_1): IMPULS_SENSOR_SCHEMA,
+            cv.Optional(
+                CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(
+                CONF_BETRIEBSSTUNDEN_VERDICHTER_2
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(CONF_IMPULSE_VERDICHTER_2): IMPULS_SENSOR_SCHEMA,
+            cv.Optional(
+                CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(
+                CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(
+                CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2
+            ): OPERATINGHOURS_SENSOR_SCHEMA,
+            cv.Optional(CONF_BETRIEBSSTUNDEN_WAERMEPUMPE): OPERATINGHOURS_SENSOR_SCHEMA,
+            # heating curve
+            cv.Optional(CONF_HEIZKURVE_TEMPERATURDELTA): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_HEIZKURVE_ENDPUNKT): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_HEIZKURVE_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_HEIZKURVE_ABSENKUNG): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_HEIZKURVE_FESTWERT_RUECKLAUF): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_MISCHKREIS1_HEIZKURVENENDPUNKT): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_MISCHKREIS1_ABSENKUNG): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_MISCHKREIS1_FESTWERT_VORLAUF): TEMPERATURE_SCHEMA,
+            cv.Optional(CONF_WARMWASSER_SOLLTEMPERATUR): number.number_schema(
+                WarmwasserSolltemperaturNumber
+            )
+            .extend(
+                {
+                    cv.Required(CONF_ID): cv.declare_id(WarmwasserSolltemperaturNumber),
+                    cv.Optional(CONF_NAME): cv.string,
+                    cv.Optional("min_value", default=30.0): cv.float_,
+                    cv.Optional("max_value", default=65.0): cv.float_,
+                    cv.Optional("step", default=1): cv.float_,
+                }
+            )
+            .extend(cv.COMPONENT_SCHEMA),
+        }
+    )
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
 )
+
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
-    
+
     if CONF_TEMPERATUR_VORLAUF in config:
         sens = await sensor.new_sensor(config[CONF_TEMPERATUR_VORLAUF])
         cg.add(var.set_temperatur_vorlauf_sensor(sens))
-    
+
     if CONF_TEMPERATUR_RUECKLAUF in config:
         sens = await sensor.new_sensor(config[CONF_TEMPERATUR_RUECKLAUF])
         cg.add(var.set_temperatur_ruecklauf_sensor(sens))
@@ -330,78 +393,78 @@ async def to_code(config):
     if CONF_AUSGANG_ABTAUVENTIL in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ABTAUVENTIL])
         cg.add(var.set_ausgang_abtauventil_sensor(sens))
-    
+
     if CONF_AUSGANG_BRAUCHWASSERPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_BRAUCHWASSERPUMPE])
         cg.add(var.set_ausgang_brauchwasserpumpe_sensor(sens))
-        
+
     if CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_FUSSBODENHEIZUNGSPUMPE])
         cg.add(var.set_ausgang_fussbodenheizungspumpe_sensor(sens))
-        
+
     if CONF_AUSGANG_HEIZUNGSPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_HEIZUNGSPUMPE])
         cg.add(var.set_ausgang_heizungspumpe_sensor(sens))
-        
+
     if CONF_AUSGANG_MISCHER_1_AUF in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_MISCHER_1_AUF])
         cg.add(var.set_ausgang_mischer_1_auf_sensor(sens))
-        
+
     if CONF_AUSGANG_MISCHER_1_ZU in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_MISCHER_1_ZU])
         cg.add(var.set_ausgang_mischer_1_zu_sensor(sens))
-        
+
     if CONF_AUSGANG_VENTILATOR_WAERMEPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VENTILATOR_WAERMEPUMPE])
         cg.add(var.set_ausgang_ventilator_waermepumpe_sensor(sens))
-        
+
     if CONF_AUSGANG_VENTILATOR_BRUNNEN in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VENTILATOR_BRUNNEN])
         cg.add(var.set_ausgang_ventilator_brunnen_sensor(sens))
-        
+
     if CONF_AUSGANG_VERDICHTER_1 in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VERDICHTER_1])
         cg.add(var.set_ausgang_verdichter_1_sensor(sens))
-        
+
     if CONF_AUSGANG_VERDICHTER_2 in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_VERDICHTER_2])
         cg.add(var.set_ausgang_verdichter_2_sensor(sens))
-        
+
     if CONF_AUSGANG_ZIRKULATIONSPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ZIRKULATIONSPUMPE])
         cg.add(var.set_ausgang_zirkulationspumpe_sensor(sens))
-        
+
     if CONF_AUSGANG_ZWEITER_WAERMEERZEUGER in config:
         sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER])
         cg.add(var.set_ausgang_zweiter_waermeerzeuger_sensor(sens))
-        
+
     if CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG in config:
-        sens = await sensor.new_sensor(config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG])
+        sens = await sensor.new_sensor(
+            config[CONF_AUSGANG_ZWEITER_WAERMEERZEUGER_STOERUNG]
+        )
         cg.add(var.set_ausgang_zweiter_waermeerzeuger_stoerung_sensor(sens))
-    
+
     if CONF_MODUS_HEIZUNG_NUMERISCH in config:
         sens = await sensor.new_sensor(config[CONF_MODUS_HEIZUNG_NUMERISCH])
         cg.add(var.set_modus_heizung_numerisch_sensor(sens))
-    
+
     if CONF_MODUS_HEIZUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_MODUS_HEIZUNG])
         cg.add(var.set_modus_heizung_sensor(sens))
-    
+
     if "modus_heizung_select" in config:
         conf = config["modus_heizung_select"]
         var_select = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(var_select, conf)
         await select.register_select(
-            var_select, 
-            conf,
-            options=list(MODUS_HEIZUNG_OPTIONS.keys())
+            var_select, conf, options=list(MODUS_HEIZUNG_OPTIONS.keys())
         )
         cg.add(var.set_modus_heizung_select(var_select))
 
     if CONF_MODUS_BRAUCHWASSER_NUMERISCH in config:
         sens = await sensor.new_sensor(config[CONF_MODUS_BRAUCHWASSER_NUMERISCH])
         cg.add(var.set_modus_brauchwasser_numerisch_sensor(sens))
-    
+
     if CONF_MODUS_BRAUCHWASSER in config:
         sens = await text_sensor.new_text_sensor(config[CONF_MODUS_BRAUCHWASSER])
         cg.add(var.set_modus_brauchwasser_sensor(sens))
@@ -411,40 +474,38 @@ async def to_code(config):
         var_select = cg.new_Pvariable(conf[CONF_ID])
         await cg.register_component(var_select, conf)
         await select.register_select(
-            var_select, 
-            conf,
-            options=list(MODUS_BRAUCHWASSER_OPTIONS.keys())
+            var_select, conf, options=list(MODUS_BRAUCHWASSER_OPTIONS.keys())
         )
         cg.add(var.set_modus_brauchwasser_select(var_select))
 
     if CONF_STATUS_ANLAGENTYP in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_ANLAGENTYP])
         cg.add(var.set_status_anlagentyp_sensor(sens))
-    
+
     if CONF_STATUS_SOFTWAREVERSION in config:
         sens = await text_sensor.new_text_sensor(config[CONF_STATUS_SOFTWAREVERSION])
         cg.add(var.set_status_softwareversion_sensor(sens))
-    
+
     if CONF_STATUS_BIVALENZSTUFE in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_BIVALENZSTUFE])
         cg.add(var.set_status_bivalenzstufe_sensor(sens))
-    
+
     if CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH in config:
         sens = await sensor.new_sensor(config[CONF_STATUS_BETRIEBSZUSTAND_NUMERISCH])
         cg.add(var.set_status_betriebszustand_numerisch_sensor(sens))
-    
+
     if CONF_STATUS_BETRIEBSZUSTAND in config:
-        sens = await  text_sensor.new_text_sensor(config[CONF_STATUS_BETRIEBSZUSTAND])
+        sens = await text_sensor.new_text_sensor(config[CONF_STATUS_BETRIEBSZUSTAND])
         cg.add(var.set_status_betriebszustand_sensor(sens))
 
     if CONF_STATUS_LETZTER_START in config:
         sens = await text_sensor.new_text_sensor(config[CONF_STATUS_LETZTER_START])
         cg.add(var.set_status_letzter_start_sensor(sens))
-    
+
     if CONF_ERROR0_FEHLERCODE in config:
         sens = await sensor.new_sensor(config[CONF_ERROR0_FEHLERCODE])
         cg.add(var.set_error0_fehlercode_sensor(sens))
-    
+
     if CONF_ERROR0_FEHLERBESCHREIBUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR0_FEHLERBESCHREIBUNG])
         cg.add(var.set_error0_fehlerbeschreibung_sensor(sens))
@@ -452,43 +513,43 @@ async def to_code(config):
     if CONF_ERROR0_ZEITPUNKT in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR0_ZEITPUNKT])
         cg.add(var.set_error0_zeitpunkt_sensor(sens))
-    
+
     if CONF_ERROR1_FEHLERCODE in config:
         sens = await sensor.new_sensor(config[CONF_ERROR1_FEHLERCODE])
         cg.add(var.set_error1_fehlercode_sensor(sens))
-    
+
     if CONF_ERROR1_FEHLERBESCHREIBUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR1_FEHLERBESCHREIBUNG])
         cg.add(var.set_error1_fehlerbeschreibung_sensor(sens))
-    
+
     if CONF_ERROR1_ZEITPUNKT in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR1_ZEITPUNKT])
         cg.add(var.set_error1_zeitpunkt_sensor(sens))
-    
+
     if CONF_ERROR2_FEHLERCODE in config:
         sens = await sensor.new_sensor(config[CONF_ERROR2_FEHLERCODE])
         cg.add(var.set_error2_fehlercode_sensor(sens))
-    
+
     if CONF_ERROR2_FEHLERBESCHREIBUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR2_FEHLERBESCHREIBUNG])
         cg.add(var.set_error2_fehlerbeschreibung_sensor(sens))
-    
+
     if CONF_ERROR2_ZEITPUNKT in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR2_ZEITPUNKT])
         cg.add(var.set_error2_zeitpunkt_sensor(sens))
-    
+
     if CONF_ERROR3_FEHLERCODE in config:
         sens = await sensor.new_sensor(config[CONF_ERROR3_FEHLERCODE])
         cg.add(var.set_error3_fehlercode_sensor(sens))
-    
+
     if CONF_ERROR3_FEHLERBESCHREIBUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR3_FEHLERBESCHREIBUNG])
         cg.add(var.set_error3_fehlerbeschreibung_sensor(sens))
-    
+
     if CONF_ERROR3_ZEITPUNKT in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR3_ZEITPUNKT])
         cg.add(var.set_error3_zeitpunkt_sensor(sens))
-    
+
     if CONF_ERROR4_FEHLERCODE in config:
         sens = await sensor.new_sensor(config[CONF_ERROR4_FEHLERCODE])
         cg.add(var.set_error4_fehlercode_sensor(sens))
@@ -496,7 +557,7 @@ async def to_code(config):
     if CONF_ERROR4_FEHLERBESCHREIBUNG in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR4_FEHLERBESCHREIBUNG])
         cg.add(var.set_error4_fehlerbeschreibung_sensor(sens))
-    
+
     if CONF_ERROR4_ZEITPUNKT in config:
         sens = await text_sensor.new_text_sensor(config[CONF_ERROR4_ZEITPUNKT])
         cg.add(var.set_error4_zeitpunkt_sensor(sens))
@@ -510,29 +571,37 @@ async def to_code(config):
         cg.add(var.set_impulse_verdichter_1_sensor(sens))
 
     if CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1 in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1])
+        sens = await sensor.new_sensor(
+            config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_1]
+        )
         cg.add(var.set_durchschnittliche_einschaltdauer_verdichter_1_sensor(sens))
-                
+
     if CONF_BETRIEBSSTUNDEN_VERDICHTER_2 in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_VERDICHTER_2])
         cg.add(var.set_betriebsstunden_verdichter_2_sensor(sens))
-    
+
     if CONF_IMPULSE_VERDICHTER_2 in config:
         sens = await sensor.new_sensor(config[CONF_IMPULSE_VERDICHTER_2])
         cg.add(var.set_impulse_verdichter_2_sensor(sens))
-        
+
     if CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2 in config:
-        sens = await sensor.new_sensor(config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2])
+        sens = await sensor.new_sensor(
+            config[CONF_DURCHSCHNITTLICHE_EINSCHALTDAUER_VERDICHTER_2]
+        )
         cg.add(var.set_durchschnittliche_einschaltdauer_verdichter_2_sensor(sens))
-        
+
     if CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1 in config:
-        sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1])
+        sens = await sensor.new_sensor(
+            config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_1]
+        )
         cg.add(var.set_betriebsstunden_zweiter_waermeerzeuger_1_sensor(sens))
-    
+
     if CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2 in config:
-        sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2])
+        sens = await sensor.new_sensor(
+            config[CONF_BETRIEBSSTUNDEN_ZWEITER_WAERMEERZEUGER_2]
+        )
         cg.add(var.set_betriebsstunden_zweiter_waermeerzeuger_2_sensor(sens))
-        
+
     if CONF_BETRIEBSSTUNDEN_WAERMEPUMPE in config:
         sens = await sensor.new_sensor(config[CONF_BETRIEBSSTUNDEN_WAERMEPUMPE])
         cg.add(var.set_betriebsstunden_waermepumpe_sensor(sens))
@@ -540,11 +609,11 @@ async def to_code(config):
     if CONF_HEIZKURVE_TEMPERATURDELTA in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_TEMPERATURDELTA])
         cg.add(var.set_heizkurve_temperaturdelta_sensor(sens))
-    
+
     if CONF_HEIZKURVE_ENDPUNKT in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_ENDPUNKT])
         cg.add(var.set_heizkurve_endpunkt_sensor(sens))
-    
+
     if CONF_HEIZKURVE_PARALLELVERSCHIEBUNG in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_PARALLELVERSCHIEBUNG])
         cg.add(var.set_heizkurve_parallelverschiebung_sensor(sens))
@@ -556,11 +625,11 @@ async def to_code(config):
     if CONF_HEIZKURVE_FESTWERT_RUECKLAUF in config:
         sens = await sensor.new_sensor(config[CONF_HEIZKURVE_FESTWERT_RUECKLAUF])
         cg.add(var.set_heizkurve_festwert_ruecklauf_sensor(sens))
-    
+
     if CONF_MISCHKREIS1_HEIZKURVENENDPUNKT in config:
         sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_HEIZKURVENENDPUNKT])
         cg.add(var.set_mischkreis1_heizkurvenendpunkt_sensor(sens))
-    
+
     if CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG in config:
         sens = await sensor.new_sensor(config[CONF_MISCHKREIS1_PARALLELVERSCHIEBUNG])
         cg.add(var.set_mischkreis1_parallelverschiebung_sensor(sens))
@@ -585,3 +654,8 @@ async def to_code(config):
             step=conf["step"],
         )
         cg.add(var.set_warmwasser_solltemperatur_number(var_number))
+
+    for conf in config.get(CONF_ON_ERROR_NOTIFICATION, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID])
+        await cg.register_trigger(trigger, conf)
+        cg.add(var.set_on_error_notification_trigger(trigger))

@@ -6,6 +6,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
 #include "esphome/components/number/number.h"
+#include "esphome/core/automation.h"
 
 namespace esphome {
 namespace luxtronik_v1_component {
@@ -165,6 +166,10 @@ class LuxtronikV1Component : public PollingComponent {
     number->set_parent(this);
   }
 
+  void set_on_error_notification_trigger(Trigger<std::string, std::string, std::string> *trigger) {
+    this->on_error_notification_trigger_ = trigger;
+  }
+
 
  protected:
   float get_float_temp_(const std::string& value) { return std::atof(value.c_str()) / 10.0f; }
@@ -281,6 +286,8 @@ class LuxtronikV1Component : public PollingComponent {
   sensor::Sensor *mischkreis1_parallelverschiebung_{nullptr}; // 3400/7
   sensor::Sensor *mischkreis1_absenkung_{nullptr};            // 3400/8
   sensor::Sensor *mischkreis1_festwert_vorlauf_{nullptr};     // 3400/9
+
+  Trigger<std::string, std::string, std::string> *on_error_notification_trigger_{nullptr};
 };
 
 }}  // namespace esphome::luxtronik_v1_component

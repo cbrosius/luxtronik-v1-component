@@ -704,6 +704,10 @@ void LuxtronikV1Component::parse_error_message_(const char* message) {
                 snprintf(buffer, sizeof(buffer), "%02d.%02d.%02d %02d:%02d",
                         tag, monat, jahr, stunde, minute);
 
+                if (this->on_error_notification_trigger_ != nullptr && this->error4_zeitpunkt_->get_state() != buffer) {
+                  this->on_error_notification_trigger_->trigger(std::string(buffer), values[2], get_error_description_(std::atoi(values[2].c_str())));
+                }
+
                 publish_timestamp_state_deferred_(error4_zeitpunkt_, buffer, "Error", "Zeitpunkt 4");
 
                 //     this->defer([this, text = std::string(buffer)]() {

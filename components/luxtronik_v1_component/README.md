@@ -227,6 +227,13 @@ luxtronik_v1_component:
   error4_fehlerbeschreibung:
     name: "Error4 Fehlerbeschreibung"
     id: error4_fehlerbeschreibung
+  on_error_notification:
+    - then:
+        - homeassistant.service:
+            service: notify.persistent_notification
+            data_template:
+              message: "Timestamp: {{timestamp}}, Code: {{code}}, Description: {{description}}"
+              title: "Luxtronik Error Notification"
   # Betriebsstunden sensors
   betriebsstunden_verdichter_1:
     name: "Betriebsstunden Verdichter 1"
