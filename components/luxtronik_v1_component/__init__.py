@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import uart, sensor, text_sensor, select, number
+from esphome import automation
 from esphome.const import (
     CONF_ID,
     CONF_NAME,
@@ -251,16 +252,14 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_ERROR4_FEHLERCODE): INPUT_OUTPUT_SCHEMA,
             cv.Optional(CONF_ERROR4_FEHLERBESCHREIBUNG): TEXT_SENSOR_SCHEMA,
             cv.Optional(CONF_ERROR4_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
-            cv.Optional(CONF_ON_ERROR_NOTIFICATION): cv.Triggers(
-                cv.Schema(
-                    {
-                        cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
-                            cg.Trigger.template(
-                                cg.std_string, cg.std_string, cg.std_string
-                            )
-                        ),
-                    }
-                )
+            cv.Optional(CONF_ON_ERROR_NOTIFICATION): automation.validate_automation(
+                {
+                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                        cg.Trigger.template(
+                            cg.std_string, cg.std_string, cg.std_string
+                        )
+                    ),
+                }
             ),
             # Workinghours sensors
             cv.Optional(
