@@ -143,6 +143,11 @@ WarmwasserSolltemperaturNumber = luxtronik_v1_component_ns.class_(
     "WarmwasserSolltemperaturNumber", number.Number, cg.Component
 )
 
+# Add trigger class for error notifications
+ErrorTrigger = luxtronik_v1_component_ns.class_(
+    "ErrorTrigger", automation.Trigger.template(cg.std_string, cg.std_string, cg.std_string)
+)
+
 TEMPERATURE_SCHEMA = sensor.sensor_schema(
     device_class=DEVICE_CLASS_TEMPERATURE,
     state_class=STATE_CLASS_MEASUREMENT,
@@ -254,11 +259,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_ERROR4_ZEITPUNKT): TEXT_SENSOR_SCHEMA,
             cv.Optional(CONF_ON_ERROR_NOTIFICATION): automation.validate_automation(
                 {
-                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
-                        cg.Trigger.template(
-                            cg.std_string, cg.std_string, cg.std_string
-                        )
-                    ),
+                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(ErrorTrigger),
                 }
             ),
             # Workinghours sensors
